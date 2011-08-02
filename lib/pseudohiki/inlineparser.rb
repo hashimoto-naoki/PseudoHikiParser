@@ -4,6 +4,15 @@ require 'treestack'
 
 class PseudoHikiInlineParser
   class InlineStack < TreeStack
+    def convert_last_node_into_leaf
+      last_node = self.pop
+      self.current_node.pop
+      tag_head = NodeTypeToHead[last_node.class]
+      tag_head_leaf = InlineLeaf.create(tag_head)
+      self.push tag_head_leaf
+      last_node.each {|leaf| self.push leaf }
+    end
+
     def node_in_ancestor?(node_class)
       @stack.select {|node| node_class == node.class }
     end
