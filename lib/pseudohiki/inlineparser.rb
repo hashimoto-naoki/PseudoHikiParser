@@ -71,7 +71,7 @@ class PseudoHikiInlineParser
       result.push m[0]
       str = m.post_match
     end
-    result.push str if str
+    result.push str unless str.empty?
     result
   end
 
