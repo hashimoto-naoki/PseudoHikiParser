@@ -27,6 +27,9 @@ class TC_PsudoHikiInlineParser < Test::Unit::TestCase
     parser = PseudoHikiInlineParser.new("this is a line that ends with a {{node}}")
     tree = parser.parse.tree
     assert_equal([["this is a line that ends with a "],[["node"]]],tree)
+    parser = PseudoHikiInlineParser.new("this is another line that ends with a {{node")
+    tree = parser.parse.tree
+    assert_equal([["this is another line that ends with a "],[["node"]]],tree)
   end
 end
 
