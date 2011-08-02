@@ -13,8 +13,8 @@ class PseudoHikiInlineParser
       last_node.each {|leaf| self.push leaf }
     end
 
-    def node_in_ancestor?(node_class)
-      @stack.select {|node| node_class == node.class }
+    def node_in_ancestors?(node_class)
+      not @stack.select {|node| node_class == node.class }.empty?
     end
   end
 
