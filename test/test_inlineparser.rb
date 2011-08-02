@@ -23,7 +23,7 @@ class TC_PsudoHikiInlineParser < Test::Unit::TestCase
   def test_parse
     parser = PseudoHikiInlineParser.new("As {{''another test'' case}}, '''this part''' must be in <strong>.")
     tree = parser.parse.tree
-    assert_equal([["As "], [[""], [["another test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
+    assert_equal([["As "], [[["another test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
     parser = PseudoHikiInlineParser.new("this is a line that ends with a {{node}}")
     tree = parser.parse.tree
     assert_equal([["this is a line that ends with a "],[["node"]]],tree)
@@ -40,13 +40,13 @@ class TC_PsudoHikiInlineParser < Test::Unit::TestCase
     assert_equal([["this is another line that ends with a "],["{{"], ["node"]],stack.tree)
     parser = PseudoHikiInlineParser.new("As {{''another '''test'' case}}, '''this part''' must be in <strong>.")
     tree = parser.parse.tree
-    assert_equal([["As "], [[""], [["another "], ["'''"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
-    parser = PseudoHikiInlineParser.new("As {{''another ]]test'' case}}, '''this part''' must be in <strong>.")
+    assert_equal([["As "], [[["another "], ["'''"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
+    parser = PseudoHikiInlineParser.new("As {{''another ]]test case with a [[node]]''.}}, '''this part''' must be in <strong>.")
     tree = parser.parse.tree
-    assert_equal([["As "], [[""], [["another "], ["]]"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
+    assert_equal([["As "], [[["another "], ["]]"], ["test case with a "], [["node"]]], ["."]], [", "], [["this part"]], [" must be in <strong>."]],tree)
     parser = PseudoHikiInlineParser.new("As {{''another {{test'' case}}, '''this part''' must be in <strong>.")
     tree = parser.parse.tree
-    assert_equal([["As "], [[""], [["another "], ["{{"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
+    assert_equal([["As "], [[["another "], ["{{"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
   end
 end
 

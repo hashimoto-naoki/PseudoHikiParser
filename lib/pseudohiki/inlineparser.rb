@@ -10,7 +10,7 @@ class PseudoHikiInlineParser
       tag_head = NodeTypeToHead[last_node.class]
       tag_head_leaf = InlineLeaf.create(tag_head)
       self.push tag_head_leaf
-      last_node.each {|leaf| self.push leaf }
+      last_node.each {|leaf| self.push_as_leaf leaf }
     end
 
     def node_in_ancestors?(node_class)
@@ -81,6 +81,7 @@ class PseudoHikiInlineParser
       str = m.post_match
     end
     result.push str unless str.empty?
+    result.delete_if {|token| token.empty? }
     result
   end
 
