@@ -95,6 +95,10 @@ class PseudoHikiInlineParser
 
   def treated_as_node_end(token)
     return @stack.pop if @stack.current_node.class == TAIL[token]
+    if @stack.node_in_ancestors?(TAIL[token])
+      @stack.convert_last_node_into_leaf until @stack.current_node.class == TAIL[token]
+      return @stack.pop
+    end
     nil
   end
 end

@@ -38,6 +38,15 @@ class TC_PsudoHikiInlineParser < Test::Unit::TestCase
     assert_equal([["this is another line that ends with a "],[["node"]]],stack.tree)
     stack.convert_last_node_into_leaf
     assert_equal([["this is another line that ends with a "],["{{"], ["node"]],stack.tree)
+    parser = PseudoHikiInlineParser.new("As {{''another '''test'' case}}, '''this part''' must be in <strong>.")
+    tree = parser.parse.tree
+    assert_equal([["As "], [[""], [["another "], ["'''"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
+    parser = PseudoHikiInlineParser.new("As {{''another ]]test'' case}}, '''this part''' must be in <strong>.")
+    tree = parser.parse.tree
+    assert_equal([["As "], [[""], [["another "], ["]]"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
+    parser = PseudoHikiInlineParser.new("As {{''another {{test'' case}}, '''this part''' must be in <strong>.")
+    tree = parser.parse.tree
+    assert_equal([["As "], [[""], [["another "], ["{{"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
   end
 end
 
