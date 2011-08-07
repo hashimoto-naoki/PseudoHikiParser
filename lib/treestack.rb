@@ -111,6 +111,6 @@ class TreeStack
   end
 
   def accept(visitor)
-    visitor.visit(self)
+    visitor.visit(tree)
   end
 end
