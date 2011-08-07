@@ -9,9 +9,15 @@ class TreeStack
 # a class that includes NodeType is expected to have #push method to include child nodes,
 # and a class that includes LeafType module is expected to have #concat method.
 
-  module NodeType
+  module TreeElement
     attr_accessor :depth
 
+    def accept(visitor)
+      visitor.visit(self)
+    end
+  end
+
+  module NodeType
     def push_self(stack)
       @depth = stack.current_depth + 1
       stack.push_as_child_node self
@@ -20,8 +26,6 @@ class TreeStack
   end
 
   module LeafType
-    attr_reader :depth
-
     def push_self(stack)
       @depth = stack.current_depth + 1
       stack.push_as_leaf self
@@ -36,10 +40,12 @@ class TreeStack
   end
 
   class Node < Array
+    include TreeElement
     include NodeType
   end
 
   class Leaf < Array
+    include TreeElement
     include LeafType
 
     def self.create(content=nil)
@@ -102,5 +108,9 @@ class TreeStack
     pop if sibling_node.kind_of? NodeType
     push(sibling_node)
     sibling_node
+  end
+
+  def accept(visitor)
+    visitor.visit(self)
   end
 end
