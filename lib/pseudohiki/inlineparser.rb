@@ -4,6 +4,12 @@ require 'treestack'
 require 'htmlelement'
 
 module PseudoHiki
+  PROTOCOL = /^((https?|file|ftp):|\.?\/)/
+  RELATIVE_PATH = /^\./o
+  ROOT_PATH = /^(\/|\\\\|[A-Za-z]:\\)/o
+  FILE_MARK = "file:///"
+  ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
+
   def self.compile_token_pat(*token_sets)
     first_set = token_sets.shift
     tokens = token_sets.inject(first_set) {|f,s| f.concat s }.uniq.sort do |x,y|
@@ -100,12 +106,6 @@ module PseudoHiki
   end
 
   include InlineParser::InlineElement
-
-  PROTOCOL = /^((https?|file|ftp):|\.?\/)/
-  RELATIVE_PATH = /^\./o
-  ROOT_PATH = /^(\/|\\\\|[A-Za-z]:\\)/o
-  FILE_MARK = "file:///"
-  ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 end
 
 module PseudoHiki
