@@ -5,6 +5,11 @@ require 'htmlelement'
 
 class PseudoHikiInlineParser
   class InlineStack < TreeStack
+    def initialize(tokens)
+      @tokens = tokens
+      super()
+    end
+
     def convert_last_node_into_leaf
       last_node = self.pop
       self.current_node.pop
@@ -25,6 +30,15 @@ class PseudoHikiInlineParser
         return self.pop
       end
       nil
+    end
+
+    def parse
+      while token = @tokens.shift
+        next if TAIL[token] and treated_as_node_end(token)
+        next if HEAD[token] and self.push HEAD[token].new
+        self.push InlineLeaf.create(token)
+      end
+      self
     end
   end
 
@@ -73,7 +87,7 @@ class PseudoHikiInlineParser
   compile_token_pat
 
   def initialize(str="")
-    @stack = InlineStack.new
+    @stack = InlineStack.new(split_into_tokens(str))
     @tokens = split_into_tokens(str)
   end
 
@@ -94,12 +108,7 @@ class PseudoHikiInlineParser
   end
 
   def parse
-    while token = @tokens.shift
-      next if TAIL[token] and @stack.treated_as_node_end(token)
-      next if HEAD[token] and @stack.push HEAD[token].new
-      @stack.push InlineLeaf.create(token)
-    end
-    @stack
+    @stack.parse
   end
 end
 
