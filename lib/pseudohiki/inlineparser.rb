@@ -12,10 +12,10 @@ module PseudoHiki
     Regexp.new(tokens.join("|"))
   end
 
-  class InlineStack < TreeStack
+  class InlineParser < TreeStack
     module InlineElement
-      class InlineNode < InlineStack::Node;end
-      class InlineLeaf < InlineStack::Leaf; end
+      class InlineNode < InlineParser::Node;end
+      class InlineLeaf < InlineParser::Leaf; end
       #  class LinkSepLeaf < InlineLeaf; end
 
       class LinkNode < InlineNode; end
@@ -99,7 +99,7 @@ module PseudoHiki
     end
   end
 
-  include InlineStack::InlineElement
+  include InlineParser::InlineElement
 
   PROTOCOL = /^((https?|file|ftp):|\.?\/)/
   RELATIVE_PATH = /^\./o
@@ -110,7 +110,7 @@ end
 
 module PseudoHiki
   class HtmlFormat
-    include InlineStack::InlineElement
+    include InlineParser::InlineElement
 
     attr_reader :element_name
 
