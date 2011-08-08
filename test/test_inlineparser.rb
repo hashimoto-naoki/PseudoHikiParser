@@ -10,8 +10,8 @@ class TC_PsudoHikiInlineParser < Test::Unit::TestCase
     assert_equal(/'''|\[\[|''|==|\{\{|\}\}|\]\]|\|/,parser.token_pat)
   end
 
-  def test_split_into_tokens
-    parser = PseudoHikiInlineParser.new
+  def test_inlinestack_split_into_tokens
+    parser = PseudoHikiInlineParser::InlineStack.new("")
     tokens = parser.split_into_tokens("As a test case, '''this part''' must be in <strong>.")
     assert_equal(["As a test case, ","'''","this part","'''"," must be in <strong>."],tokens)
     tokens = parser.split_into_tokens("As another {{test case}}, '''this part''' must be in <strong>.")

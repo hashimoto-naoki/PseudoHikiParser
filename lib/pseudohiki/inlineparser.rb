@@ -112,10 +112,6 @@ class PseudoHikiInlineParser
     @@token_pat
   end
 
-  def split_into_tokens(str)
-    @stack.split_into_tokens(str)
-  end
-
   def parse
     @stack.parse
   end
