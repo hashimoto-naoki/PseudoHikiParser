@@ -17,6 +17,15 @@ class PseudoHikiInlineParser
     def node_in_ancestors?(node_class)
       not @stack.select {|node| node_class == node.class }.empty?
     end
+
+    def treated_as_node_end(token)
+      return self.pop if current_node.class == TAIL[token]
+      if node_in_ancestors?(TAIL[token])
+        convert_last_node_into_leaf until current_node.class == TAIL[token]
+        return self.pop
+      end
+      nil
+    end
   end
 
   class InlineNode < TreeStack::Node;end
@@ -86,20 +95,11 @@ class PseudoHikiInlineParser
 
   def parse
     while token = @tokens.shift
-      next if TAIL[token] and treated_as_node_end(token)
+      next if TAIL[token] and @stack.treated_as_node_end(token)
       next if HEAD[token] and @stack.push HEAD[token].new
       @stack.push InlineLeaf.create(token)
     end
     @stack
-  end
-
-  def treated_as_node_end(token)
-    return @stack.pop if @stack.current_node.class == TAIL[token]
-    if @stack.node_in_ancestors?(TAIL[token])
-      @stack.convert_last_node_into_leaf until @stack.current_node.class == TAIL[token]
-      return @stack.pop
-    end
-    nil
   end
 end
 
