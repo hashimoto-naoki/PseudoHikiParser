@@ -94,15 +94,15 @@ class PseudoHikiInlineParser
     NodeTypeToHead[type] = head
   end
 
-  def self.compile_token_pat
-    tokens = HEAD.keys.concat(TAIL.keys).uniq.sort do |x,y|
+  def self.compile_token_pat(*token_sets)
+    first_set = token_sets.shift
+    tokens = token_sets.inject(first_set) {|f,s| f.concat s }.uniq.sort do |x,y|
       y.length <=> x.length
-    end.concat([LinkSep]).collect {|token| Regexp.escape(token) }
-    token_pat = Regexp.new(tokens.join("|"))
-    token_pat
+    end.collect {|token| Regexp.escape(token) }
+    Regexp.new(tokens.join("|"))
   end
   unless class_variable_defined? :@@token_pat
-    @@token_pat = compile_token_pat
+    @@token_pat = compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep])
   end
 
   def initialize(str="")
