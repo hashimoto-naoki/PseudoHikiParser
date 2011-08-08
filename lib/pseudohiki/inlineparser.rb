@@ -112,8 +112,8 @@ class PseudoHikiInlineParser
     @@token_pat
   end
 
-  def parse
-    @stack.parse
+  def stack
+    @stack
   end
 end
 
