@@ -3,7 +3,7 @@
 require 'treestack'
 require 'htmlelement'
 
-class PseudoHikiInlineParser
+module PseudoHikiInlineParser
   def self.compile_token_pat(*token_sets)
     first_set = token_sets.shift
     tokens = token_sets.inject(first_set) {|f,s| f.concat s }.uniq.sort do |x,y|
@@ -108,7 +108,7 @@ class PseudoHikiInlineParser
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 end
 
-class PseudoHikiInlineParser
+module PseudoHikiInlineParser
   class HtmlFormat
     include InlineStack::InlineElement
 
