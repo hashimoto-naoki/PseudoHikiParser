@@ -4,6 +4,14 @@ require 'treestack'
 require 'htmlelement'
 
 class PseudoHikiInlineParser
+  def self.compile_token_pat(*token_sets)
+    first_set = token_sets.shift
+    tokens = token_sets.inject(first_set) {|f,s| f.concat s }.uniq.sort do |x,y|
+      y.length <=> x.length
+    end.collect {|token| Regexp.escape(token) }
+    Regexp.new(tokens.join("|"))
+  end
+
   class InlineStack < TreeStack
     module InlineElement
       class InlineNode < InlineStack::Node;end
@@ -16,11 +24,33 @@ class PseudoHikiInlineParser
       class DelNode < InlineNode; end
       class PlainNode < InlineNode; end
       class PluginNode < InlineNode; end
+
+      LinkSep = "|"
     end
     include InlineElement
 
+    HEAD = {}
+    TAIL = {}
+    NodeTypeToHead = {}
+    
+    [[LinkNode, "[[", "]]"],
+     [EmNode, "''", "''"],
+     [StrongNode, "'''", "'''"],
+     [DelNode, "==", "=="],
+     [PluginNode, "{{","}}"]].each do |type, head, tail|
+      HEAD[head] = type
+      TAIL[tail] = type
+      NodeTypeToHead[type] = head
+    end
+
+    unless class_variable_defined? :@@token_pat
+      @@token_pat = PseudoHikiInlineParser.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep])
+      def token_pat
+        @@token_pat
+      end
+    end
+
     def initialize(str)
-      @@token_pat = PseudoHikiInlineParser.token_pat
       @tokens = split_into_tokens(str)
       super()
     end
@@ -71,51 +101,15 @@ class PseudoHikiInlineParser
 
   include InlineStack::InlineElement
 
-  LinkSep = "|"
-
   PROTOCOL = /^((https?|file|ftp):|\.?\/)/
   RELATIVE_PATH = /^\./o
   ROOT_PATH = /^(\/|\\\\|[A-Za-z]:\\)/o
   FILE_MARK = "file:///"
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 
-
-  HEAD = {}
-  TAIL = {}
-  NodeTypeToHead = {}
-  
-  [[LinkNode, "[[", "]]"],
-   [EmNode, "''", "''"],
-   [StrongNode, "'''", "'''"],
-   [DelNode, "==", "=="],
-   [PluginNode, "{{","}}"]].each do |type, head, tail|
-    HEAD[head] = type
-    TAIL[tail] = type
-    NodeTypeToHead[type] = head
-  end
-
-  def self.compile_token_pat(*token_sets)
-    first_set = token_sets.shift
-    tokens = token_sets.inject(first_set) {|f,s| f.concat s }.uniq.sort do |x,y|
-      y.length <=> x.length
-    end.collect {|token| Regexp.escape(token) }
-    Regexp.new(tokens.join("|"))
-  end
-  unless class_variable_defined? :@@token_pat
-    @@token_pat = compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep])
-  end
-
   def initialize(str="")
     @stack = InlineStack.new(str)
     @tokens = @stack.split_into_tokens(str)
-  end
-
-  def self.token_pat
-    @@token_pat
-  end
-
-  def token_pat
-    @@token_pat
   end
 
   def stack
