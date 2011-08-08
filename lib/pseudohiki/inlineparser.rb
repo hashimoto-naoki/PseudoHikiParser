@@ -5,6 +5,20 @@ require 'htmlelement'
 
 class PseudoHikiInlineParser
   class InlineStack < TreeStack
+    module InlineElement
+      class InlineNode < InlineStack::Node;end
+      class InlineLeaf < InlineStack::Leaf; end
+      #  class LinkSepLeaf < InlineLeaf; end
+
+      class LinkNode < InlineNode; end
+      class EmNode < InlineNode; end
+      class StrongNode < InlineNode; end
+      class DelNode < InlineNode; end
+      class PlainNode < InlineNode; end
+      class PluginNode < InlineNode; end
+    end
+    include InlineElement
+
     def initialize(str)
       @@token_pat = PseudoHikiInlineParser.token_pat
       @tokens = split_into_tokens(str)
@@ -55,16 +69,7 @@ class PseudoHikiInlineParser
     end
   end
 
-  class InlineNode < TreeStack::Node;end
-  class InlineLeaf < TreeStack::Leaf; end
-#  class LinkSepLeaf < InlineLeaf; end
-
-  class LinkNode < InlineNode; end
-  class EmNode < InlineNode; end
-  class StrongNode < InlineNode; end
-  class DelNode < InlineNode; end
-  class PlainNode < InlineNode; end
-  class PluginNode < InlineNode; end
+  include InlineStack::InlineElement
 
   LinkSep = "|"
 
@@ -74,10 +79,11 @@ class PseudoHikiInlineParser
   FILE_MARK = "file:///"
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 
+
   HEAD = {}
   TAIL = {}
   NodeTypeToHead = {}
-
+  
   [[LinkNode, "[[", "]]"],
    [EmNode, "''", "''"],
    [StrongNode, "'''", "'''"],
@@ -119,6 +125,8 @@ end
 
 class PseudoHikiInlineParser
   class HtmlFormat
+    include InlineStack::InlineElement
+
     attr_reader :element_name
 
     LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
