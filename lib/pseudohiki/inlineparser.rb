@@ -106,15 +106,6 @@ class PseudoHikiInlineParser
   ROOT_PATH = /^(\/|\\\\|[A-Za-z]:\\)/o
   FILE_MARK = "file:///"
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
-
-  def initialize(str="")
-    @stack = InlineStack.new(str)
-    @tokens = @stack.split_into_tokens(str)
-  end
-
-  def stack
-    @stack
-  end
 end
 
 class PseudoHikiInlineParser
