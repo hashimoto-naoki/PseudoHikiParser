@@ -7,7 +7,7 @@ require 'lib/pseudohiki/inlineparser'
 class TC_PsudoHikiInlineParser < Test::Unit::TestCase
   def test_compile_token_pat
     parser = PseudoHikiInlineParser.new
-    assert_equal(/'''|\[\[|''|==|\{\{|\}\}|\]\]/,parser.token_pat)
+    assert_equal(/'''|\[\[|''|==|\{\{|\}\}|\]\]|\|/,parser.token_pat)
   end
 
   def test_split_into_tokens
