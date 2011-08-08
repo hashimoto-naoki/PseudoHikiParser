@@ -76,15 +76,15 @@ class PseudoHikiInlineParser
   end
 
   def self.compile_token_pat
-    unless class_variable_defined? :@@token_pat
-      tokens = HEAD.keys.concat(TAIL.keys).uniq.sort do |x,y|
-        y.length <=> x.length
-      end.concat([LinkSep]).collect {|token| Regexp.escape(token) }
-      @@token_pat = Regexp.new(tokens.join("|"))
-    end
-    @@token_pat
+    tokens = HEAD.keys.concat(TAIL.keys).uniq.sort do |x,y|
+      y.length <=> x.length
+    end.concat([LinkSep]).collect {|token| Regexp.escape(token) }
+    token_pat = Regexp.new(tokens.join("|"))
+    token_pat
   end
-  compile_token_pat
+  unless class_variable_defined? :@@token_pat
+    @@token_pat = compile_token_pat
+  end
 
   def initialize(str="")
     @stack = InlineStack.new(split_into_tokens(str))
