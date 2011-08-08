@@ -5,8 +5,9 @@ require 'htmlelement'
 
 class PseudoHikiInlineParser
   class InlineStack < TreeStack
-    def initialize(tokens)
-      @tokens = tokens
+    def initialize(str)
+      @@token_pat = PseudoHikiInlineParser.token_pat
+      @tokens = split_into_tokens(str)
       super()
     end
 
@@ -30,6 +31,18 @@ class PseudoHikiInlineParser
         return self.pop
       end
       nil
+    end
+
+    def split_into_tokens(str)
+      result = []
+      while m = @@token_pat.match(str)
+        result.push m.pre_match if m.pre_match
+        result.push m[0]
+        str = m.post_match
+      end
+      result.push str unless str.empty?
+      result.delete_if {|token| token.empty? }
+      result
     end
 
     def parse
@@ -87,8 +100,12 @@ class PseudoHikiInlineParser
   end
 
   def initialize(str="")
-    @stack = InlineStack.new(split_into_tokens(str))
-    @tokens = split_into_tokens(str)
+    @stack = InlineStack.new(str)
+    @tokens = @stack.split_into_tokens(str)
+  end
+
+  def self.token_pat
+    @@token_pat
   end
 
   def token_pat
@@ -96,15 +113,7 @@ class PseudoHikiInlineParser
   end
 
   def split_into_tokens(str)
-    result = []
-    while m = @@token_pat.match(str)
-      result.push m.pre_match if m.pre_match
-      result.push m[0]
-      str = m.post_match
-    end
-    result.push str unless str.empty?
-    result.delete_if {|token| token.empty? }
-    result
+    @stack.split_into_tokens(str)
   end
 
   def parse
