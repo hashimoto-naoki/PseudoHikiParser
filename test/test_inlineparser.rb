@@ -59,4 +59,14 @@ class TC_HtmlFormat < Test::Unit::TestCase
     tree = parser.parse.tree
     assert_equal('<a href="image.html">image.html</a> is a link to a html file.', tree.accept(formatter).to_s)
   end
+
+  def test_visit_leafnode
+    formatter = HtmlFormat.create_plain
+    parser = InlineParser.new("a string with <charactors> that are replaced by &entity references.")
+    tree = parser.parse.tree
+    assert_equal("a string with &lt;charactors&gt; that are replaced by &amp;entity references.", tree.accept(formatter).to_s)
+    parser = InlineParser.new("a string with a token |.")
+    tree = parser.parse.tree
+    assert_equal("a string with a token |.", tree.accept(formatter).to_s)
+  end
 end

@@ -154,7 +154,7 @@ module PseudoHiki
 
     class <<LeafFormat
       def visit(leaf)
-        leaf.join("")
+        HtmlElement.escape(leaf.first)
       end
     end
 
