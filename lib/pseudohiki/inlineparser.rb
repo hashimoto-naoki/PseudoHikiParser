@@ -173,7 +173,7 @@ module PseudoHiki
          if ImageSuffix =~ ref
            htmlelement = ImgFormat.make_html_element
            htmlelement[SRC] = ref
-           htmlelement[ALT] = caption
+           htmlelement[ALT] = caption if caption
          else
            htmlelement = make_html_element
            htmlelement[HREF] = ref

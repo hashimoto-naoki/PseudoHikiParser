@@ -55,9 +55,18 @@ class TC_HtmlFormat < Test::Unit::TestCase
 
   def test_visit_linknode
     formatter = HtmlFormat.create_plain
+
     parser = InlineParser.new("[[image.html]] is a link to a html file.")
     tree = parser.parse.tree
     assert_equal('<a href="image.html">image.html</a> is a link to a html file.', tree.accept(formatter).to_s)
+
+    parser = InlineParser.new("[[image name|image.png]] is a link to a image file.")
+    tree = parser.parse.tree
+    assert_equal("<img alt=\"image name\" src=\"image.png\">\n is a link to a image file.", tree.accept(formatter).to_s)
+
+    parser = InlineParser.new("[[image.png]] is a link to a image file.")
+    tree = parser.parse.tree
+    assert_equal("<img src=\"image.png\">\n is a link to a image file.", tree.accept(formatter).to_s)
   end
 
   def test_visit_leafnode
