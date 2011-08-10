@@ -2,6 +2,7 @@
 
 require 'treestack'
 require 'htmlelement'
+require 'pseudohiki/htmlplugin'
 
 module PseudoHiki
   PROTOCOL = /^((https?|file|ftp):|\.?\/)/
@@ -180,6 +181,12 @@ module PseudoHiki
           htmlelement.push caption||ref
         end
         htmlelement
+      end
+    end
+
+    class <<PluginFormat
+      def visit(leaf)
+        HtmlPlugin.new(@element_name,leaf.join).apply
       end
     end
 
