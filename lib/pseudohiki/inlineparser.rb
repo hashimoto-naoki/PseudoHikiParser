@@ -159,28 +159,28 @@ module PseudoHiki
     end
 
     class <<LinkFormat
-       def visit(tree)
-         caption = nil
-         link_sep_index = tree.find_index([LinkSep])
-         if link_sep_index
-           caption = tree[0,link_sep_index].collect do |element|
-             visitor = Formatter[element.class]||PlainFormat
-             element.accept(visitor)
-           end
-           tree.shift(link_sep_index+1)
-         end
-         ref = tree[0][0]
-         if ImageSuffix =~ ref
-           htmlelement = ImgFormat.make_html_element
-           htmlelement[SRC] = ref
-           htmlelement[ALT] = caption if caption
-         else
-           htmlelement = make_html_element
-           htmlelement[HREF] = ref
-           htmlelement.push caption||ref
-         end
-         htmlelement
-       end
+      def visit(tree)
+        caption = nil
+        link_sep_index = tree.find_index([LinkSep])
+        if link_sep_index
+          caption = tree[0,link_sep_index].collect do |element|
+            visitor = Formatter[element.class]||PlainFormat
+            element.accept(visitor)
+          end
+          tree.shift(link_sep_index+1)
+        end
+        ref = tree[0][0]
+        if ImageSuffix =~ ref
+          htmlelement = ImgFormat.make_html_element
+          htmlelement[SRC] = ref
+          htmlelement[ALT] = caption if caption
+        else
+          htmlelement = make_html_element
+          htmlelement[HREF] = ref
+          htmlelement.push caption||ref
+        end
+        htmlelement
+      end
     end
 
     [[InlineLeaf,LeafFormat],
