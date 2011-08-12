@@ -128,7 +128,7 @@ module PseudoHiki
     def visit(tree)
       htmlelement = make_html_element
       tree.each do |element|
-        visitor = Formatter[element.class]||PlainFormat
+        visitor = Formatter[element.class]||Formatter[PlainNode]
         htmlelement.push element.accept(visitor)
       end
       htmlelement
@@ -138,34 +138,36 @@ module PseudoHiki
       HtmlElement.create(@element_name)
     end
 
-    LeafFormat = self.new(nil)
-    LinkFormat = self.new(LINK)
-    ImgFormat = self.new(IMG)
-    EmFormat = self.new(EM)
-    StrongFormat = self.new(STRONG)
-    DelFormat = self.new(DEL)
-    PlainFormat = self.new(PLAIN)
-    PluginFormat = self.new(PLUGIN)
+    [[InlineLeaf,nil],
+      [LinkNode,LINK],
+      [EmNode,EM],
+      [StrongNode,STRONG],
+      [DelNode,DEL],
+      [PlainNode,PLAIN],
+      [PluginNode,PLUGIN]
+    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
 
-    class <<PlainFormat
+    ImgFormat = self.new(IMG)
+
+    class << Formatter[PlainNode]
       def make_html_element
         []
       end
     end
 
-    class <<LeafFormat
+    class << Formatter[InlineLeaf]
       def visit(leaf)
         HtmlElement.escape(leaf.first)
       end
     end
 
-    class <<LinkFormat
+    class << Formatter[LinkNode]
       def visit(tree)
         caption = nil
         link_sep_index = tree.find_index([LinkSep])
         if link_sep_index
           caption = tree[0,link_sep_index].collect do |element|
-            visitor = Formatter[element.class]||PlainFormat
+            visitor = Formatter[element.class]||Formatter[PlainNode]
             element.accept(visitor)
           end
           tree.shift(link_sep_index+1)
@@ -184,23 +186,14 @@ module PseudoHiki
       end
     end
 
-    class <<PluginFormat
+    class << Formatter[PluginNode]
       def visit(leaf)
         HtmlPlugin.new(@element_name,leaf.join).apply
       end
     end
 
-    [[InlineLeaf,LeafFormat],
-      [LinkNode,LinkFormat],
-      [EmNode,EmFormat],
-      [StrongNode,StrongFormat],
-      [DelNode,DelFormat],
-      [PlainNode,PlainFormat],
-      [PluginNode,PluginFormat]
-    ].each {|node_class,format| Formatter[node_class] = format }
-
     def self.create_plain
-      PlainFormat
+      Formatter[PlainNode]
     end
   end
 end
