@@ -38,6 +38,7 @@ module PseudoHiki
     HEAD = {}
     TAIL = {}
     NodeTypeToHead = {}
+    TokenPat = {}
     
     [[LinkNode, "[[", "]]"],
      [EmNode, "''", "''"],
@@ -49,11 +50,10 @@ module PseudoHiki
       NodeTypeToHead[type] = head
     end
 
-    unless class_variable_defined? :@@token_pat
-      @@token_pat = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep])
-      def token_pat
-        @@token_pat
-      end
+    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep])
+
+    def token_pat
+      TokenPat[self.class]
     end
 
     def initialize(str)
@@ -85,7 +85,7 @@ module PseudoHiki
 
     def split_into_tokens(str)
       result = []
-      while m = @@token_pat.match(str)
+      while m = token_pat.match(str)
         result.push m.pre_match if m.pre_match
         result.push m[0]
         str = m.post_match
