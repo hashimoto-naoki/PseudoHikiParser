@@ -115,7 +115,7 @@ module PseudoHiki
 
     LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
     HREF, SRC, ALT = %w(href src alt)
-    PLAIN, PLUGIN = %w(plain div)
+    PLAIN, PLUGIN = %w(plain span)
 
     Formatter = {}
 
