@@ -62,8 +62,7 @@ module PseudoHiki
     end
 
     def convert_last_node_into_leaf
-      last_node = self.pop
-      self.current_node.pop
+      last_node = remove_current_node
       tag_head = NodeTypeToHead[last_node.class]
       tag_head_leaf = InlineLeaf.create(tag_head)
       self.push tag_head_leaf
