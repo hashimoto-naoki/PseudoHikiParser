@@ -56,7 +56,6 @@ class TreeStack
   end
 
   class NodeEnd
-
     def push_self(stack)
       stack.pop
       nil
@@ -108,6 +107,12 @@ class TreeStack
     pop if sibling_node.kind_of? NodeType
     push(sibling_node)
     sibling_node
+  end
+
+  def remove_current_node
+    removed_node = self.pop
+    self.current_node.pop
+    removed_node
   end
 
   def accept(visitor)
