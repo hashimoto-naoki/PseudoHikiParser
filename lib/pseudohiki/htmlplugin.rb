@@ -1,9 +1,18 @@
 #!/usr/bin/env ruby
 
-require('htmlelement')
+require 'htmlelement'
+require 'pseudohiki/inlineparser'
 #require('hikiparser/hikiblockparser')
 
 module PseudoHiki
+  class HtmlFormat
+    class << Formatter[PluginNode]
+      def visit(leaf)
+        HtmlPlugin.new(@element_name,leaf.join).apply
+      end
+    end
+  end
+  
   class HtmlPlugin
 
     PLUGIN_PAT = /^(\w+)([\s\(]+)/
