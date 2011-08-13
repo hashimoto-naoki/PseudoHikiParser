@@ -12,8 +12,7 @@ module PseudoHiki
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 
   def self.compile_token_pat(*token_sets)
-    first_set = token_sets.shift
-    tokens = token_sets.inject(first_set) {|f,s| f.concat s }.uniq.sort do |x,y|
+    tokens = token_sets.flatten.uniq.sort do |x,y|
       y.length <=> x.length
     end.collect {|token| Regexp.escape(token) }
     Regexp.new(tokens.join("|"))
