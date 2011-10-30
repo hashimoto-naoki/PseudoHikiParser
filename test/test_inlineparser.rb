@@ -65,6 +65,12 @@ class TC_HtmlFormat < Test::Unit::TestCase
     parser = InlineParser.new("[[LINK|image.html]] is a link to a html file.")
     tree = parser.parse.tree
     assert_equal('<a href="image.html">LINK</a> is a link to a html file.', tree.accept(formatter).to_s)
+    assert_equal('<a href="image.html">LINK</a> is a link to a html file.', tree.accept(formatter).to_s)
+
+    parser = InlineParser.new("[[an explanation about {{co2}}|co2.html]] is a link to a html file.")
+    tree = parser.parse.tree
+    assert_equal('<a href="co2.html">an explanation about <span>co2</span></a> is a link to a html file.', tree.accept(formatter).to_s)
+    assert_equal('<a href="co2.html">an explanation about <span>co2</span></a> is a link to a html file.', tree.accept(formatter).to_s)
 
     parser = InlineParser.new("[[image name|image.png]] is a link to a image file.")
     tree = parser.parse.tree

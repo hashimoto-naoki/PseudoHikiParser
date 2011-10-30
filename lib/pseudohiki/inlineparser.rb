@@ -160,6 +160,7 @@ module PseudoHiki
 
     class << Formatter[LinkNode]
       def visit(tree)
+        tree = tree.dup
         caption = nil
         link_sep_index = tree.find_index([LinkSep])
         if link_sep_index
