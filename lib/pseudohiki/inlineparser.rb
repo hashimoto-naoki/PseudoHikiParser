@@ -164,10 +164,7 @@ module PseudoHiki
         caption = nil
         link_sep_index = tree.find_index([LinkSep])
         if link_sep_index
-          caption = tree[0,link_sep_index].collect do |element|
-            visitor = Formatter[element.class]||Formatter[PlainNode]
-            element.accept(visitor)
-          end
+          caption = get_caption(tree,link_sep_index)
           tree.shift(link_sep_index+1)
         end
         ref = tree[0][0]
@@ -181,6 +178,13 @@ module PseudoHiki
           htmlelement.push caption||ref
         end
         htmlelement
+      end
+
+      def get_caption(tree,link_sep_index)
+        tree[0,link_sep_index].collect do |element|
+          visitor = Formatter[element.class]||Formatter[PlainNode]
+          element.accept(visitor)
+        end
       end
     end
 
