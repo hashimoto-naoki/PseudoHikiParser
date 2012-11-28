@@ -106,7 +106,7 @@ class HtmlElement
   
   def format_attributes
     @attributes.collect do |attr,value|
-      ' %s="%s"'%[attr,value.to_s]
+      ' %s="%s"'%[attr,HtmlElement.escape(value.to_s)]
     end.sort.join("")
   end
   private :format_attributes
