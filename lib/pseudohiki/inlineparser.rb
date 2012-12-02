@@ -12,7 +12,7 @@ module PseudoHiki
 
   def self.compile_token_pat(*token_sets)
     tokens = token_sets.flatten.uniq.sort do |x,y|
-      y.length <=> x.length
+      [y.length, y] <=> [x.length, x]
     end.collect {|token| Regexp.escape(token) }
     Regexp.new(tokens.join("|"))
   end
