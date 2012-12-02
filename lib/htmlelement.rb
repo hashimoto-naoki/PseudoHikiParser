@@ -7,6 +7,13 @@ require 'kconv'
 
 class HtmlElement
 
+  class Children < Array
+
+    def to_s
+      self.join("")
+    end
+  end
+
   module CHARSET
     EUC_JP = "EUC-JP"
     SJIS = "Shift_JIS"
@@ -74,7 +81,7 @@ class HtmlElement
   def initialize(tagname)
     @parent = nil
     @tagname = tagname
-    @children = []
+    @children = Children.new
     @attributes = {}
     @end_comment_not_added = true
   end

@@ -148,7 +148,7 @@ module PseudoHiki
 
     class << Formatter[PlainNode]
       def make_html_element
-        []
+        HtmlElement::Children.new
       end
     end
 
@@ -171,7 +171,7 @@ module PseudoHiki
         if ImageSuffix =~ ref
           htmlelement = ImgFormat.make_html_element
           htmlelement[SRC] = ref
-          htmlelement[ALT] = caption if caption
+          htmlelement[ALT] = caption.join("") if caption
         else
           htmlelement = make_html_element
           htmlelement[HREF] = ref
