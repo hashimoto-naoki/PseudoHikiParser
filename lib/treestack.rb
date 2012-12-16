@@ -34,7 +34,7 @@ class TreeStack
 
     def merge(leaf)
       raise NotLeafError unless leaf.kind_of? Leaf
-      nil unless leaf.kind_of? Mergeable
+      return nil unless leaf.kind_of? Mergeable
       self.concat(leaf)
     end
   end
