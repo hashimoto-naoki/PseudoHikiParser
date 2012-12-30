@@ -255,3 +255,85 @@ TEXT
                    [["paragraph9"]]]],tree)
   end
 end
+
+class TC_HtmlFormat < Test::Unit::TestCase
+  include PseudoHiki
+
+  class ::String
+    def accept(visitor)
+      self.to_s
+    end
+  end
+
+  def test_visit_tree
+    text = <<TEXT
+!heading1
+
+paragraph1.
+paragraph2.
+paragraph3.
+""citation1
+paragraph4.
+
+*list1
+*list1-1
+**list2
+**list2-2
+*list3
+
+paragraph5.
+
+!!heading2
+
+paragraph6.
+paragraph7.
+
+paragraph8.
+
+!heading3
+
+paragraph9.
+TEXT
+    html = <<HTML
+<div class="section">
+<h1>heading1</h1>
+<p>
+paragraph1.paragraph2.paragraph3.</p>
+<blockquote>
+citation1</blockquote>
+<p>
+paragraph4.</p>
+<ul>
+<li>list1
+<li>list1-1
+<ul>
+<li>list2
+<li>list2-2
+</ul>
+<li>list3
+</ul>
+<p>
+paragraph5.</p>
+<div class="section">
+<h2>heading2</h2>
+<p>
+paragraph6.paragraph7.</p>
+<p>
+paragraph8.</p>
+<!-- end of section -->
+</div>
+<!-- end of section -->
+</div>
+<div class="section">
+<h1>heading3</h1>
+<p>
+paragraph9.</p>
+<!-- end of section -->
+</div>
+HTML
+
+    formatter = HtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
+end

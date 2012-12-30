@@ -1,7 +1,7 @@
 #/usr/bin/env ruby
 
 require 'treestack'
-require 'htmlelement'
+require 'pseudohiki/inlineparser'
 
 module PseudoHiki
 
@@ -251,6 +251,77 @@ module PseudoHiki
       parser = self.new
       parser.read_lines(lines)
       parser.stack.tree
+    end
+  end
+end
+
+module PseudoHiki
+  class HtmlFormat
+    include BlockParser::BlockElement
+
+    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
+    SECTION = "section"
+    DT, TR, HEADING, LI = %w(dt tr h li)
+
+    [[DescNode, DESC],
+     [VerbatimNode, VERB],
+     [QuoteNode, QUOTE],
+     [TableNode, TABLE],
+     [HeadingNode, SECTION],
+     [ParagraphNode, PARA],
+     [HrNode, HR],
+     [ListNode, UL],
+     [EnumNode, OL],
+     [DescLeaf, DT],
+     [TableLeaf, TR],
+     [HeadingLeaf, HEADING],
+     [ListLeaf, LI],
+     [EnumLeaf, LI]
+    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
+
+    class << Formatter[DescNode]
+    end
+
+    class << Formatter[VerbatimNode]
+    end
+
+    class << Formatter[QuoteNode]
+    end
+
+    class << Formatter[TableNode]
+    end
+
+    class << Formatter[HeadingNode]
+    end
+
+    class << Formatter[ParagraphNode]
+    end
+
+    class << Formatter[HrNode]
+    end
+
+    class << Formatter[ListNode]
+    end
+
+    class << Formatter[EnumNode]
+    end
+
+    class << Formatter[DescLeaf]
+    end
+
+    class << Formatter[TableLeaf]
+    end
+
+    class << Formatter[HeadingLeaf]
+      def make_html_element(tree)
+        HtmlElement.create(@element_name+tree.nominal_level.to_s)
+      end
+    end
+
+    class << Formatter[ListLeaf]
+    end
+
+    class << Formatter[EnumLeaf]
     end
   end
 end

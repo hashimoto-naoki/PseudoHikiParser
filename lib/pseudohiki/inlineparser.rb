@@ -123,7 +123,7 @@ module PseudoHiki
     end
 
     def visit(tree)
-      htmlelement = make_html_element
+      htmlelement = make_html_element(tree)
       tree.each do |element|
         visitor = Formatter[element.class]||Formatter[PlainNode]
         htmlelement.push element.accept(visitor)
@@ -131,7 +131,7 @@ module PseudoHiki
       htmlelement
     end
 
-    def make_html_element
+    def make_html_element(tree=nil)
       HtmlElement.create(@element_name)
     end
 
@@ -147,7 +147,7 @@ module PseudoHiki
     ImgFormat = self.new(IMG)
 
     class << Formatter[PlainNode]
-      def make_html_element
+      def make_html_element(tree=nil)
         HtmlElement::Children.new
       end
     end
