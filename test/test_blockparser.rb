@@ -254,6 +254,28 @@ TEXT
                   [[["heading3"]],
                    [[["paragraph9"]]]]],tree)
   end
+
+  def test_parse_with_inline_elements
+    text = <<TEXT
+!heading
+
+paragraph with a [[link|http://www.example.org/]].
+
+||col||col
+
+:item:description
+TEXT
+
+    tree = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal([[[["heading"]],
+                   [[["paragraph with a "],
+                     [["link"],
+                      ["|"],
+                      ["http://www.example.org/"]],
+                     ["."]]],
+                   [[["col"],["|"],["|"],["col"]]],
+                   [[["item:description"]]]]], tree)
+  end
 end
 
 class TC_HtmlFormat < Test::Unit::TestCase
@@ -328,6 +350,28 @@ paragraph8.</p>
 <h1>heading3</h1>
 <p>
 paragraph9.</p>
+<!-- end of section -->
+</div>
+HTML
+
+    formatter = HtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
+
+  def test_visit_tree_with_inline_elements
+    text = <<TEXT
+!!heading2
+
+a paragraph with an ''emphasised'' word.
+a paragraph with a [[link|http://www.example.org/]].
+TEXT
+
+    html = <<HTML
+<div class="section">
+<h2>heading2</h2>
+<p>
+a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://www.example.org/">link</a>.</p>
 <!-- end of section -->
 </div>
 HTML
