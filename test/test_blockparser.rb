@@ -46,7 +46,7 @@ class TC_BlockLeaf < Test::Unit::TestCase
     parser = PseudoHiki::BlockParser.new
     paragraph_line = "This is a paragraph."
     paragraph = parser.select_leaf_type(paragraph_line).create(paragraph_line)
-    assert_equal([paragraph_line], paragraph)
+    assert_equal([[paragraph_line]], paragraph)
     assert_equal(nil, paragraph.nominal_level)
   end
 
@@ -54,12 +54,12 @@ class TC_BlockLeaf < Test::Unit::TestCase
     parser = PseudoHiki::BlockParser.new
     level1_heading_line = "!This is a level1 heading."
     heading1 = parser.select_leaf_type(level1_heading_line).create(level1_heading_line)
-    assert_equal(["This is a level1 heading."], heading1)
+    assert_equal([["This is a level1 heading."]], heading1)
     assert_equal(1, heading1.nominal_level)
 
     level2_heading_line = "!!This is a level2 heading."
     heading2 = parser.select_leaf_type(level2_heading_line).create(level2_heading_line)
-    assert_equal(["This is a level2 heading."], heading2)
+    assert_equal([["This is a level2 heading."]], heading2)
     assert_equal(2, heading2.nominal_level)
   end
 
@@ -92,12 +92,12 @@ class TC_BlockLeaf < Test::Unit::TestCase
     stack = PseudoHiki::BlockParser.new.stack
     stack.push create_leaf(paragraph_str)
     paragraph_tree = stack.tree
-    assert_equal([[[paragraph_str]]],paragraph_tree)
+    assert_equal([[[[paragraph_str]]]],paragraph_tree)
     assert_equal(nil,paragraph_tree.first.nominal_level)
     another_paragraph = create_leaf(another_paragraph_str)
     stack.push another_paragraph
-    assert_equal([[[paragraph_str],
-                   [another_paragraph_str]]],paragraph_tree)
+    assert_equal([[[[paragraph_str]],
+                   [[another_paragraph_str]]]],paragraph_tree)
 
     heading_str = "This is a heading line."
     stack = PseudoHiki::BlockParser.new.stack
@@ -108,20 +108,20 @@ class TC_BlockLeaf < Test::Unit::TestCase
     assert_equal(HeadingNode, heading_tree.first.class)
     assert_equal(HeadingLeaf, heading_tree.first.first.class)
     stack.push create_leaf("!!"+heading_str)
-    assert_equal([[[heading_str],
-                   [[heading_str]]]], heading_tree)
+    assert_equal([[[[heading_str]],
+                   [[[heading_str]]]]], heading_tree)
 
     stack = PseudoHiki::BlockParser.new.stack
     stack.push create_leaf("!!"+heading_str)
     heading2_tree = stack.tree
-    assert_equal([[[heading_str]]], heading2_tree)
+    assert_equal([[[[heading_str]]]], heading2_tree)
     assert_equal(2,heading2_tree.first.nominal_level)
 
     stack = PseudoHiki::BlockParser.new.stack
     stack.push create_leaf("!"+heading_str)
     stack.push create_leaf(another_paragraph_str)
-    assert_equal([[[heading_str],
-                   [[another_paragraph_str]]]],stack.tree)
+    assert_equal([[[[heading_str]],
+                   [[[another_paragraph_str]]]]],stack.tree)
   end
 
   def test_paragraph_breakable?
@@ -235,24 +235,24 @@ paragraph9
 TEXT
 
     tree = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal([[["heading1"],
-                   [["paragraph1"],
-                    ["paragraph2"],
-                    ["paragraph3"]],
-                   [["citation1"]],
-                   [["paragraph4"]],
-                   [["list1"],
-                    ["list1-1"],
-                    [["list2"],
-                     ["list2-2"]],
-                    ["list3"]],
-                   [["paragraph5"]],
-                   [["heading2"],
-                    [["paragraph6"],
-                     ["paragraph7"]],
-                    [["paragraph8"]]]],
-                  [["heading3"],
-                   [["paragraph9"]]]],tree)
+    assert_equal([[[["heading1"]],
+                   [[["paragraph1"]],
+                    [["paragraph2"]],
+                    [["paragraph3"]]],
+                   [[["citation1"]]],
+                   [[["paragraph4"]]],
+                   [[["list1"]],
+                    [["list1-1"]],
+                    [[["list2"]],
+                     [["list2-2"]]],
+                    [["list3"]]],
+                   [[["paragraph5"]]],
+                   [[["heading2"]],
+                    [[["paragraph6"]],
+                     [["paragraph7"]]],
+                    [[["paragraph8"]]]]],
+                  [[["heading3"]],
+                   [[["paragraph9"]]]]],tree)
   end
 end
 

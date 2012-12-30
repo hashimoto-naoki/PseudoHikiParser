@@ -59,7 +59,9 @@ module PseudoHiki
 
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
-        self.new.push line
+        leaf = self.new
+        InlineParser.parse(line).each {|n| leaf.push n }
+        leaf
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
