@@ -30,7 +30,7 @@ module PseudoHiki
       class PlainNode < InlineNode; end
       class PluginNode < InlineNode; end
 
-      LinkSep = "|"
+      LinkSep, TableSep = %w(| ||)
     end
     include InlineElement
 
@@ -49,7 +49,7 @@ module PseudoHiki
       NodeTypeToHead[type] = head
     end
 
-    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep])
+    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep, TableSep])
 
     def token_pat
       TokenPat[self.class]

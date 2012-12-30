@@ -273,7 +273,7 @@ TEXT
                       ["|"],
                       ["http://www.example.org/"]],
                      ["."]]],
-                   [[["col"],["|"],["|"],["col"]]],
+                   [[["col"],["||"],["col"]]],
                    [[["item:description"]]]]], tree)
   end
 end
