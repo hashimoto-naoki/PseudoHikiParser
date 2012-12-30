@@ -103,6 +103,11 @@ module PseudoHiki
     end
   end
 
+  def InlineParser.parse(str)
+    parser = new(str)
+    parser.parse.tree
+  end
+
   include InlineParser::InlineElement
 end
 

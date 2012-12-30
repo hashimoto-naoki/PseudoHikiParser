@@ -23,14 +23,11 @@ class TC_InlineParser < Test::Unit::TestCase
   end
 
   def test_inlineparser_parse
-    parser = InlineParser.new("As {{''another test'' case}}, '''this part''' must be in <strong>.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("As {{''another test'' case}}, '''this part''' must be in <strong>.")
     assert_equal([["As "], [[["another test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
-    parser = InlineParser.new("this is a line that ends with a {{node}}")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("this is a line that ends with a {{node}}")
     assert_equal([["this is a line that ends with a "],[["node"]]],tree)
-    parser = InlineParser.new("this is another line that ends with a {{node")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("this is another line that ends with a {{node")
     assert_equal([["this is another line that ends with a "],[["node"]]],tree)
   end
 
@@ -40,14 +37,11 @@ class TC_InlineParser < Test::Unit::TestCase
     assert_equal([["this is another line that ends with a "],[["node"]]],stack.tree)
     stack.convert_last_node_into_leaf
     assert_equal([["this is another line that ends with a "],["{{"], ["node"]],stack.tree)
-    parser = InlineParser.new("As {{''another '''test'' case}}, '''this part''' must be in <strong>.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("As {{''another '''test'' case}}, '''this part''' must be in <strong>.")
     assert_equal([["As "], [[["another "], ["'''"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
-    parser = InlineParser.new("As {{''another ]]test case with a [[node]]''.}}, '''this part''' must be in <strong>.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("As {{''another ]]test case with a [[node]]''.}}, '''this part''' must be in <strong>.")
     assert_equal([["As "], [[["another "], ["]]"], ["test case with a "], [["node"]]], ["."]], [", "], [["this part"]], [" must be in <strong>."]],tree)
-    parser = InlineParser.new("As {{''another {{test'' case}}, '''this part''' must be in <strong>.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("As {{''another {{test'' case}}, '''this part''' must be in <strong>.")
     assert_equal([["As "], [[["another "], ["{{"], ["test"]], [" case"]], [", "], [["this part"]], [" must be in <strong>."]],tree)
   end
 end
@@ -58,36 +52,29 @@ class TC_HtmlFormat < Test::Unit::TestCase
   def test_visit_linknode
     formatter = HtmlFormat.create_plain
 
-    parser = InlineParser.new("[[image.html]] is a link to a html file.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("[[image.html]] is a link to a html file.")
     assert_equal('<a href="image.html">image.html</a> is a link to a html file.', tree.accept(formatter).to_s)
 
-    parser = InlineParser.new("[[LINK|image.html]] is a link to a html file.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("[[LINK|image.html]] is a link to a html file.")
     assert_equal('<a href="image.html">LINK</a> is a link to a html file.', tree.accept(formatter).to_s)
     assert_equal('<a href="image.html">LINK</a> is a link to a html file.', tree.accept(formatter).to_s)
 
-    parser = InlineParser.new("[[an explanation about {{co2}}|co2.html]] is a link to a html file.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("[[an explanation about {{co2}}|co2.html]] is a link to a html file.")
     assert_equal('<a href="co2.html">an explanation about <span>co2</span></a> is a link to a html file.', tree.accept(formatter).to_s)
     assert_equal('<a href="co2.html">an explanation about <span>co2</span></a> is a link to a html file.', tree.accept(formatter).to_s)
 
-    parser = InlineParser.new("[[image name|image.png]] is a link to a image file.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("[[image name|image.png]] is a link to a image file.")
     assert_equal("<img alt=\"image name\" src=\"image.png\">\n is a link to a image file.", tree.accept(formatter).to_s)
 
-    parser = InlineParser.new("[[image.png]] is a link to a image file.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("[[image.png]] is a link to a image file.")
     assert_equal("<img src=\"image.png\">\n is a link to a image file.", tree.accept(formatter).to_s)
   end
 
   def test_visit_leafnode
     formatter = HtmlFormat.create_plain
-    parser = InlineParser.new("a string with <charactors> that are replaced by &entity references.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("a string with <charactors> that are replaced by &entity references.")
     assert_equal("a string with &lt;charactors&gt; that are replaced by &amp;entity references.", tree.accept(formatter).to_s)
-    parser = InlineParser.new("a string with a token |.")
-    tree = parser.parse.tree
+    tree = InlineParser.parse("a string with a token |.")
     assert_equal("a string with a token |.", tree.accept(formatter).to_s)
   end
 
