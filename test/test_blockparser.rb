@@ -416,4 +416,24 @@ HTML
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
+
+  def test_dl
+    text = <<TEXT
+:dt1:dd1
+:dt2:dd2
+TEXT
+
+    html = <<HTML
+<dl>
+<dt>dt1</dt>
+<dd>dd1</dd>
+<dt>dt2</dt>
+<dd>dd2</dd>
+</dl>
+HTML
+
+    formatter = HtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
 end

@@ -263,8 +263,9 @@ module PseudoHiki
 
     DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
     SECTION = "section"
-    DT, TR, HEADING, LI = %w(dt tr h li)
+    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
     TableSep = [InlineParser::TableSep]
+    DescSep = [InlineParser::DescSep]
 
     [[DescNode, DESC],
      [VerbatimNode, VERB],
@@ -310,6 +311,27 @@ module PseudoHiki
     end
 
     class << Formatter[DescLeaf]
+      def visit(tree)
+        tree = tree.dup
+        dt = make_html_element(tree)
+        dd = HtmlElement.create(DD)
+        element = HtmlElement::Children.new
+        element.push dt
+        dt_sep_index = tree.index(DescSep)
+        if dt_sep_index
+          tree.shift(dt_sep_index).each do |token|
+            dt.push visited_result(token)
+          end
+          tree.shift
+          unless tree.empty?
+            tree.each {|token| dd.push visited_result(token) }
+            element.push dd
+          end
+        else
+          tree.each {|token| dt.push visited_result(token) }
+        end
+        element
+      end
     end
 
     class << Formatter[TableLeaf]
