@@ -127,11 +127,15 @@ module PseudoHiki
       @element_name = element_name
     end
 
+    def visited_result(element)
+      visitor = Formatter[element.class]||Formatter[PlainNode]
+      element.accept(visitor)
+    end
+
     def visit(tree)
       htmlelement = make_html_element(tree)
       tree.each do |element|
-        visitor = Formatter[element.class]||Formatter[PlainNode]
-        htmlelement.push element.accept(visitor)
+        htmlelement.push visited_result(element)
       end
       htmlelement
     end
@@ -187,8 +191,7 @@ module PseudoHiki
 
       def get_caption(tree,link_sep_index)
         tree[0,link_sep_index].collect do |element|
-          visitor = Formatter[element.class]||Formatter[PlainNode]
-          element.accept(visitor)
+          visited_result(element)
         end
       end
     end
