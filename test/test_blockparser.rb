@@ -262,7 +262,6 @@ TEXT
 paragraph with a [[link|http://www.example.org/]].
 
 ||col||col
-
 :item:description
 TEXT
 
@@ -275,6 +274,25 @@ TEXT
                      ["."]]],
                    [[["col"],["||"],["col"]]],
                    [[["item:description"]]]]], tree)
+  end
+
+  def test_parse_table_with_inline_elements
+    text =<<TEXT
+||!col||![[link|http://www.example.org/]]||col
+TEXT
+
+    parsed_cells = [[["!col"],
+                     ["||"],
+                     ["!"],
+                     [["link"],
+                      ["|"],
+                      ["http://www.example.org/"]],
+                     ["||"],
+                     ["col"]]]
+
+    tablenode = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o)).shift
+    assert_equal(parsed_cells, tablenode)
+    assert_equal(TableNode, tablenode.class)
   end
 end
 
@@ -374,6 +392,24 @@ TEXT
 a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://www.example.org/">link</a>.</p>
 <!-- end of section -->
 </div>
+HTML
+
+    formatter = HtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
+
+  def test_table
+    text = <<TEXT
+||!col||!^[[col|link]]||>col
+||col||col||col
+TEXT
+
+    html = <<HTML
+<table>
+<tr><th>col</th><th rowspan="2"><a href="link">col</a></th><td colspan="2">col</td></tr>
+<tr><td>col</td><td>col</td><td>col</td></tr>
+</table>
 HTML
 
     formatter = HtmlFormat.create_plain
