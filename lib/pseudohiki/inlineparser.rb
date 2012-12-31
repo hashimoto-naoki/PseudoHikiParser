@@ -30,7 +30,7 @@ module PseudoHiki
       class PlainNode < InlineNode; end
       class PluginNode < InlineNode; end
 
-      LinkSep, TableSep = %w(| ||)
+      LinkSep, TableSep, DescSep = %w(| || :)
     end
     include InlineElement
 
@@ -49,7 +49,7 @@ module PseudoHiki
       NodeTypeToHead[type] = head
     end
 
-    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep, TableSep])
+    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep, TableSep, DescSep])
 
     def token_pat
       TokenPat[self.class]
@@ -176,15 +176,15 @@ module PseudoHiki
           caption = get_caption(tree,link_sep_index)
           tree.shift(link_sep_index+1)
         end
-        ref = tree[0][0]
+        ref = tree.last[0]
         if ImageSuffix =~ ref
           htmlelement = ImgFormat.make_html_element
-          htmlelement[SRC] = ref
+          htmlelement[SRC] = tree.join("")
           htmlelement[ALT] = caption.join("") if caption
         else
           htmlelement = make_html_element
-          htmlelement[HREF] = ref
-          htmlelement.push caption||ref
+          htmlelement[HREF] = tree.join("")
+          htmlelement.push caption||tree.join("")
         end
         htmlelement
       end

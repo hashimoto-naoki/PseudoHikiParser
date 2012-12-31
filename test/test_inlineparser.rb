@@ -9,7 +9,7 @@ class TC_InlineParser < Test::Unit::TestCase
 
   def test_inlineparser_compile_token_pat
     parser = InlineParser.new("")
-    assert_equal(/'''|\}\}|\|\||\{\{|\]\]|\[\[|==|''|\|/,parser.token_pat)
+    assert_equal(/'''|\}\}|\|\||\{\{|\]\]|\[\[|==|''|\||:/,parser.token_pat)
   end
 
   def test_inlineparser_split_into_tokens
@@ -58,6 +58,10 @@ class TC_HtmlFormat < Test::Unit::TestCase
     tree = InlineParser.parse("[[LINK|image.html]] is a link to a html file.")
     assert_equal('<a href="image.html">LINK</a> is a link to a html file.', tree.accept(formatter).to_s)
     assert_equal('<a href="image.html">LINK</a> is a link to a html file.', tree.accept(formatter).to_s)
+
+    tree = InlineParser.parse("[[LINK|http://www.example.org/]] is a link to an url.")
+    assert_equal('<a href="http://www.example.org/">LINK</a> is a link to an url.', tree.accept(formatter).to_s)
+    assert_equal('<a href="http://www.example.org/">LINK</a> is a link to an url.', tree.accept(formatter).to_s)
 
     tree = InlineParser.parse("[[an explanation about {{co2}}|co2.html]] is a link to a html file.")
     assert_equal('<a href="co2.html">an explanation about <span>co2</span></a> is a link to a html file.', tree.accept(formatter).to_s)

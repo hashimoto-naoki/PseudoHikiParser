@@ -270,10 +270,10 @@ TEXT
                    [[["paragraph with a "],
                      [["link"],
                       ["|"],
-                      ["http://www.example.org/"]],
+                      ["http"], [":"], ["//www.example.org/"]],
                      ["."]]],
                    [[["col"],["||"],["col"]]],
-                   [[["item:description"]]]]], tree)
+                   [[["item"], [":"], ["description"]]]]], tree)
   end
 
   def test_parse_table_with_inline_elements
@@ -286,7 +286,7 @@ TEXT
                      ["!"],
                      [["link"],
                       ["|"],
-                      ["http://www.example.org/"]],
+                      ["http"], [":"], ["//www.example.org/"]],
                      ["||"],
                      ["col"]]]
 
