@@ -281,36 +281,36 @@ module PseudoHiki
      [HeadingLeaf, HEADING],
      [ListLeaf, LI],
      [EnumLeaf, LI]
-    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
+    ].each {|node_class, element| Format[self][node_class] = self.new(element) }
 
-    class << Formatter[DescNode]
+    class << Format[self][DescNode]
     end
 
-    class << Formatter[VerbatimNode]
+    class << Format[self][VerbatimNode]
     end
 
-    class << Formatter[QuoteNode]
+    class << Format[self][QuoteNode]
     end
 
-    class << Formatter[TableNode]
+    class << Format[self][TableNode]
     end
 
-    class << Formatter[HeadingNode]
+    class << Format[self][HeadingNode]
     end
 
-    class << Formatter[ParagraphNode]
+    class << Format[self][ParagraphNode]
     end
 
-    class << Formatter[HrNode]
+    class << Format[self][HrNode]
     end
 
-    class << Formatter[ListNode]
+    class << Format[self][ListNode]
     end
 
-    class << Formatter[EnumNode]
+    class << Format[self][EnumNode]
     end
 
-    class << Formatter[DescLeaf]
+    class << Format[self][DescLeaf]
       def visit(tree)
         tree = tree.dup
         dt = make_html_element(tree)
@@ -334,7 +334,7 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[TableLeaf]
+    class << Format[self][TableLeaf]
       TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
       MODIFIED_CELL_PAT = /^!?[>^]*/o
 
@@ -379,16 +379,16 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[HeadingLeaf]
+    class << Format[self][HeadingLeaf]
       def make_html_element(tree)
         create_element(@element_name+tree.nominal_level.to_s)
       end
     end
 
-    class << Formatter[ListLeaf]
+    class << Format[self][ListLeaf]
     end
 
-    class << Formatter[EnumLeaf]
+    class << Format[self][EnumLeaf]
     end
   end
 end

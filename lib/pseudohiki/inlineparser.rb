@@ -121,7 +121,8 @@ module PseudoHiki
     HREF, SRC, ALT = %w(href src alt)
     PLAIN, PLUGIN = %w(plain span)
 
-    Formatter = {}
+    Format = {}
+    Format[self] = {}
 
     def initialize(element_name)
       @element_name = element_name
@@ -132,7 +133,7 @@ module PseudoHiki
     end
 
     def visited_result(element)
-      visitor = Formatter[element.class]||Formatter[PlainNode]
+      visitor = Format[HtmlFormat][element.class]||Format[HtmlFormat][PlainNode]
       element.accept(visitor)
     end
 
@@ -155,23 +156,23 @@ module PseudoHiki
       [DelNode,DEL],
       [PlainNode,PLAIN],
       [PluginNode,PLUGIN]
-    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
+    ].each {|node_class,element| Format[self][node_class] = self.new(element) }
 
     ImgFormat = self.new(IMG)
 
-    class << Formatter[PlainNode]
+    class << Format[self][PlainNode]
       def make_html_element(tree=nil)
         HtmlElement::Children.new
       end
     end
 
-    class << Formatter[InlineLeaf]
+    class << Format[self][InlineLeaf]
       def visit(leaf)
         HtmlElement.escape(leaf.first)
       end
     end
 
-    class << Formatter[LinkNode]
+    class << Format[self][LinkNode]
       def visit(tree)
         tree = tree.dup
         caption = nil
@@ -201,7 +202,7 @@ module PseudoHiki
     end
 
     def self.create_plain
-      Formatter[PlainNode]
+      Format[self][PlainNode]
     end
   end
 end
