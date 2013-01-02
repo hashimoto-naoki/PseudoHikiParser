@@ -127,6 +127,10 @@ module PseudoHiki
       @element_name = element_name
     end
 
+    def create_element(element_name, content=nil)
+      HtmlElement.create(element_name, content)
+    end
+
     def visited_result(element)
       visitor = Formatter[element.class]||Formatter[PlainNode]
       element.accept(visitor)
@@ -141,7 +145,7 @@ module PseudoHiki
     end
 
     def make_html_element(tree=nil)
-      HtmlElement.create(@element_name)
+      create_element(@element_name)
     end
 
     [[InlineLeaf,nil],

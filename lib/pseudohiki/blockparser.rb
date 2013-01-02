@@ -314,7 +314,7 @@ module PseudoHiki
       def visit(tree)
         tree = tree.dup
         dt = make_html_element(tree)
-        dd = HtmlElement.create(DD)
+        dd = create_element(DD)
         element = HtmlElement::Children.new
         element.push dt
         dt_sep_index = tree.index(DescSep)
@@ -364,7 +364,7 @@ module PseudoHiki
         while i = cells.index(TableSep)
           first_cell = cells.shift.dup
           first_cell[0], cell_type, rowspan, colspan = parse_first_token(first_cell[0])
-          col = HtmlElement.create(cell_type, visited_result(first_cell))
+          col = create_element(cell_type, visited_result(first_cell))
           row.push col
           col["rowspan"] = rowspan if rowspan
           col["colspan"] = colspan if colspan
@@ -381,7 +381,7 @@ module PseudoHiki
 
     class << Formatter[HeadingLeaf]
       def make_html_element(tree)
-        HtmlElement.create(@element_name+tree.nominal_level.to_s)
+        create_element(@element_name+tree.nominal_level.to_s)
       end
     end
 
