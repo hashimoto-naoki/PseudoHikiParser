@@ -57,17 +57,12 @@ class HtmlElement
   Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
   XhtmlTagFormats = TagFormats.dup
   XhtmlTagFormats.each do |key, value|
-    if value == "<%s%s>%s#{$/}"
-#      XhtmlTagFormats.delete(key)
+    case value
+    when "<%s%s>%s#{$/}"
       XhtmlTagFormats[key] = "<%s%s>%s</%s>#{$/}"
-    end
-    if value == "<%s%s>#{$/}"
+    when "<%s%s>#{$/}"
       XhtmlTagFormats[key] = "<%s%s />#{$/}"
     end
-  end
-
-  %w(img).each do |tag|
-    XhtmlTagFormats[tag] =  "<%s%s/>#{$/}"
   end
 
   def HtmlElement.escape(str)
@@ -158,7 +153,7 @@ class HtmlElement
     else
       tag = self.new(tagname)
     end
-    tag.push content if not content.nil?
+    tag.push content if content
     yield tag if block_given?
     tag
   end
@@ -173,17 +168,8 @@ class HtmlElement
     return utf.toeuc if $KCODE =~ /^e/io
     utf
   end
-
-
 end
   
-#def Tag(tagname,content=nil)
-#  tag = HtmlElement.new(tagname)
-#  tag.push content if not content.nil?
-#  yield tag if block_given?
-#  tag
-#end
-
 def Tag(tagname,content=nil)
   HtmlElement.create(tagname,content)
 end
@@ -191,14 +177,8 @@ end
 class XhtmlElement < HtmlElement
 
   def to_s
-    XhmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
+    add_end_comment_for_div
+    XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
   alias to_str to_s
-
-  def XhtmlElement.create(tagname,content=nil)
-    tag = HtmlElement.new(tagname)
-    tag.push content if not content.nil?
-    yield tag if block_given?
-    tag
-  end
 end
