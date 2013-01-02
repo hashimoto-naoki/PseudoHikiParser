@@ -436,4 +436,26 @@ HTML
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
+
+  def test_hr
+    text = <<TEXT
+paragraph
+
+----
+
+paragraph
+TEXT
+
+    html = <<HTML
+<p>
+paragraph</p>
+<hr>
+<p>
+paragraph</p>
+HTML
+
+    formatter = HtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
 end
