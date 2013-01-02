@@ -391,4 +391,41 @@ module PseudoHiki
     class << Format[self][EnumLeaf]
     end
   end
+
+  class XhtmlFormat < HtmlFormat
+    Format[self] = Format[HtmlFormat].dup
+
+    Format[self].each do |node_class, formatter|
+      Format[self][node_class] = formatter.dup
+
+      class << Format[self][node_class]
+        def create_element(element_name, content=nil)
+          XhtmlElement.create(element_name, content)
+        end
+
+        def visited_result(element)
+          visitor = Format[XhtmlFormat][element.class]||Format[XhtmlFormat][PlainNode]
+          element.accept(visitor)
+        end
+      end
+    end
+
+    class << Format[self][PlainNode]
+      def make_html_element(tree=nil)
+        HtmlElement::Children.new
+      end
+    end
+
+    class << Format[self][InlineLeaf]
+      def visit(leaf)
+        HtmlElement.escape(leaf.first)
+      end
+    end
+
+    class << Format[self][HeadingLeaf]
+      def make_html_element(tree)
+        create_element(@element_name+tree.nominal_level.to_s)
+      end
+    end
+  end
 end
