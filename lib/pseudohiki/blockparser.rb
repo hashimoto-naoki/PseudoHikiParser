@@ -271,6 +271,7 @@ module PseudoHiki
      [VerbatimNode, VERB],
      [QuoteNode, QUOTE],
      [TableNode, TABLE],
+     [CommentOutNode, nil],
      [HeadingNode, SECTION],
      [ParagraphNode, PARA],
      [HrNode, HR],
@@ -293,6 +294,10 @@ module PseudoHiki
     end
 
     class << Formatter[TableNode]
+    end
+
+    class << Formatter[CommentOutNode]
+      def visit(tree); ""; end
     end
 
     class << Formatter[HeadingNode]

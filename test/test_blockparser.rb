@@ -454,4 +454,21 @@ HTML
 
     assert_equal(html,convert_text_to_html(text))
   end
+
+  def test_commentout
+    text = <<TEXT
+a paragraph.
+//a comment
+another paragraph.
+TEXT
+
+    html = <<HTML
+<p>
+a paragraph.</p>
+<p>
+another paragraph.</p>
+HTML
+
+    assert_equal(html,convert_text_to_html(text))
+  end
 end
