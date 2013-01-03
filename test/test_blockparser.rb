@@ -305,6 +305,12 @@ class TC_HtmlFormat < Test::Unit::TestCase
     end
   end
 
+  def convert_text_to_html(text)
+    formatter = HtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    tree.accept(formatter).to_s
+  end
+
   def test_visit_tree
     text = <<TEXT
 !heading1
@@ -372,9 +378,7 @@ paragraph9.</p>
 </div>
 HTML
 
-    formatter = HtmlFormat.create_plain
-    tree = BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal(html,tree.accept(formatter).to_s)
+    assert_equal(html,convert_text_to_html(text))
   end
 
   def test_visit_tree_with_inline_elements
@@ -394,9 +398,7 @@ a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://
 </div>
 HTML
 
-    formatter = HtmlFormat.create_plain
-    tree = BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal(html,tree.accept(formatter).to_s)
+    assert_equal(html,convert_text_to_html(text))
   end
 
   def test_table
@@ -412,9 +414,7 @@ TEXT
 </table>
 HTML
 
-    formatter = HtmlFormat.create_plain
-    tree = BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal(html,tree.accept(formatter).to_s)
+    assert_equal(html,convert_text_to_html(text))
   end
 
   def test_dl
@@ -432,9 +432,7 @@ TEXT
 </dl>
 HTML
 
-    formatter = HtmlFormat.create_plain
-    tree = BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal(html,tree.accept(formatter).to_s)
+    assert_equal(html,convert_text_to_html(text))
   end
 
   def test_hr
@@ -454,8 +452,6 @@ paragraph</p>
 paragraph</p>
 HTML
 
-    formatter = HtmlFormat.create_plain
-    tree = BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal(html,tree.accept(formatter).to_s)
+    assert_equal(html,convert_text_to_html(text))
   end
 end
