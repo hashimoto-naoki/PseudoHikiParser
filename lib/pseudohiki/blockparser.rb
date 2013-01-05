@@ -410,18 +410,6 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[PlainNode]
-      def make_html_element(tree=nil)
-        HtmlElement::Children.new
-      end
-    end
-
-    class << Formatter[InlineLeaf]
-      def visit(leaf)
-        HtmlElement.escape(leaf.first)
-      end
-    end
-
     class << Formatter[HeadingLeaf]
       def make_html_element(tree)
         create_element(@element_name+tree.nominal_level.to_s)
