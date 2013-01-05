@@ -267,6 +267,12 @@ module PseudoHiki
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
+    class HeadingLeafFormatter < self
+      def make_html_element(tree)
+        create_element(@element_name+tree.nominal_level.to_s)
+      end
+    end
+
     [[DescNode, DESC],
      [VerbatimNode, VERB],
      [QuoteNode, QUOTE],
@@ -278,10 +284,12 @@ module PseudoHiki
      [EnumNode, OL],
      [DescLeaf, DT],
      [TableLeaf, TR],
-     [HeadingLeaf, HEADING],
+#     [HeadingLeaf, HEADING],
      [ListLeaf, LI],
      [EnumLeaf, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
+
+    Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
 
     class << Formatter[DescNode]
     end
@@ -379,12 +387,6 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[HeadingLeaf]
-      def make_html_element(tree)
-        create_element(@element_name+tree.nominal_level.to_s)
-      end
-    end
-
     class << Formatter[ListLeaf]
     end
 
@@ -410,10 +412,10 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[HeadingLeaf]
-      def make_html_element(tree)
-        create_element(@element_name+tree.nominal_level.to_s)
-      end
-    end
+#    class << Formatter[HeadingLeaf]
+#      def make_html_element(tree)
+#        create_element(@element_name+tree.nominal_level.to_s)
+#      end
+#    end
   end
 end
