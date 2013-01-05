@@ -281,36 +281,36 @@ module PseudoHiki
      [HeadingLeaf, HEADING],
      [ListLeaf, LI],
      [EnumLeaf, LI]
-    ].each {|node_class, element| Format[self][node_class] = self.new(element) }
+    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
-    class << Format[self][DescNode]
+    class << Formatter[DescNode]
     end
 
-    class << Format[self][VerbatimNode]
+    class << Formatter[VerbatimNode]
     end
 
-    class << Format[self][QuoteNode]
+    class << Formatter[QuoteNode]
     end
 
-    class << Format[self][TableNode]
+    class << Formatter[TableNode]
     end
 
-    class << Format[self][HeadingNode]
+    class << Formatter[HeadingNode]
     end
 
-    class << Format[self][ParagraphNode]
+    class << Formatter[ParagraphNode]
     end
 
-    class << Format[self][HrNode]
+    class << Formatter[HrNode]
     end
 
-    class << Format[self][ListNode]
+    class << Formatter[ListNode]
     end
 
-    class << Format[self][EnumNode]
+    class << Formatter[EnumNode]
     end
 
-    class << Format[self][DescLeaf]
+    class << Formatter[DescLeaf]
       def visit(tree)
         tree = tree.dup
         dt = make_html_element(tree)
@@ -334,7 +334,7 @@ module PseudoHiki
       end
     end
 
-    class << Format[self][TableLeaf]
+    class << Formatter[TableLeaf]
       TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
       MODIFIED_CELL_PAT = /^!?[>^]*/o
 
@@ -379,50 +379,50 @@ module PseudoHiki
       end
     end
 
-    class << Format[self][HeadingLeaf]
+    class << Formatter[HeadingLeaf]
       def make_html_element(tree)
         create_element(@element_name+tree.nominal_level.to_s)
       end
     end
 
-    class << Format[self][ListLeaf]
+    class << Formatter[ListLeaf]
     end
 
-    class << Format[self][EnumLeaf]
+    class << Formatter[EnumLeaf]
     end
   end
 
   class XhtmlFormat < HtmlFormat
-    Format[self] = Format[HtmlFormat].dup
+    Formatter = HtmlFormat::Formatter.dup
 
-    Format[self].each do |node_class, formatter|
-      Format[self][node_class] = formatter.dup
+    Formatter.each do |node_class, formatter|
+      Formatter[node_class] = formatter.dup
 
-      class << Format[self][node_class]
+      class << Formatter[node_class]
         def create_element(element_name, content=nil)
           XhtmlElement.create(element_name, content)
         end
 
         def visited_result(element)
-          visitor = Format[XhtmlFormat][element.class]||Format[XhtmlFormat][PlainNode]
+          visitor = Formatter[element.class]||Formatter[PlainNode]
           element.accept(visitor)
         end
       end
     end
 
-    class << Format[self][PlainNode]
+    class << Formatter[PlainNode]
       def make_html_element(tree=nil)
         HtmlElement::Children.new
       end
     end
 
-    class << Format[self][InlineLeaf]
+    class << Formatter[InlineLeaf]
       def visit(leaf)
         HtmlElement.escape(leaf.first)
       end
     end
 
-    class << Format[self][HeadingLeaf]
+    class << Formatter[HeadingLeaf]
       def make_html_element(tree)
         create_element(@element_name+tree.nominal_level.to_s)
       end
