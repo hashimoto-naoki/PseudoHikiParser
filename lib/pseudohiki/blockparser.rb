@@ -23,24 +23,6 @@ module PseudoHiki
 
     class BlockStack < TreeStack; end
 
-    class BlockNode < BlockStack::Node
-      attr_accessor :base_level, :relative_level_from_base
-
-      def nominal_level
-        return nil unless first
-        first.nominal_level
-      end
-
-      def push_self(stack)
-        @stack = stack
-        super(stack)
-      end
-
-      def breakable?(breaker)
-        not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
-      end
-    end
-
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
       attr_accessor :nominal_level
@@ -91,18 +73,6 @@ module PseudoHiki
       end
     end
 
-    class NestedBlockNode < BlockNode; end
-      
-    class ListTypeBlockNode < NestedBlockNode
-      def breakable?(breaker)
-        return false if breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level
-        true
-      end
-    end
-
-    class ListLeafNode < NestedBlockNode
-    end
-
     class NestedBlockLeaf < BlockLeaf
       def self.assign_head_re(head, need_to_escape)
         super(head, need_to_escape, "(%s)+")
@@ -121,6 +91,36 @@ module PseudoHiki
     end
 
     class ListTypeLeaf < NestedBlockLeaf; end
+
+    class BlockNode < BlockStack::Node
+      attr_accessor :base_level, :relative_level_from_base
+
+      def nominal_level
+        return nil unless first
+        first.nominal_level
+      end
+
+      def push_self(stack)
+        @stack = stack
+        super(stack)
+      end
+
+      def breakable?(breaker)
+        not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
+      end
+    end
+
+    class NestedBlockNode < BlockNode; end
+
+    class ListTypeBlockNode < NestedBlockNode
+      def breakable?(breaker)
+        return false if breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level
+        true
+      end
+    end
+
+    class ListLeafNode < NestedBlockNode
+    end
 
     module BlockElement
       class DescLeaf < BlockLeaf; end
