@@ -267,6 +267,10 @@ module PseudoHiki
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
+    class CommentOutNodeFormatter < self
+      def visit(tree); ""; end
+    end
+
     class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
@@ -346,7 +350,7 @@ module PseudoHiki
      [VerbatimNode, VERB],
      [QuoteNode, QUOTE],
      [TableNode, TABLE],
-     [CommentOutNode, nil],
+#     [CommentOutNode, nil],
      [HeadingNode, SECTION],
      [ParagraphNode, PARA],
      [HrNode, HR],
@@ -359,6 +363,7 @@ module PseudoHiki
      [EnumLeaf, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
+    Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
@@ -373,10 +378,6 @@ module PseudoHiki
     end
 
     class << Formatter[TableNode]
-    end
-
-    class << Formatter[CommentOutNode]
-      def visit(tree); ""; end
     end
 
     class << Formatter[HeadingNode]
