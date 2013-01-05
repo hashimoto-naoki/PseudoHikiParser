@@ -471,4 +471,42 @@ HTML
 
     assert_equal(html,convert_text_to_html(text))
   end
+
+  def test_xhtml
+    text = <<TEXT
+!heading1
+
+paragraph1.
+paragraph2.
+""citation1
+paragraph3.
+----
+
+*list1
+*list2
+TEXT
+
+    html = <<HTML
+<div class="section">
+<h1>heading1</h1>
+<p>
+paragraph1.paragraph2.</p>
+<blockquote>
+citation1</blockquote>
+<p>
+paragraph3.</p>
+<hr />
+<ul>
+<li>list1</li>
+<li>list2</li>
+</ul>
+<!-- end of section -->
+</div>
+HTML
+
+    formatter = XhtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+
+  end
 end

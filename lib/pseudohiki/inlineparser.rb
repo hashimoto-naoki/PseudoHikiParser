@@ -148,28 +148,28 @@ module PseudoHiki
       create_element(@element_name)
     end
 
-    [[InlineLeaf,nil],
-      [LinkNode,LINK],
-      [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
-      [PlainNode,PLAIN],
-      [PluginNode,PLUGIN]
-    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
+    class InlineLeafFormatter < self
+      def visit(leaf)
+        HtmlElement.escape(leaf.first)
+      end
+    end
 
-    ImgFormat = self.new(IMG)
-
-    class << Formatter[PlainNode]
+    class PlainNodeFormatter < self
       def make_html_element(tree=nil)
         HtmlElement::Children.new
       end
     end
 
-    class << Formatter[InlineLeaf]
-      def visit(leaf)
-        HtmlElement.escape(leaf.first)
-      end
-    end
+    [[LinkNode,LINK],
+      [EmNode,EM],
+      [StrongNode,STRONG],
+      [DelNode,DEL],
+      [PluginNode,PLUGIN]
+    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
+
+    ImgFormat = self.new(IMG)
+    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
+    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
 
     class << Formatter[LinkNode]
       def visit(tree)
@@ -201,7 +201,7 @@ module PseudoHiki
     end
 
     def self.create_plain
-      Formatter[PlainNode]
+      self::Formatter[PlainNode]
     end
   end
 end

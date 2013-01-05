@@ -267,55 +267,7 @@ module PseudoHiki
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
-    [[DescNode, DESC],
-     [VerbatimNode, VERB],
-     [QuoteNode, QUOTE],
-     [TableNode, TABLE],
-     [CommentOutNode, nil],
-     [HeadingNode, SECTION],
-     [ParagraphNode, PARA],
-     [HrNode, HR],
-     [ListNode, UL],
-     [EnumNode, OL],
-     [DescLeaf, DT],
-     [TableLeaf, TR],
-     [HeadingLeaf, HEADING],
-     [ListLeaf, LI],
-     [EnumLeaf, LI]
-    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
-
-    class << Formatter[DescNode]
-    end
-
-    class << Formatter[VerbatimNode]
-    end
-
-    class << Formatter[QuoteNode]
-    end
-
-    class << Formatter[TableNode]
-    end
-
-    class << Formatter[CommentOutNode]
-      def visit(tree); ""; end
-    end
-
-    class << Formatter[HeadingNode]
-    end
-
-    class << Formatter[ParagraphNode]
-    end
-
-    class << Formatter[HrNode]
-    end
-
-    class << Formatter[ListNode]
-    end
-
-    class << Formatter[EnumNode]
-    end
-
-    class << Formatter[DescLeaf]
+    class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
         dt = make_html_element(tree)
@@ -339,7 +291,7 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[TableLeaf]
+    class TableLeafFormatter < self
       TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
       MODIFIED_CELL_PAT = /^!?[>^]*/o
 
@@ -384,16 +336,87 @@ module PseudoHiki
       end
     end
 
-    class << Formatter[HeadingLeaf]
+    class HeadingLeafFormatter < self
       def make_html_element(tree)
         create_element(@element_name+tree.nominal_level.to_s)
       end
+    end
+
+    [[DescNode, DESC],
+     [VerbatimNode, VERB],
+     [QuoteNode, QUOTE],
+     [TableNode, TABLE],
+     [CommentOutNode, nil],
+     [HeadingNode, SECTION],
+     [ParagraphNode, PARA],
+     [HrNode, HR],
+     [ListNode, UL],
+     [EnumNode, OL],
+#     [DescLeaf, DT],
+#     [TableLeaf, TR],
+#     [HeadingLeaf, HEADING],
+     [ListLeaf, LI],
+     [EnumLeaf, LI]
+    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
+
+    Formatter[DescLeaf] = DescLeafFormatter.new(DT)
+    Formatter[TableLeaf] = TableLeafFormatter.new(TR)
+    Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
+
+    class << Formatter[DescNode]
+    end
+
+    class << Formatter[VerbatimNode]
+    end
+
+    class << Formatter[QuoteNode]
+    end
+
+    class << Formatter[TableNode]
+    end
+
+    class << Formatter[CommentOutNode]
+      def visit(tree); ""; end
+    end
+
+    class << Formatter[HeadingNode]
+    end
+
+    class << Formatter[ParagraphNode]
+    end
+
+    class << Formatter[HrNode]
+    end
+
+    class << Formatter[ListNode]
+    end
+
+    class << Formatter[EnumNode]
     end
 
     class << Formatter[ListLeaf]
     end
 
     class << Formatter[EnumLeaf]
+    end
+  end
+
+  class XhtmlFormat < HtmlFormat
+    Formatter = HtmlFormat::Formatter.dup
+
+    Formatter.each do |node_class, formatter|
+      Formatter[node_class] = formatter.dup
+
+      class << Formatter[node_class]
+        def create_element(element_name, content=nil)
+          XhtmlElement.create(element_name, content)
+        end
+
+        def visited_result(element)
+          visitor = Formatter[element.class]||Formatter[PlainNode]
+          element.accept(visitor)
+        end
+      end
     end
   end
 end
