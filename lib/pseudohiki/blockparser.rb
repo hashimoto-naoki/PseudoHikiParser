@@ -267,6 +267,30 @@ module PseudoHiki
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
+    class DescLeafFormatter < self
+      def visit(tree)
+        tree = tree.dup
+        dt = make_html_element(tree)
+        dd = create_element(DD)
+        element = HtmlElement::Children.new
+        element.push dt
+        dt_sep_index = tree.index(DescSep)
+        if dt_sep_index
+          tree.shift(dt_sep_index).each do |token|
+            dt.push visited_result(token)
+          end
+          tree.shift
+          unless tree.empty?
+            tree.each {|token| dd.push visited_result(token) }
+            element.push dd
+          end
+        else
+          tree.each {|token| dt.push visited_result(token) }
+        end
+        element
+      end
+    end
+
     class TableLeafFormatter < self
       TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
       MODIFIED_CELL_PAT = /^!?[>^]*/o
@@ -327,13 +351,14 @@ module PseudoHiki
      [HrNode, HR],
      [ListNode, UL],
      [EnumNode, OL],
-     [DescLeaf, DT],
+#     [DescLeaf, DT],
 #     [TableLeaf, TR],
 #     [HeadingLeaf, HEADING],
      [ListLeaf, LI],
      [EnumLeaf, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
+    Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
 
@@ -362,30 +387,6 @@ module PseudoHiki
     end
 
     class << Formatter[EnumNode]
-    end
-
-    class << Formatter[DescLeaf]
-      def visit(tree)
-        tree = tree.dup
-        dt = make_html_element(tree)
-        dd = create_element(DD)
-        element = HtmlElement::Children.new
-        element.push dt
-        dt_sep_index = tree.index(DescSep)
-        if dt_sep_index
-          tree.shift(dt_sep_index).each do |token|
-            dt.push visited_result(token)
-          end
-          tree.shift
-          unless tree.empty?
-            tree.each {|token| dd.push visited_result(token) }
-            element.push dd
-          end
-        else
-          tree.each {|token| dt.push visited_result(token) }
-        end
-        element
-      end
     end
 
     class << Formatter[ListLeaf]
