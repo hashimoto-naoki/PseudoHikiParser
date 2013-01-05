@@ -120,6 +120,9 @@ module PseudoHiki
     end
 
     class ListLeafNode < NestedBlockNode
+      def breakable?(breaker)
+        (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level) ? false : true
+      end
     end
 
     module BlockElement
@@ -165,6 +168,18 @@ module PseudoHiki
     end
 
     class ListTypeLeaf
+      include BlockElement
+
+      Wrapper = {
+        ListLeaf => ListWrapNode,
+        EnumLeaf => EnumWrapNode
+      }
+
+      def push_self(stack)
+        push_block(stack) unless under_appropriate_block?(stack)
+        stack.push Wrapper[self.class].new
+        stack.push_as_leaf self
+      end
     end
 
     [[DescLeaf, DescNode],

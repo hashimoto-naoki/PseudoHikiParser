@@ -172,8 +172,10 @@ class TC_BlockLeaf < Test::Unit::TestCase
     parser = PseudoHiki::BlockParser.new
     parser.stack.push list1_leaf
     assert_equal(true, parser.breakable?(blocknode_end))
-    assert_equal(false, parser.breakable?(list1_leaf))
+    assert_equal(true, parser.breakable?(list1_leaf))
     assert_equal(false, parser.breakable?(list2_leaf))
+    parser.stack.pop
+    assert_equal(false, parser.breakable?(list1_leaf))
   end
 
   def test_list2_breakale?
@@ -191,15 +193,20 @@ class TC_BlockLeaf < Test::Unit::TestCase
     assert_equal(1, list1_leaf.nominal_level)
     assert_equal(ListNode, list2_leaf.block)
     assert_equal(2, list2_leaf.nominal_level)
-    assert_equal(ListNode, parser.stack.current_node.class)
+    assert_equal(ListWrapNode, parser.stack.current_node.class)
 #    assert_equal(true, parser.stack.current_node.class.kind_of?(PseudoHiki::BlockParser::ListTypeBlockNode))
-    assert_equal(PseudoHiki::BlockParser::ListTypeBlockNode, current_node_superclass)
+    assert_equal(PseudoHiki::BlockParser::ListLeafNode, current_node_superclass)
     assert_equal(PseudoHiki::BlockParser::ListTypeBlockNode, leaf_superclass)
-    assert_equal(true, current_node_superclass == leaf_superclass)
+    assert_equal(false, current_node_superclass == leaf_superclass)
     assert_equal(true, PseudoHiki::BlockParser::ListTypeBlockNode == leaf_superclass)
     assert_equal(true, parser.breakable?(blocknode_end))
     assert_equal(false, parser.stack.current_node.nominal_level <= list1_leaf.nominal_level)
     assert_equal(true, parser.stack.current_node.nominal_level <= list2_leaf.nominal_level)
+    assert_equal(true, parser.breakable?(list1_leaf))
+    assert_equal(true, parser.breakable?(list2_leaf))
+    parser.stack.pop
+    assert_equal(ListNode, parser.stack.current_node.class)
+    assert_equal(true, parser.stack.current_node.class.superclass == leaf_superclass)
     assert_equal(true, parser.breakable?(list1_leaf))
     assert_equal(false, parser.breakable?(list2_leaf))
   end
@@ -241,11 +248,11 @@ TEXT
                     [["paragraph3"]]],
                    [[["citation1"]]],
                    [[["paragraph4"]]],
-                   [[["list1"]],
-                    [["list1-1"]],
-                    [[["list2"]],
-                     [["list2-2"]]],
-                    [["list3"]]],
+                   [[[["list1"]]],
+                    [[["list1-1"]],
+                     [[[["list2"]]],
+                      [[["list2-2"]]]]],
+                    [[["list3"]]]],
                    [[["paragraph5"]]],
                    [[["heading2"]],
                     [[["paragraph6"]],
