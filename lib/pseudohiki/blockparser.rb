@@ -100,6 +100,9 @@ module PseudoHiki
       end
     end
 
+    class ListLeafNode < NestedBlockNode
+    end
+
     class NestedBlockLeaf < BlockLeaf
       def self.assign_head_re(head, need_to_escape)
         super(head, need_to_escape, "(%s)+")
@@ -117,6 +120,8 @@ module PseudoHiki
       end
     end
 
+    class ListTypeLeaf < NestedBlockLeaf; end
+
     module BlockElement
       class DescLeaf < BlockLeaf; end
       class VerbatimLeaf < BlockLeaf; end
@@ -128,8 +133,8 @@ module PseudoHiki
       class HrLeaf < BlockLeaf; end
       class BlockNodeEnd < BlockLeaf; end
 
-      class ListLeaf < NestedBlockLeaf; end
-      class EnumLeaf < NestedBlockLeaf; end
+      class ListLeaf < ListTypeLeaf; end
+      class EnumLeaf < ListTypeLeaf; end
 
       class DescNode < BlockNode; end
       class VerbatimNode < BlockNode; end
@@ -142,6 +147,9 @@ module PseudoHiki
 
       class ListNode < ListTypeBlockNode; end
       class EnumNode < ListTypeBlockNode; end
+
+      class ListWrapNode < ListLeafNode; end
+      class EnumWrapNode < ListLeafNode; end
     end
     include BlockElement
 
@@ -154,6 +162,9 @@ module PseudoHiki
       def breakable?(breaker)
         kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
       end
+    end
+
+    class ListTypeLeaf
     end
 
     [[DescLeaf, DescNode],
