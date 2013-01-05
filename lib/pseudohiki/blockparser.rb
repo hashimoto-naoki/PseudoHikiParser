@@ -385,8 +385,10 @@ module PseudoHiki
 #     [DescLeaf, DT],
 #     [TableLeaf, TR],
 #     [HeadingLeaf, HEADING],
-     [ListLeaf, LI],
-     [EnumLeaf, LI]
+#     [ListLeaf, LI],
+#     [EnumLeaf, LI],
+     [ListWrapNode, LI],
+     [EnumWrapNode, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
