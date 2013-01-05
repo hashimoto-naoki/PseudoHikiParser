@@ -358,11 +358,11 @@ citation1</blockquote>
 paragraph4.</p>
 <ul>
 <li>list1
-<li>list1-1
-<ul>
+<li>list1-1<ul>
 <li>list2
 <li>list2-2
 </ul>
+
 <li>list3
 </ul>
 <p>
@@ -514,6 +514,31 @@ HTML
     formatter = XhtmlFormat.create_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
+  end
 
+  def test_xhtml_list
+    text = <<TEXT
+*list1(1)
+*list2(1)
+**list3(2)
+**list4(2)
+*list5(1)
+TEXT
+
+    html = <<HTML
+<ul>
+<li>list1(1)</li>
+<li>list2(1)<ul>
+<li>list3(2)</li>
+<li>list4(2)</li>
+</ul>
+</li>
+<li>list5(1)</li>
+</ul>
+HTML
+
+    formatter = XhtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
   end
 end

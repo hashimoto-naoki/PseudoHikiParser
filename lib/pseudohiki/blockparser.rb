@@ -114,8 +114,7 @@ module PseudoHiki
 
     class ListTypeBlockNode < NestedBlockNode
       def breakable?(breaker)
-        return false if breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level
-        true
+        (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level) ? false : true
       end
     end
 
@@ -385,8 +384,10 @@ module PseudoHiki
 #     [DescLeaf, DT],
 #     [TableLeaf, TR],
 #     [HeadingLeaf, HEADING],
-     [ListLeaf, LI],
-     [EnumLeaf, LI]
+#     [ListLeaf, LI],
+#     [EnumLeaf, LI],
+     [ListWrapNode, LI],
+     [EnumWrapNode, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
