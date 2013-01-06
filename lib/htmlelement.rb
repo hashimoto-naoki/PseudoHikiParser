@@ -2,9 +2,6 @@
 
 require 'kconv'
 
-# if you set "$HtmlElementXhtmlMode = true" before "require 'htmlelement'"
-# resulting elements should be in xhtml format.
-
 class HtmlElement
 
   class Children < Array
@@ -121,24 +118,13 @@ class HtmlElement
     end
   end
 
-  if $HtmlElementXhtmlMode
-    def to_s
-      add_end_comment_for_div
-      XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-    end
+  def to_s
+    add_end_comment_for_div
+    TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
+  end
 
-    def HtmlElement.doctype(encoding="euc-jp")
-      Xhtml1Doctype%[encoding]
-    end
-  else
-    def to_s
-      add_end_comment_for_div
-      TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-    end
-
-    def HtmlElement.doctype(encoding="euc-jp")
-      Html4Doctype
-    end
+  def self.doctype(encoding="euc-jp")
+    Html4Doctype
   end
   alias to_str to_s
 
@@ -180,5 +166,10 @@ class XhtmlElement < HtmlElement
     add_end_comment_for_div
     XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
+
+  def self.doctype(encoding="euc-jp")
+    Xhtml1Doctype%[encoding]
+  end
+
   alias to_str to_s
 end
