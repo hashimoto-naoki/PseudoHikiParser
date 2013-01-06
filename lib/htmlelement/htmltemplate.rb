@@ -117,4 +117,9 @@ end
 
 class XhtmlTemplate < HtmlTemplate
   ELEMENT[self] = XhtmlElement
+
+  def initialize(*params)
+    super(*params)
+    @html['xmlns'] = 'http://www.w3.org/1999/xhtml'
+  end
 end
