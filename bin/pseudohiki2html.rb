@@ -74,7 +74,7 @@ class << OPTIONS
   end
 end
 
-FILE_HEADER_PAT = /^\/\//
+FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
 WRITTEN_OPTION_PAT = {}
 OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
 
