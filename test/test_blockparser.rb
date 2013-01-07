@@ -541,4 +541,23 @@ HTML
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
+
+  def test_xhtml_link
+    text = <<TEXT
+a line with a [[link|http://www.example.org/]] in it.
+
+*a list item with a [[link|http://www.example.org/]] in it.
+TEXT
+
+    html = <<HTML
+<p>
+a line with a <a href="http://www.example.org/">link</a> in it.</p>
+<ul>
+<li>a list item with a <a href="http://www.example.org/">link</a> in it.</li>
+</ul>
+HTML
+    formatter = XhtmlFormat.create_plain
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
 end
