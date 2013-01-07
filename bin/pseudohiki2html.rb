@@ -167,7 +167,7 @@ input_lines.each do |line|
   line = line.chomp
   OPTIONS.keys.each do |opt|
     if WRITTEN_OPTION_PAT[opt] =~ line and not OPTIONS[:force]
-      OPTIONS[opt] = $1
+      OPTIONS[opt] = $2
     end
   end
 end

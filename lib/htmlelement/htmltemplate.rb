@@ -26,7 +26,8 @@ class HtmlTemplate
     @content_style_type = create_meta("Content-Style-Type","text/css")
     @content_script_type = create_meta("Content-Script-Type","text/javascript")
     @default_css_link = create_css_link(css_link)
-    @title = ELEMENT[self.class].create("title")
+    @title = nil
+    @title_element = ELEMENT[self.class].create("title")
     @body = ELEMENT[self.class].create("body")
     @html.push @head
     @html.push @body
@@ -34,14 +35,14 @@ class HtmlTemplate
       @content_type,
       @content_sytle_type,
       @content_script_type,
-      @title,
+      @title_element,
       @base,
       @default_css_link
     ].each do |element|
       @head.push element
     end
   end
-  attr_accessor :title
+  attr_reader :title
 
   def charset=(charset_name)
     @charset=charset_name
@@ -70,6 +71,12 @@ class HtmlTemplate
 
   def default_css=(file_path)
     @default_css_link["href"] = file_path
+  end
+
+  def title=(title)
+    @title_element.pop until @title_element.empty?
+    @title = title
+    @title_element.push title
   end
 
   def push(element)
