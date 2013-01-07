@@ -148,30 +148,7 @@ module PseudoHiki
       create_element(@element_name)
     end
 
-    class InlineLeafFormatter < self
-      def visit(leaf)
-        HtmlElement.escape(leaf.first)
-      end
-    end
-
-    class PlainNodeFormatter < self
-      def make_html_element(tree=nil)
-        HtmlElement::Children.new
-      end
-    end
-
-    [[LinkNode,LINK],
-      [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
-      [PluginNode,PLUGIN]
-    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
-
-    ImgFormat = self.new(IMG)
-    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
-    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
-
-    class << Formatter[LinkNode]
+    class LinkNodeFormatter < self
       def visit(tree)
         tree = tree.dup
         caption = nil
@@ -199,6 +176,29 @@ module PseudoHiki
         end
       end
     end
+
+    class InlineLeafFormatter < self
+      def visit(leaf)
+        HtmlElement.escape(leaf.first)
+      end
+    end
+
+    class PlainNodeFormatter < self
+      def make_html_element(tree=nil)
+        HtmlElement::Children.new
+      end
+    end
+
+    [ [EmNode,EM],
+      [StrongNode,STRONG],
+      [DelNode,DEL],
+      [PluginNode,PLUGIN]
+    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
+
+    ImgFormat = self.new(IMG)
+    Formatter[LinkNode] = LinkNodeFormatter.new(LINK)
+    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
+    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
 
     def self.create_plain
       self::Formatter[PlainNode]
