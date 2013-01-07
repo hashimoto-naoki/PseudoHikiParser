@@ -199,7 +199,7 @@ if OPTIONS.need_output_file
 end
 
 if output_file_name
-  open("w", output_file_name) {|f| f.puts html }
+  open(output_file_name, "w") {|f| f.puts html }
 else
   STDOUT.puts html
 end
