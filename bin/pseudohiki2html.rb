@@ -110,7 +110,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     end
   end
 
-  opt.on("-t [title]", "--title [=title]",
+#use '-w' to avoid the conflict with the short option for '[-t]emplate'
+  opt.on("-w [(window) title]", "--title [=title]",
            "Set the value of the <title> element (default: the basename of the input file)") do |title|
     OPTIONS[:title] = title if (title and not title.empty?)
   end
