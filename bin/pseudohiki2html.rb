@@ -117,7 +117,9 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   end
 
   opt.on("-c [css]", "--css [=css]",
-           "Set the path to a css file to be used (default: #{OPTIONS[:css]})") {|v| }
+           "Set the path to a css file to be used (default: #{OPTIONS[:css]})") do |css|
+    OPTIONS[:css] = css
+  end
 
   opt.on("-b [base]", "--base [=base]",
        "Specify the value of href attribute of the <base> element (default: not specified)") do |base_dir|
