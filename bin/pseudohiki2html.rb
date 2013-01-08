@@ -176,8 +176,8 @@ input_lines.each do |line|
 end
 
 tree = BlockParser.parse(input_lines)
-formatter = OPTIONS.formatter.create_plain
-body = tree.accept(formatter)
+body = OPTIONS.formatter.format(tree)
+
 title = OPTIONS[:title]||input_file_basename||"-"
 
 if OPTIONS[:template]
