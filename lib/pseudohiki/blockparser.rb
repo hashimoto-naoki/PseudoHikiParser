@@ -371,6 +371,12 @@ module PseudoHiki
       end
     end
 
+    class ListWrapNodeFormatter < self
+    end
+
+    class EnumWrapNodeFormatter < self
+    end
+
     [[DescNode, DESC],
      [VerbatimNode, VERB],
      [QuoteNode, QUOTE],
@@ -386,14 +392,16 @@ module PseudoHiki
 #     [HeadingLeaf, HEADING],
 #     [ListLeaf, LI],
 #     [EnumLeaf, LI],
-     [ListWrapNode, LI],
-     [EnumWrapNode, LI]
+#     [ListWrapNode, LI],
+#     [EnumWrapNode, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
+    Formatter[ListWrapNode] = ListWrapNodeFormatter.new(LI)
+    Formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(LI)
 
     class << Formatter[DescNode]
     end
