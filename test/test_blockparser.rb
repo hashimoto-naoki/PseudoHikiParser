@@ -479,6 +479,40 @@ HTML
     assert_equal(html,convert_text_to_html(text))
   end
 
+  def test_self_format
+    text = <<TEXT
+a paragraph.
+
+*list
+
+another paragraph.
+TEXT
+
+    html = <<HTML
+<p>
+a paragraph.</p>
+<ul>
+<li>list
+</ul>
+<p>
+another paragraph.</p>
+HTML
+
+    xhtml = <<HTML
+<p>
+a paragraph.</p>
+<ul>
+<li>list</li>
+</ul>
+<p>
+another paragraph.</p>
+HTML
+
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+   assert_equal(html, HtmlFormat.format(tree).to_s)
+   assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_xhtml
     text = <<TEXT
 !heading1
