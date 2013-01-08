@@ -594,4 +594,35 @@ HTML
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
+
+  def test_assign_id
+    text = <<TEXT
+!![h2]heading1
+
+*[l1]list1
+TEXT
+  html = <<HTML
+<div class="section">
+<h2 id="H2">heading1</h2>
+<ul>
+<li id="L1">list1
+</ul>
+<!-- end of section -->
+</div>
+HTML
+
+  xhtml = <<HTML
+<div class="section">
+<h2 id="H2">heading1</h2>
+<ul>
+<li id="L1">list1</li>
+</ul>
+<!-- end of section -->
+</div>
+HTML
+
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(html, HtmlFormat.format(tree).to_s)
+  end
+
 end
