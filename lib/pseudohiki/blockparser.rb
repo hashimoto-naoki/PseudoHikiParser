@@ -391,14 +391,26 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def make_html_element(tree)
-        create_element(@element_name+tree.nominal_level.to_s)
+        element = create_element(@element_name+tree.nominal_level.to_s)
+        element["id"] = tree.node_id.upcase if tree.node_id
+        element
       end
     end
 
     class ListWrapNodeFormatter < self
+      def make_html_element(tree)
+        element = super(tree)
+        element["id"] = tree.node_id.upcase if tree.node_id
+        element
+      end
     end
 
     class EnumWrapNodeFormatter < self
+      def make_html_element(tree)
+        element = super(tree)
+        element["id"] = tree.node_id.upcase if tree.node_id
+        element
+      end
     end
 
     [[DescNode, DESC],
