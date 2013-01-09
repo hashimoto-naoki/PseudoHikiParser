@@ -105,7 +105,7 @@ module PseudoHiki
 
       def push_self(stack)
         super(stack)
-        BlockParser.assign_node_id(self[0], stack.current_node)
+        BlockParser.assign_node_id(self[0], self)
       end
     end
 
