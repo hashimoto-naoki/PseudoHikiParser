@@ -317,6 +317,9 @@ module PseudoHiki
       def visit(tree); ""; end
     end
 
+    class HeadingNodeFormatter < self
+    end
+
     class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
@@ -403,7 +406,7 @@ module PseudoHiki
      [QuoteNode, QUOTE],
      [TableNode, TABLE],
 #     [CommentOutNode, nil],
-     [HeadingNode, SECTION],
+#     [HeadingNode, SECTION],
      [ParagraphNode, PARA],
      [HrNode, HR],
      [ListNode, UL],
@@ -418,6 +421,7 @@ module PseudoHiki
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
+    Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
@@ -434,9 +438,6 @@ module PseudoHiki
     end
 
     class << Formatter[TableNode]
-    end
-
-    class << Formatter[HeadingNode]
     end
 
     class << Formatter[ParagraphNode]
