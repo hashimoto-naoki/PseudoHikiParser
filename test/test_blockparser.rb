@@ -649,5 +649,4 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s) #bug: you should not touch the original tree.
   end
-
 end

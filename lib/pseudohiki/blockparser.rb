@@ -312,20 +312,6 @@ module PseudoHiki
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
-    ID_TAG_PAT = /^\[([^\[\]]+)\]/o
-
-    def assign_id(tree, element)
-#      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
-      head = tree[0][0]
-      return unless head.kind_of? String
-      m = ID_TAG_PAT.match(head)
-      if m
-        element['id'] = m[1].upcase
-        tree[0][0] = head.sub(ID_TAG_PAT,"")
-      end
-      element
-    end
-
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
     end
@@ -401,21 +387,14 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def make_html_element(tree)
-        html_element = create_element(@element_name+tree.nominal_level.to_s)
-        assign_id(tree,html_element)
+        create_element(@element_name+tree.nominal_level.to_s)
       end
     end
 
     class ListWrapNodeFormatter < self
-      def make_html_element(tree)
-        assign_id(tree[0], super(tree))
-      end
     end
 
     class EnumWrapNodeFormatter < self
-      def make_html_element(tree)
-        assign_id(tree[0], super(tree))
-      end
     end
 
     [[DescNode, DESC],
