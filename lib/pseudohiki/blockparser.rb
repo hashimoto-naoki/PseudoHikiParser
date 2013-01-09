@@ -7,6 +7,7 @@ module PseudoHiki
 
   class BlockParser
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
+    ID_TAG_PAT = /^\[([^\[\]]+)\]/o
 
     module LINE_PAT
       VERBATIM_BEGIN = /\A(<<<\s*)/o
@@ -21,11 +22,24 @@ module PseudoHiki
 
     attr_reader :stack
 
+    def self.assign_node_id(leaf, node)
+#      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
+      head = leaf[0]
+      return unless head.kind_of? String
+      m = ID_TAG_PAT.match(head)
+      if m
+        node.node_id = m[1]
+        leaf[0] = head.sub(ID_TAG_PAT,"")
+      end
+      node
+    end
+
     class BlockStack < TreeStack; end
 
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
       attr_accessor :nominal_level
+      attr_accessor :node_id
 
       def self.head_re=(head_regex)
         @@head_re[self] = head_regex
@@ -88,12 +102,18 @@ module PseudoHiki
       def self.with_depth?
         true
       end
+
+      def push_self(stack)
+        super(stack)
+        BlockParser.assign_node_id(self[0], self)
+      end
     end
 
     class ListTypeLeaf < NestedBlockLeaf; end
 
     class BlockNode < BlockStack::Node
       attr_accessor :base_level, :relative_level_from_base
+      attr_accessor :node_id
 
       def nominal_level
         return nil unless first
@@ -177,6 +197,7 @@ module PseudoHiki
       def push_self(stack)
         push_block(stack) unless under_appropriate_block?(stack)
         stack.push Wrapper[self.class].new
+        BlockParser.assign_node_id(self[0], stack.current_node)
         stack.push_as_leaf self
       end
     end
@@ -292,22 +313,11 @@ module PseudoHiki
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
-    ID_TAG_PAT = /^\[([^\[\]]+)\]/o
-
-    def assign_id(tree, element)
-#      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
-      head = tree[0][0]
-      return unless head.kind_of? String
-      m = ID_TAG_PAT.match(head)
-      if m
-        element['id'] = m[1].upcase
-        tree[0][0] = head.sub(ID_TAG_PAT,"")
-      end
-      element
-    end
-
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
+    end
+
+    class HeadingNodeFormatter < self
     end
 
     class DescLeafFormatter < self
@@ -381,20 +391,25 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def make_html_element(tree)
-        html_element = create_element(@element_name+tree.nominal_level.to_s)
-        assign_id(tree,html_element)
+        element = create_element(@element_name+tree.nominal_level.to_s)
+        element["id"] = tree.node_id.upcase if tree.node_id
+        element
       end
     end
 
     class ListWrapNodeFormatter < self
       def make_html_element(tree)
-        assign_id(tree[0], super(tree))
+        element = super(tree)
+        element["id"] = tree.node_id.upcase if tree.node_id
+        element
       end
     end
 
     class EnumWrapNodeFormatter < self
       def make_html_element(tree)
-        assign_id(tree[0], super(tree))
+        element = super(tree)
+        element["id"] = tree.node_id.upcase if tree.node_id
+        element
       end
     end
 
@@ -403,7 +418,7 @@ module PseudoHiki
      [QuoteNode, QUOTE],
      [TableNode, TABLE],
 #     [CommentOutNode, nil],
-     [HeadingNode, SECTION],
+#     [HeadingNode, SECTION],
      [ParagraphNode, PARA],
      [HrNode, HR],
      [ListNode, UL],
@@ -418,6 +433,7 @@ module PseudoHiki
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
+    Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
@@ -434,9 +450,6 @@ module PseudoHiki
     end
 
     class << Formatter[TableNode]
-    end
-
-    class << Formatter[HeadingNode]
     end
 
     class << Formatter[ParagraphNode]
