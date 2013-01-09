@@ -7,6 +7,7 @@ module PseudoHiki
 
   class BlockParser
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
+    ID_TAG_PAT = /^\[([^\[\]]+)\]/o
 
     module LINE_PAT
       VERBATIM_BEGIN = /\A(<<<\s*)/o
@@ -20,6 +21,18 @@ module PseudoHiki
     HeadToLeaf = {}
 
     attr_reader :stack
+
+    def self.assign_node_id(leaf, node)
+#      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
+      head = leaf[0]
+      return unless head.kind_of? String
+      m = ID_TAG_PAT.match(head)
+      if m
+        node.node_id = m[1]
+        leaf[0] = head.sub(ID_TAG_PAT,"")
+      end
+      node
+    end
 
     class BlockStack < TreeStack; end
 
@@ -88,12 +101,18 @@ module PseudoHiki
       def self.with_depth?
         true
       end
+
+      def push_self(stack)
+        super(stack)
+        BlockParser.assign_node_id(self[0], stack.current_node)
+      end
     end
 
     class ListTypeLeaf < NestedBlockLeaf; end
 
     class BlockNode < BlockStack::Node
       attr_accessor :base_level, :relative_level_from_base
+      attr_accessor :node_id
 
       def nominal_level
         return nil unless first
@@ -177,6 +196,7 @@ module PseudoHiki
       def push_self(stack)
         push_block(stack) unless under_appropriate_block?(stack)
         stack.push Wrapper[self.class].new
+        BlockParser.assign_node_id(self[0], stack.current_node)
         stack.push_as_leaf self
       end
     end

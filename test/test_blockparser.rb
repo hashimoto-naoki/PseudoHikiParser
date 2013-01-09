@@ -301,6 +301,28 @@ TEXT
     assert_equal(parsed_cells, tablenode)
     assert_equal(TableNode, tablenode.class)
   end
+
+  def test_assign_node_id
+    text = <<TEXT
+*[lst]list
+TEXT
+    list_leaf = ListLeaf.new
+    list_leaf.push "[lst]list"
+    list_node = ListNode.new
+    assert_equal(["[lst]list"], list_leaf)
+    PseudoHiki::BlockParser.assign_node_id(list_leaf,list_node)
+    assert_equal(["list"], list_leaf)
+    assert_equal("lst", list_node.node_id)
+    parsed = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal([[[[["list"]]]]],parsed)
+
+    text2 = <<TEXT
+!!![hd]heading
+TEXT
+
+    parsed = PseudoHiki::BlockParser.parse(text2.split(/\r?\n/o))
+    assert_equal([[[["heading"]]]],parsed)
+  end
 end
 
 class TC_HtmlFormat < Test::Unit::TestCase
