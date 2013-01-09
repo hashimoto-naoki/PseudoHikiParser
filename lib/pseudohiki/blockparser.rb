@@ -39,6 +39,7 @@ module PseudoHiki
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
       attr_accessor :nominal_level
+      attr_accessor :node_id
 
       def self.head_re=(head_regex)
         @@head_re[self] = head_regex
