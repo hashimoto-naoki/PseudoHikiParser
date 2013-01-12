@@ -535,6 +535,25 @@ HTML
    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_listwrapnode
+    ul_html = <<HTML
+<ul>
+<li>ul list
+</ul>
+HTML
+
+    ol_html = <<HTML
+<ol>
+<li>ol list
+</ol>
+HTML
+
+    tree = BlockParser.parse(['*ul list'])
+    assert_equal(ul_html, HtmlFormat.format(tree).to_s)
+    tree = BlockParser.parse(['#ol list'])
+    assert_equal(ol_html, HtmlFormat.format(tree).to_s)
+  end
+
   def test_xhtml
     text = <<TEXT
 !heading1
