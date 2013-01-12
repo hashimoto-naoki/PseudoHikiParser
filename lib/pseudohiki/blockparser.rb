@@ -319,10 +319,10 @@ module PseudoHiki
 
     class HeadingNodeFormatter < self
       def make_html_element(tree)
-        element = super(tree)
-        element['class'] ||= ""
-        element['class'] +=  " h#{tree.first.nominal_level}"
-        element
+        super(tree).configure do |element|
+          element['class'] ||= ""
+          element['class'] +=  " h#{tree.first.nominal_level}"
+        end
       end
     end
 
@@ -397,17 +397,17 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def make_html_element(tree)
-        element = create_element(@element_name+tree.nominal_level.to_s)
-        element["id"] = tree.node_id.upcase if tree.node_id
-        element
+        create_element(@element_name+tree.nominal_level.to_s).configure do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
       end
     end
 
     class ListLeafNodeFormatter < self
       def make_html_element(tree)
-        element = super(tree)
-        element["id"] = tree.node_id.upcase if tree.node_id
-        element
+        super(tree).configure do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
       end
     end
 
