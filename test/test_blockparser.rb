@@ -370,7 +370,7 @@ paragraph8.
 paragraph9.
 TEXT
     html = <<HTML
-<div class="section">
+<div class="section h1">
 <h1>heading1</h1>
 <p>
 paragraph1.paragraph2.paragraph3.</p>
@@ -389,21 +389,21 @@ paragraph4.</p>
 </ul>
 <p>
 paragraph5.</p>
-<div class="section">
+<div class="section h2">
 <h2>heading2</h2>
 <p>
 paragraph6.paragraph7.</p>
 <p>
 paragraph8.</p>
-<!-- end of section -->
+<!-- end of section h2 -->
 </div>
-<!-- end of section -->
+<!-- end of section h1 -->
 </div>
-<div class="section">
+<div class="section h1">
 <h1>heading3</h1>
 <p>
 paragraph9.</p>
-<!-- end of section -->
+<!-- end of section h1 -->
 </div>
 HTML
 
@@ -419,11 +419,11 @@ a paragraph with a [[link|http://www.example.org/]].
 TEXT
 
     html = <<HTML
-<div class="section">
+<div class="section h2">
 <h2>heading2</h2>
 <p>
 a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://www.example.org/">link</a>.</p>
-<!-- end of section -->
+<!-- end of section h2 -->
 </div>
 HTML
 
@@ -569,7 +569,7 @@ paragraph3.
 TEXT
 
     html = <<HTML
-<div class="section">
+<div class="section h1">
 <h1>heading1</h1>
 <p>
 paragraph1.paragraph2.</p>
@@ -582,7 +582,7 @@ paragraph3.</p>
 <li>list1</li>
 <li>list2</li>
 </ul>
-<!-- end of section -->
+<!-- end of section h1 -->
 </div>
 HTML
 
@@ -643,22 +643,22 @@ HTML
 *[l1]list1
 TEXT
   html = <<HTML
-<div class="section">
+<div class="section h2">
 <h2 id="H2">heading1</h2>
 <ul>
 <li id="L1">list1
 </ul>
-<!-- end of section -->
+<!-- end of section h2 -->
 </div>
 HTML
 
   xhtml = <<HTML
-<div class="section">
+<div class="section h2">
 <h2 id="H2">heading1</h2>
 <ul>
 <li id="L1">list1</li>
 </ul>
-<!-- end of section -->
+<!-- end of section h2 -->
 </div>
 HTML
 

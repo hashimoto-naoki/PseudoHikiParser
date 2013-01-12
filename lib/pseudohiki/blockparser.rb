@@ -318,6 +318,12 @@ module PseudoHiki
     end
 
     class HeadingNodeFormatter < self
+      def make_html_element(tree)
+        element = super(tree)
+        element['class'] ||= ""
+        element['class'] +=  " h#{tree.first.nominal_level}"
+        element
+      end
     end
 
     class DescLeafFormatter < self
