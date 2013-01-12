@@ -30,13 +30,21 @@ ENCODING_REGEXP = {
 
 HTML_VERSIONS = %w(html4 xhtml1)
 
+FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
+WRITTEN_OPTION_PAT = {}
+OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
+
 def win32? 
   true if RUBY_PLATFORM =~ /win/i
 end
 
+def value_given?(value)
+  value and not value.empty?
+end
+
 class << OPTIONS
   include HtmlElement::CHARSET
-  attr_accessor :need_output_file
+  attr_accessor :need_output_file, :default_title
 
   ENCODING_TO_CHARSET = {
     'utf8' => UTF8,
@@ -69,51 +77,81 @@ class << OPTIONS
     base_dir
   end
 
+  def title
+    OPTIONS[:title]||@default_title||"-"
+  end
+
   def read_template_file
     File.read(File.expand_path(self[:template]))
   end
-end
 
-FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
-WRITTEN_OPTION_PAT = {}
-OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
+  def set_html_version(version)
+    if HTML_VERSIONS.include? version
+      self[:html_version] = version
+    else
+      case version
+      when /^x/io
+        self[:html_version] = HTML_VERSIONS[1] #xhtml1
+      end
+      STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
+    end
+  end
+
+  def set_encoding(given_opt)
+    if ENCODING_REGEXP.values.include? given_opt
+      self[:encoding] = given_opt
+    else
+      ENCODING_REGEXP.each do |pat, encoding|
+        self[:encoding] = encoding if pat =~ given_opt
+      end
+      STDERR.puts "\"#{self[:encoding]}\" is chosen as an encoding system, instead of \"#{given_opt}\"."
+    end
+  end
+
+  def set_options_from_input_file(input_lines)
+    input_lines.each do |line|
+      break if FILE_HEADER_PAT !~ line
+      line = line.chomp
+      self.keys.each do |opt|
+        if WRITTEN_OPTION_PAT[opt] =~ line and not self[:force]
+          self[opt] = $2
+        end
+      end
+    end
+  end
+
+  def create_html_with_current_options
+    html = self.html_template.new
+    html.charset = self.charset
+    html.language = self[:lang]
+    html.default_css = self[:css] if self[:css]
+    html.base = self.base if self[:base]
+    html.title = self.title
+    html
+  end
+end
 
 OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   opt.on("-h [html_version]", "--html_version [=html_version]",
          "HTML version to be used. Choose html4 or xhtml1 (default: #{OPTIONS[:html_version]})") do |version|
-    if HTML_VERSIONS.include? version
-      OPTIONS[:html_version] = version
-    else
-      case version
-      when /^x/io
-        OPTIONS[:html_version] = HTML_VERSIONS[1] #xhtml1
-      end
-      STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{OPTIONS[:html_version]}\" is chosen instead."
-    end
+    OPTIONS.set_html_version(version)
   end
 
   opt.on("-l [lang]", "--lang [=lang]", 
          "Set the value of charset attributes (default: #{OPTIONS[:lang]})") do |lang|
-    OPTIONS[:lang] = lang if (lang and not lang.empty?)
+    OPTIONS[:lang] = lang if value_given?(lang)
   end
 
   opt.on("-e [encoding]", "--encoding [=encoding]",
          "Available options: utf8, euc-jp, sjis, latin1 (default: #{OPTIONS[:encoding]})") do |given_opt|
-    if ENCODING_REGEXP.values.include? given_opt
-      OPTIONS[:encoding] = given_opt
-    else
-      ENCODING_REGEXP.each do |pat, encoding|
-        OPTIONS[:encoding] = encoding if pat =~ given_opt
-      end
-      STDERR.puts "\"#{OPTIONS[:encoding]}\" is chosen as an encoding system, instead of \"#{given_opt}\"."
-    end
+    OPTIONS.set_encoding(given_opt)
   end
 
 #use '-w' to avoid the conflict with the short option for '[-t]emplate'
   opt.on("-w [(window) title]", "--title [=title]",
            "Set the value of the <title> element (default: the basename of the input file)") do |title|
-    OPTIONS[:title] = title if (title and not title.empty?)
+    OPTIONS[:title] = title if value_given?(title)
   end
 
   opt.on("-c [css]", "--css [=css]",
@@ -123,17 +161,17 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
 
   opt.on("-b [base]", "--base [=base]",
        "Specify the value of href attribute of the <base> element (default: not specified)") do |base_dir|
-    OPTIONS[:base] = base_dir if (base_dir and not base_dir.empty?)
+    OPTIONS[:base] = base_dir if value_given?(base_dir)
   end
 
   opt.on("-t [template]", "--template [=template]",
          "Specify a template file written in eruby format with \"<%= body %>\" inside (default: not specified)") do |template|
-    OPTIONS[:template] = template if (template and not template.empty?)
+    OPTIONS[:template] = template if value_given?(template)
   end
 
   opt.on("-o [output]", "--output [=output]",
          "Output to the specified file. If no file is given, \"[input_file_basename].html\" will be used.(default: STDOUT)") do |output|
-    OPTIONS[:output] = File.expand_path(output) if (output and not output.empty?)
+    OPTIONS[:output] = File.expand_path(output) if value_given?(output)
     OPTIONS.need_output_file = true
   end
 
@@ -142,7 +180,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     OPTIONS[:force] = force
   end
 
- opt.parse!
+  opt.parse!
 end
 
 if $KCODE
@@ -165,31 +203,18 @@ when 1
   input_file_basename = File.basename(input_file_name,".*")
 end
 
-input_lines.each do |line|
-  break if FILE_HEADER_PAT !~ line
-  line = line.chomp
-  OPTIONS.keys.each do |opt|
-    if WRITTEN_OPTION_PAT[opt] =~ line and not OPTIONS[:force]
-      OPTIONS[opt] = $2
-    end
-  end
-end
+OPTIONS.set_options_from_input_file(input_lines)
+OPTIONS.default_title = input_file_basename
 
 tree = BlockParser.parse(input_lines)
 body = OPTIONS.formatter.format(tree)
-
-title = OPTIONS[:title]||input_file_basename||"-"
+title =  OPTIONS.title
 
 if OPTIONS[:template]
   erb = ERB.new(OPTIONS.read_template_file)
   html = erb.result(binding)
 else
-  html = OPTIONS.html_template.new
-  html.language = OPTIONS[:lang]
-  html.charset = OPTIONS.charset
-  html.title = title
-  html.default_css = OPTIONS[:css] if OPTIONS[:css]
-  html.base = OPTIONS.base if OPTIONS[:base]
+  html = OPTIONS.create_html_with_current_options
   html.push body
 end
 
