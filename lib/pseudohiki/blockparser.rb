@@ -397,15 +397,7 @@ module PseudoHiki
       end
     end
 
-    class ListWrapNodeFormatter < self
-      def make_html_element(tree)
-        element = super(tree)
-        element["id"] = tree.node_id.upcase if tree.node_id
-        element
-      end
-    end
-
-    class EnumWrapNodeFormatter < self
+    class ListLeafNodeFormatter < self
       def make_html_element(tree)
         element = super(tree)
         element["id"] = tree.node_id.upcase if tree.node_id
@@ -437,8 +429,8 @@ module PseudoHiki
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
-    Formatter[ListWrapNode] = ListWrapNodeFormatter.new(LI)
-    Formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(LI)
+    Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
+    Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
 
     class << Formatter[DescNode]
     end
