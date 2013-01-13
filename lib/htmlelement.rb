@@ -131,6 +131,11 @@ class HtmlElement
   def HtmlElement.comment(content)
     "<!-- #{content} -->#{$/}"
   end
+
+  def configure
+    yield self
+    self
+  end
       
   def self.create(tagname,content=nil)
     if Html5Tags.include? tagname

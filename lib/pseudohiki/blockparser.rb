@@ -318,6 +318,12 @@ module PseudoHiki
     end
 
     class HeadingNodeFormatter < self
+      def make_html_element(tree)
+        super(tree).configure do |element|
+          element['class'] ||= ""
+          element['class'] +=  " h#{tree.first.nominal_level}"
+        end
+      end
     end
 
     class DescLeafFormatter < self
@@ -391,25 +397,17 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def make_html_element(tree)
-        element = create_element(@element_name+tree.nominal_level.to_s)
-        element["id"] = tree.node_id.upcase if tree.node_id
-        element
+        create_element(@element_name+tree.nominal_level.to_s).configure do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
       end
     end
 
-    class ListWrapNodeFormatter < self
+    class ListLeafNodeFormatter < self
       def make_html_element(tree)
-        element = super(tree)
-        element["id"] = tree.node_id.upcase if tree.node_id
-        element
-      end
-    end
-
-    class EnumWrapNodeFormatter < self
-      def make_html_element(tree)
-        element = super(tree)
-        element["id"] = tree.node_id.upcase if tree.node_id
-        element
+        super(tree).configure do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
       end
     end
 
@@ -437,8 +435,8 @@ module PseudoHiki
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
-    Formatter[ListWrapNode] = ListWrapNodeFormatter.new(LI)
-    Formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(LI)
+    Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
+    Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
 
     class << Formatter[DescNode]
     end
