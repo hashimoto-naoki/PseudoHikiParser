@@ -34,7 +34,12 @@ module PseudoHiki
       node
     end
 
-    class BlockStack < TreeStack; end
+    class BlockStack < TreeStack
+      def pop
+        self.current_node.parse_leafs
+        super
+      end
+    end
 
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
@@ -128,6 +133,8 @@ module PseudoHiki
       def breakable?(breaker)
         not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
       end
+
+      def parse_leafs; end
     end
 
     class NestedBlockNode < BlockNode; end
@@ -183,6 +190,34 @@ module PseudoHiki
     class BlockElement::HeadingNode
       def breakable?(breaker)
         kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
+      end
+    end
+
+    class BlockElement::ParagraphNode
+      def parse_leafs
+        parsed = InlineParser.parse(self.join(""))
+        self[0].clear
+        parsed.each {|n| self[0].push n }
+      end
+    end
+
+    class BlockElement::ParagraphLeaf
+      include TreeStack::Mergeable
+
+      def self.create(line)
+        line.sub!(self.head_re,"") if self.head_re
+        leaf = self.new
+        leaf.push line
+        leaf
+      end
+
+      def push_self(stack)
+        push_block(stack) unless under_appropriate_block?(stack)
+        if stack.last_leaf.kind_of? self.class
+          stack.last_leaf.merge(self)
+        else
+          super(stack)
+        end
       end
     end
 
@@ -294,6 +329,7 @@ module PseudoHiki
           add_leaf(line)
         end
       end
+      @stack.pop
     end
 
     def self.parse(lines)
