@@ -18,7 +18,8 @@ OPTIONS = {
   :base => nil,
   :template => nil,
   :output => nil,
-  :force => false
+  :force => false,
+  :toc => nil
 }
 
 ENCODING_REGEXP = {
@@ -33,6 +34,7 @@ HTML_VERSIONS = %w(html4 xhtml1)
 FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
 WRITTEN_OPTION_PAT = {}
 OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
+HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][A-Za-z_\-.:]+)\]/o
 
 def win32? 
   true if RUBY_PLATFORM =~ /win/i
@@ -40,6 +42,32 @@ end
 
 def value_given?(value)
   value and not value.empty?
+end
+
+def create_table_of_contents(lines)
+  toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
+    m = HEADING_WITH_ID_PAT.match(line)
+    heading_depth, id = m[1].length, m[2].upcase
+    "%s[[%s|#%s]]"%['*'*heading_depth, line.sub(HEADING_WITH_ID_PAT,''), id]
+  end
+  OPTIONS.formatter.format(BlockParser.parse(toc_lines))
+end
+
+def create_main(toc, body)
+  toc_container = HtmlElement.create("section").configure do |element|
+    element["id"] = "toc"
+    element.push HtmlElement.create("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
+    element.push toc
+  end
+  contents_container = HtmlElement.create("section").configure do |element|
+    element["id"] = "contents"
+    element.push body
+  end
+  main = HtmlElement.create("section").configure do |element|
+    element["id"] = "main"
+    element.push toc_container
+    element.push contents_container
+  end
 end
 
 class << OPTIONS
@@ -180,6 +208,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     OPTIONS[:force] = force
   end
 
+  opt.on("-m [contents-title]", "--table-of-contents [=contents-title]",
+         "Include the list of h2 and/or h3 headings with ids.(default: nil)") do |toc_title|
+    OPTIONS[:toc] = toc_title
+  end
+
   opt.parse!
 end
 
@@ -206,16 +239,18 @@ end
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
+toc = create_table_of_contents(input_lines)
 tree = BlockParser.parse(input_lines)
 body = OPTIONS.formatter.format(tree)
 title =  OPTIONS.title
+main = OPTIONS[:toc] ? create_main(toc,body) : nil
 
 if OPTIONS[:template]
   erb = ERB.new(OPTIONS.read_template_file)
   html = erb.result(binding)
 else
   html = OPTIONS.create_html_with_current_options
-  html.push body
+  html.push main||body
 end
 
 if OPTIONS.need_output_file
