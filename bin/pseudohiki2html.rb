@@ -239,6 +239,7 @@ end
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
+css = OPTIONS[:css]
 toc = create_table_of_contents(input_lines)
 tree = BlockParser.parse(input_lines)
 body = OPTIONS.formatter.format(tree)
