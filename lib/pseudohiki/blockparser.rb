@@ -275,6 +275,7 @@ module PseudoHiki
       until lines.empty? or LINE_PAT::VERBATIM_END =~ lines.first
         @stack.push(VerbatimLeaf.create(lines.shift))
       end
+      lines.shift if LINE_PAT::VERBATIM_END =~ lines.first
     end
 
     def add_leaf(line)

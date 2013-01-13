@@ -668,4 +668,36 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s) #bug: you should not touch the original tree.
   end
+
+  def test_verbatim
+    text = <<TEXT
+<<<
+a verbatim line.
+a verbatim line with <greater than/less than>.
+>>>
+
+a normal paragraph.
+
+ another verbatim line with <greater than/less than>.
+
+another normal paragraph.
+
+ the last verbatim line.
+TEXT
+    xhtml = <<HTML
+<pre>
+a verbatim line.a verbatim line with &lt;greater than/less than&gt;.</pre>
+<p>
+a normal paragraph.</p>
+<pre>
+another verbatim line with &lt;greater than/less than&gt;.</pre>
+<p>
+another normal paragraph.</p>
+<pre>
+the last verbatim line.</pre>
+HTML
+
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
 end
