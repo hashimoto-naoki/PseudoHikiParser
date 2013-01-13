@@ -15,6 +15,7 @@ OPTIONS = {
   :encoding => 'utf8',
   :title => nil,
   :css => "default.css",
+  :embed_css => nil,
   :base => nil,
   :template => nil,
   :output => nil,
@@ -67,6 +68,15 @@ def create_main(toc, body)
     element["id"] = "main"
     element.push toc_container
     element.push contents_container
+  end
+end
+
+def create_style(path_to_css_file)
+  style = HtmlElement.create("style").configure do |element|
+    element["type"] = "text/css"
+    open(File.expand_path(path_to_css_file)) do |css_file|
+      element.push css_file.read
+    end
   end
 end
 
@@ -187,6 +197,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     OPTIONS[:css] = css
   end
 
+  opt.on("-C [path_to_css_file]", "--embed-css [=path_to_css_file]",
+           "Set the path to a css file to be used (default: not to embed)") do |path_to_css_file|
+    OPTIONS[:embed_css] = path_to_css_file
+  end
+
   opt.on("-b [base]", "--base [=base]",
        "Specify the value of href attribute of the <base> element (default: not specified)") do |base_dir|
     OPTIONS[:base] = base_dir if value_given?(base_dir)
@@ -251,6 +266,7 @@ if OPTIONS[:template]
   html = erb.result(binding)
 else
   html = OPTIONS.create_html_with_current_options
+  html.head.push  create_style(OPTIONS[:embed_css]) if OPTIONS[:embed_css]
   html.push main||body
 end
 
