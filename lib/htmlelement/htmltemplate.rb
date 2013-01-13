@@ -42,7 +42,7 @@ class HtmlTemplate
       @head.push element
     end
   end
-  attr_reader :title
+  attr_reader :title, :head
 
   def charset=(charset_name)
     @charset=charset_name
