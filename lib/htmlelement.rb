@@ -39,7 +39,7 @@ class HtmlElement
   
   TagFormats = Hash.new("<%s%s>%s</%s>")
   
-  [[%w(html body div table colgroup thead tbody ul ol dl head p pre blockquote),"<%s%s>#{$/}%s</%s>#{$/}"],
+  [[%w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),"<%s%s>#{$/}%s</%s>#{$/}"],
    [%w(dt dd tr title h1 h2 h3 h4 h5 h6),"<%s%s>%s</%s>#{$/}"],
    [%w(li col),"<%s%s>%s#{$/}"],
    [%w(img meta link base input hr), "<%s%s>#{$/}"]
