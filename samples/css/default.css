@@ -1,0 +1,68 @@
+h1 {
+    margin-left: 0.5em;
+}
+
+.h2 {
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    border-style: dotted;
+    border-width: 0px 1px 1px 1px;
+}
+
+h2 {
+    margin-top: 0em;
+    padding: 0.2em 0.2em 0.2em 0.4em;
+    background: #dddddd;
+    border-style: solid;
+    border-width: 1px 0px 1px 0px;
+}
+
+.h2 p, .h2 blockquote, .h2 pre, .h2 dl, .h3 {
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 1em;
+}
+
+.h2 pre {
+    margin-left: 3em;
+    margin-right: 3em;
+    padding: 1em;
+    background: #ffffdd;
+    border-style: solid;
+    border-width: 2px 0px 2px 0px;
+    border-color: #ffff66;
+}
+
+.h2 blockquote {
+    margin-left: 2em;
+    margin-right: 2em;
+    padding: 1em;
+    background: #eeffee;
+    border-style: solid;
+    border-width: 2px 0px 2px 0px;
+    border-color: #aaffaa;
+}
+
+.h3 {
+    padding: 0.1em 0.2em 0.2em 1em;
+    background: #eeffff;
+}
+
+table {
+    margin-left: 3em;
+    margin-bottom: 1.5em;
+    border-collapse: collapse;
+    border-spacing: 0px;
+}    
+
+th, td {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+}
+
+th {
+    background: #eeeeee;
+}

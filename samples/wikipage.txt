@@ -1,0 +1,76 @@
+//title: 
+
+!Welcome to the PseudoHikiParser wiki!
+
+!! About PseudoHikiParser
+
+PseudoHikiParser is a converter of texts written in a [[Hiki|http://hikiwiki.org/en/]] like notation, into html or other formats. 
+
+Currently, only a limited range of notations can be converted into HTML4 or XHTML1.0.
+
+I am writing this tool with following objectives in mind,
+
+* provide some additional features that doesn't exist in the original Hiki
+** make the notation more line oriented
+** allow to assign ids to elements such as headings
+* support several formats other than HTML
+** The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
+
+And, it would not be compatible with the original Hiki notation.
+
+!! License
+
+I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. 
+
+And one of them will be BSD 2-clause license or MIT license.
+
+!! Development status of features from the original [[Hiki notation|http://hikiwiki.org/en/TextFormattingRules.html]]
+
+* Paragraphs - Usable
+* Links
+** WikiNames - Not supported (and would never be)
+** Linking to other Wiki pages - Not supported as well
+** Linking to an arbitrary URL - Partly supported
+* Preformatted text - Implemented, but still buggy
+* Text decoration - Partly supported
+** Currently, there is no means to escape tags for inline decorations.
+** The notation with backquote tags(``) for inline literals is not supported.
+* Headings - Usable
+* Horizontal lines - Usable
+* Lists - Usable
+* Quotations - Usable
+* Definitions - Usable
+* Tables - Usable
+* Comments - Usable
+* Plugins - Not support (and will not be compatible with the original one)
+
+!! Additional Features
+
+!!! Already Implemented
+
+!!!! Assigning ids
+
+If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
+
+<<<
+!![heading_id]heading
+
+*[list_id]list
+>>>
+
+will be rendered as
+
+
+ <div class="section h2">
+ <h2 id="HEADING_ID">heading
+ </h2>
+ <ul>
+ <li id="LIST_ID">list
+ </li>
+ </ul>
+ <!-- end of section h2 -->
+ </div>
+
+
+!!! Not Implemented Yet
+
