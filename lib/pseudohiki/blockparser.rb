@@ -89,6 +89,12 @@ module PseudoHiki
         push_block(stack) unless under_appropriate_block?(stack)
         super(stack)
       end
+
+      def parse_leafs
+        parsed = InlineParser.parse(self.join(""))
+        self.clear
+        self.concat(parsed)
+      end
     end
 
     class NonNestedBlockLeaf < BlockLeaf
@@ -158,9 +164,7 @@ module PseudoHiki
 
     class NonNestedBlockNode < BlockNode
       def parse_leafs
-        parsed = InlineParser.parse(self[0].join(""))
-        self[0].clear
-        self[0].concat(parsed)
+        self.each {|leaf| leaf.parse_leafs }
       end
     end
 
