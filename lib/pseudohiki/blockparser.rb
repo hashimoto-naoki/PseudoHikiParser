@@ -92,6 +92,26 @@ module PseudoHiki
       end
     end
 
+    class NonNestedBlockLeaf < BlockLeaf
+      include TreeStack::Mergeable
+
+      def self.create(line)
+        line.sub!(self.head_re,"") if self.head_re
+        leaf = self.new
+        leaf.push line
+        leaf
+      end
+
+      def push_self(stack)
+        push_block(stack) unless under_appropriate_block?(stack)
+        if stack.last_leaf.kind_of? self.class
+          stack.last_leaf.merge(self)
+        else
+          super(stack)
+        end
+      end
+    end
+
     class NestedBlockLeaf < BlockLeaf
       def self.assign_head_re(head, need_to_escape)
         super(head, need_to_escape, "(%s)+")
@@ -137,6 +157,14 @@ module PseudoHiki
       def parse_leafs; end
     end
 
+    class NonNestedBlockNode < BlockNode
+      def parse_leafs
+        parsed = InlineParser.parse(self.join(""))
+        self[0].clear
+        parsed.each {|n| self[0].push n }
+      end
+    end
+
     class NestedBlockNode < BlockNode; end
 
     class ListTypeBlockNode < NestedBlockNode
@@ -158,7 +186,7 @@ module PseudoHiki
       class TableLeaf < BlockLeaf; end
       class CommentOutLeaf < BlockLeaf; end
       class HeadingLeaf < NestedBlockLeaf; end
-      class ParagraphLeaf < BlockLeaf; end
+      class ParagraphLeaf < NonNestedBlockLeaf; end
       class HrLeaf < BlockLeaf; end
       class BlockNodeEnd < BlockLeaf; end
 
@@ -171,7 +199,7 @@ module PseudoHiki
       class TableNode < BlockNode; end
       class CommentOutNode < BlockNode; end
       class HeadingNode < NestedBlockNode; end
-      class ParagraphNode < BlockNode; end
+      class ParagraphNode < NonNestedBlockNode; end
       class HrNode < BlockNode; end
 
       class ListNode < ListTypeBlockNode; end
@@ -190,34 +218,6 @@ module PseudoHiki
     class BlockElement::HeadingNode
       def breakable?(breaker)
         kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
-      end
-    end
-
-    class BlockElement::ParagraphNode
-      def parse_leafs
-        parsed = InlineParser.parse(self.join(""))
-        self[0].clear
-        parsed.each {|n| self[0].push n }
-      end
-    end
-
-    class BlockElement::ParagraphLeaf
-      include TreeStack::Mergeable
-
-      def self.create(line)
-        line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
-        leaf
-      end
-
-      def push_self(stack)
-        push_block(stack) unless under_appropriate_block?(stack)
-        if stack.last_leaf.kind_of? self.class
-          stack.last_leaf.merge(self)
-        else
-          super(stack)
-        end
       end
     end
 
