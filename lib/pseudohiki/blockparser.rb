@@ -182,7 +182,7 @@ module PseudoHiki
     module BlockElement
       class DescLeaf < BlockLeaf; end
       class VerbatimLeaf < BlockLeaf; end
-      class QuoteLeaf < BlockLeaf; end
+      class QuoteLeaf < NonNestedBlockLeaf; end
       class TableLeaf < BlockLeaf; end
       class CommentOutLeaf < BlockLeaf; end
       class HeadingLeaf < NestedBlockLeaf; end
@@ -195,7 +195,7 @@ module PseudoHiki
 
       class DescNode < BlockNode; end
       class VerbatimNode < BlockNode; end
-      class QuoteNode < BlockNode; end
+      class QuoteNode < NonNestedBlockNode; end
       class TableNode < BlockNode; end
       class CommentOutNode < BlockNode; end
       class HeadingNode < NestedBlockNode; end
@@ -212,6 +212,12 @@ module PseudoHiki
 
     class BlockElement::BlockNodeEnd
       def push_self(stack); end
+    end
+
+    class BlockElement::QuoteNode
+      def parse_leafs
+        self[0] = BlockParser.parse(self[0])
+      end
     end
 
 #    class HeadingNode

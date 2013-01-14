@@ -244,7 +244,7 @@ TEXT
     tree = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
     assert_equal([[[["heading1"]],
                    [[["paragraph1.paragraph2.paragraph3."]]],
-                   [[["citation1"]]],
+                   [[[[["citation1"]]]]],
                    [[["paragraph4."]]],
                    [[[["list1"]]],
                     [[["list1-1"]],
@@ -372,7 +372,9 @@ TEXT
 <p>
 paragraph1.paragraph2.paragraph3.</p>
 <blockquote>
-citation1</blockquote>
+<p>
+citation1</p>
+</blockquote>
 <p>
 paragraph4.</p>
 <ul>
@@ -571,7 +573,9 @@ TEXT
 <p>
 paragraph1.paragraph2.</p>
 <blockquote>
-citation1</blockquote>
+<p>
+citation1</p>
+</blockquote>
 <p>
 paragraph3.</p>
 <hr />
@@ -695,6 +699,29 @@ the last verbatim line.</pre>
 HTML
 
     tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_quote
+    text = <<TEXT
+""this line should be enclosed in a p element.
+""
+""*this line should be a list item.
+TEXT
+
+    xhtml = <<HTML
+<blockquote>
+<p>
+this line should be enclosed in a p element.
+</p>
+<ul>
+<li>this line should be a list item.
+</li>
+</ul>
+</blockquote>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 end
