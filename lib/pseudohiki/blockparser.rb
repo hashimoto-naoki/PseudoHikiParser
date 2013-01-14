@@ -61,8 +61,7 @@ module PseudoHiki
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
         leaf = self.new
-        InlineParser.parse(line).each {|n| leaf.push n }
-        leaf
+        leaf.concat(InlineParser.parse(line))
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
@@ -159,9 +158,9 @@ module PseudoHiki
 
     class NonNestedBlockNode < BlockNode
       def parse_leafs
-        parsed = InlineParser.parse(self.join(""))
+        parsed = InlineParser.parse(self[0].join(""))
         self[0].clear
-        parsed.each {|n| self[0].push n }
+        self[0].concat(parsed)
       end
     end
 
