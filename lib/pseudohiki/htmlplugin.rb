@@ -89,7 +89,7 @@ module PseudoHiki
      CFC, chlorofluorocarbon
      CH4, methane
      H2O, water
-     C2F5Cl, CFC-115, CFC-115).each do |line|
+     C2F5Cl, CFC-115, CFC-115).lines.each do |line|
       chemical_formula, en = line.strip.split(/,\s+/)
       add_chemical_formula chemical_formula, en
     end

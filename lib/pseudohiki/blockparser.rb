@@ -34,7 +34,12 @@ module PseudoHiki
       node
     end
 
-    class BlockStack < TreeStack; end
+    class BlockStack < TreeStack
+      def pop
+        self.current_node.parse_leafs
+        super
+      end
+    end
 
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
@@ -56,8 +61,7 @@ module PseudoHiki
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
         leaf = self.new
-        InlineParser.parse(line).each {|n| leaf.push n }
-        leaf
+        leaf.concat(InlineParser.parse(line))
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
@@ -84,6 +88,32 @@ module PseudoHiki
       def push_self(stack)
         push_block(stack) unless under_appropriate_block?(stack)
         super(stack)
+      end
+
+      def parse_leafs
+        parsed = InlineParser.parse(self.join(""))
+        self.clear
+        self.concat(parsed)
+      end
+    end
+
+    class NonNestedBlockLeaf < BlockLeaf
+      include TreeStack::Mergeable
+
+      def self.create(line)
+        line.sub!(self.head_re,"") if self.head_re
+        leaf = self.new
+        leaf.push line
+        leaf
+      end
+
+      def push_self(stack)
+        push_block(stack) unless under_appropriate_block?(stack)
+        if stack.last_leaf.kind_of? self.class
+          stack.last_leaf.merge(self)
+        else
+          super(stack)
+        end
       end
     end
 
@@ -128,6 +158,14 @@ module PseudoHiki
       def breakable?(breaker)
         not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
       end
+
+      def parse_leafs; end
+    end
+
+    class NonNestedBlockNode < BlockNode
+      def parse_leafs
+        self.each {|leaf| leaf.parse_leafs }
+      end
     end
 
     class NestedBlockNode < BlockNode; end
@@ -147,11 +185,11 @@ module PseudoHiki
     module BlockElement
       class DescLeaf < BlockLeaf; end
       class VerbatimLeaf < BlockLeaf; end
-      class QuoteLeaf < BlockLeaf; end
+      class QuoteLeaf < NonNestedBlockLeaf; end
       class TableLeaf < BlockLeaf; end
       class CommentOutLeaf < BlockLeaf; end
       class HeadingLeaf < NestedBlockLeaf; end
-      class ParagraphLeaf < BlockLeaf; end
+      class ParagraphLeaf < NonNestedBlockLeaf; end
       class HrLeaf < BlockLeaf; end
       class BlockNodeEnd < BlockLeaf; end
 
@@ -160,11 +198,11 @@ module PseudoHiki
 
       class DescNode < BlockNode; end
       class VerbatimNode < BlockNode; end
-      class QuoteNode < BlockNode; end
+      class QuoteNode < NonNestedBlockNode; end
       class TableNode < BlockNode; end
       class CommentOutNode < BlockNode; end
       class HeadingNode < NestedBlockNode; end
-      class ParagraphNode < BlockNode; end
+      class ParagraphNode < NonNestedBlockNode; end
       class HrNode < BlockNode; end
 
       class ListNode < ListTypeBlockNode; end
@@ -177,6 +215,12 @@ module PseudoHiki
 
     class BlockElement::BlockNodeEnd
       def push_self(stack); end
+    end
+
+    class BlockElement::QuoteNode
+      def parse_leafs
+        self[0] = BlockParser.parse(self[0])
+      end
     end
 
 #    class HeadingNode
@@ -275,6 +319,7 @@ module PseudoHiki
       until lines.empty? or LINE_PAT::VERBATIM_END =~ lines.first
         @stack.push(VerbatimLeaf.create(lines.shift))
       end
+      lines.shift if LINE_PAT::VERBATIM_END =~ lines.first
     end
 
     def add_leaf(line)
@@ -293,6 +338,7 @@ module PseudoHiki
           add_leaf(line)
         end
       end
+      @stack.pop
     end
 
     def self.parse(lines)

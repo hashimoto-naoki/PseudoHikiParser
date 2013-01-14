@@ -46,7 +46,7 @@ class TC_BlockLeaf < Test::Unit::TestCase
     parser = PseudoHiki::BlockParser.new
     paragraph_line = "This is a paragraph."
     paragraph = parser.select_leaf_type(paragraph_line).create(paragraph_line)
-    assert_equal([[paragraph_line]], paragraph)
+    assert_equal([paragraph_line], paragraph)
     assert_equal(nil, paragraph.nominal_level)
   end
 
@@ -92,12 +92,12 @@ class TC_BlockLeaf < Test::Unit::TestCase
     stack = PseudoHiki::BlockParser.new.stack
     stack.push create_leaf(paragraph_str)
     paragraph_tree = stack.tree
-    assert_equal([[[[paragraph_str]]]],paragraph_tree)
+    assert_equal([[[paragraph_str]]],paragraph_tree)
     assert_equal(nil,paragraph_tree.first.nominal_level)
     another_paragraph = create_leaf(another_paragraph_str)
     stack.push another_paragraph
-    assert_equal([[[[paragraph_str]],
-                   [[another_paragraph_str]]]],paragraph_tree)
+    assert_equal([[[paragraph_str,
+                   another_paragraph_str]]],paragraph_tree)
 
     heading_str = "This is a heading line."
     stack = PseudoHiki::BlockParser.new.stack
@@ -121,7 +121,7 @@ class TC_BlockLeaf < Test::Unit::TestCase
     stack.push create_leaf("!"+heading_str)
     stack.push create_leaf(another_paragraph_str)
     assert_equal([[[[heading_str]],
-                   [[[another_paragraph_str]]]]],stack.tree)
+                   [[another_paragraph_str]]]],stack.tree)
   end
 
   def test_paragraph_breakable?
@@ -215,11 +215,11 @@ class TC_BlockLeaf < Test::Unit::TestCase
     text = <<TEXT
 !heading1
 
-paragraph1
-paragraph2
-paragraph3
+paragraph1.
+paragraph2.
+paragraph3.
 ""citation1
-paragraph4
+paragraph4.
 
 *list1
 *list1-1
@@ -227,39 +227,36 @@ paragraph4
 **list2-2
 *list3
 
-paragraph5
+paragraph5.
 
 !!heading2
 
-paragraph6
-paragraph7
+paragraph6.
+paragraph7.
 
-paragraph8
+paragraph8.
 
 !heading3
 
-paragraph9
+paragraph9.
 TEXT
 
     tree = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
     assert_equal([[[["heading1"]],
-                   [[["paragraph1"]],
-                    [["paragraph2"]],
-                    [["paragraph3"]]],
-                   [[["citation1"]]],
-                   [[["paragraph4"]]],
+                   [[["paragraph1.paragraph2.paragraph3."]]],
+                   [[[[["citation1"]]]]],
+                   [[["paragraph4."]]],
                    [[[["list1"]]],
                     [[["list1-1"]],
                      [[[["list2"]]],
                       [[["list2-2"]]]]],
                     [[["list3"]]]],
-                   [[["paragraph5"]]],
+                   [[["paragraph5."]]],
                    [[["heading2"]],
-                    [[["paragraph6"]],
-                     [["paragraph7"]]],
-                    [[["paragraph8"]]]]],
+                    [[["paragraph6.paragraph7."]]],
+                    [[["paragraph8."]]]]],
                   [[["heading3"]],
-                   [[["paragraph9"]]]]],tree)
+                   [[["paragraph9."]]]]],tree)
   end
 
   def test_parse_with_inline_elements
@@ -375,7 +372,9 @@ TEXT
 <p>
 paragraph1.paragraph2.paragraph3.</p>
 <blockquote>
-citation1</blockquote>
+<p>
+citation1</p>
+</blockquote>
 <p>
 paragraph4.</p>
 <ul>
@@ -574,7 +573,9 @@ TEXT
 <p>
 paragraph1.paragraph2.</p>
 <blockquote>
-citation1</blockquote>
+<p>
+citation1</p>
+</blockquote>
 <p>
 paragraph3.</p>
 <hr />
@@ -667,5 +668,60 @@ HTML
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s) #bug: you should not touch the original tree.
+  end
+
+  def test_verbatim
+    text = <<TEXT
+<<<
+a verbatim line.
+a verbatim line with <greater than/less than>.
+>>>
+
+a normal paragraph.
+
+ another verbatim line with <greater than/less than>.
+
+another normal paragraph.
+
+ the last verbatim line.
+TEXT
+    xhtml = <<HTML
+<pre>
+a verbatim line.a verbatim line with &lt;greater than/less than&gt;.</pre>
+<p>
+a normal paragraph.</p>
+<pre>
+another verbatim line with &lt;greater than/less than&gt;.</pre>
+<p>
+another normal paragraph.</p>
+<pre>
+the last verbatim line.</pre>
+HTML
+
+    tree = BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_quote
+    text = <<TEXT
+""this line should be enclosed in a p element.
+""
+""*this line should be a list item.
+TEXT
+
+    xhtml = <<HTML
+<blockquote>
+<p>
+this line should be enclosed in a p element.
+</p>
+<ul>
+<li>this line should be a list item.
+</li>
+</ul>
+</blockquote>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 end
