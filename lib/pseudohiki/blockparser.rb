@@ -344,7 +344,7 @@ module PseudoHiki
         if LINE_PAT::VERBATIM_BEGIN =~ line
           add_verbatim_block(lines)
         else
-          add_leaf(line)
+          add_leaf(self.tagfy_link(line))
         end
       end
       @stack.pop
