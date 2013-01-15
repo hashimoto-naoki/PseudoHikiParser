@@ -724,4 +724,51 @@ HTML
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
+
+  def test_verbatim_with_blank_lines
+    text = <<TEXT
+<<<
+a verbatim line with [[a link]]
+
+another verbatim line
+
+the last verbatim line
+>>>
+TEXT
+
+    text2 = <<TEXT
+ a verbatim line with [[a link]]
+ 
+ another verbatim line
+ 
+ the last verbatim line
+TEXT
+
+
+    xhtml = <<HTML
+<pre>
+a verbatim line with [[a link]]
+
+another verbatim line
+
+the last verbatim line
+</pre>
+HTML
+
+    input_array = [
+                   "<<<\n",
+                   "a verbatim line with [[a link]]\n",
+                   "\n",
+                   "another verbatim line\n",
+                   "\n",
+                   "the last verbatim line\n",
+                   ">>>\n"
+                  ]
+    tree = BlockParser.parse(text.lines.to_a)
+    tree2 = BlockParser.parse(text2.lines.to_a)
+#    assert_equal(input_array, text.lines.to_a)
+#    assert_equal([], tree2)
+#    assert_equal([], tree)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
 end
