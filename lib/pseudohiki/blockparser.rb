@@ -230,6 +230,14 @@ module PseudoHiki
       end
     end
 
+    class BlockElement::VerbatimLeaf
+      def self.create(line)
+        line.sub!(self.head_re,"") if self.head_re
+        leaf = self.new
+        leaf.push line
+      end
+    end
+
     class ListTypeLeaf
       include BlockElement
 
@@ -317,6 +325,7 @@ module PseudoHiki
 
     def add_verbatim_block(lines)
       until lines.empty? or LINE_PAT::VERBATIM_END =~ lines.first
+        lines[0] = " " + lines[0] if BlockNodeEnd.head_re =~ lines.first
         @stack.push(VerbatimLeaf.create(lines.shift))
       end
       lines.shift if LINE_PAT::VERBATIM_END =~ lines.first
@@ -358,6 +367,14 @@ module PseudoHiki
     DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
     TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
+
+    class VerbatimNodeFormatter < self
+      def visit(tree)
+        make_html_element.configure do |element|
+          element.push HtmlElement.escape(tree.join)
+        end
+      end
+    end
 
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
@@ -458,7 +475,7 @@ module PseudoHiki
     end
 
     [[DescNode, DESC],
-     [VerbatimNode, VERB],
+#     [VerbatimNode, VERB],
      [QuoteNode, QUOTE],
      [TableNode, TABLE],
 #     [CommentOutNode, nil],
@@ -476,6 +493,7 @@ module PseudoHiki
 #     [EnumWrapNode, LI]
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
+    Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
@@ -485,9 +503,6 @@ module PseudoHiki
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
 
     class << Formatter[DescNode]
-    end
-
-    class << Formatter[VerbatimNode]
     end
 
     class << Formatter[QuoteNode]
