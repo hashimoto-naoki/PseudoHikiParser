@@ -372,7 +372,13 @@ module PseudoHiki
     class VerbatimNodeFormatter < self
       def visit(tree)
         make_html_element.configure do |element|
-          element.push HtmlElement.escape(tree.join)
+          contents = HtmlElement.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
+            create_element("a").configure do |a|
+              a.push url
+              a["href"] = url
+            end.to_s
+          end
+          element.push contents
         end
       end
     end

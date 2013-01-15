@@ -785,4 +785,23 @@ HTML
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
+
+  def test_automatical_link_generation_in_verbatim_blocks
+    text = <<TEXT
+ a line with a url http://www.example.org/ to test an automatical link generation.
+
+ another line with [[link|sample.html]]
+TEXT
+
+    xhtml = <<HTML
+<pre>
+a line with a url <a href="http://www.example.org/">http://www.example.org/</a> to test an automatical link generation.
+</pre>
+<pre>
+another line with [[link|sample.html]]
+</pre>
+HTML
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
 end
