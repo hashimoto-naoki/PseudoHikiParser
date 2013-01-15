@@ -30,8 +30,8 @@ And one of them will be BSD 2-clause license or MIT license.
 * Links
 ** WikiNames - Not supported (and would never be)
 ** Linking to other Wiki pages - Not supported as well
-** Linking to an arbitrary URL - Partly supported
-* Preformatted text - Implemented, but still buggy
+** Linking to an arbitrary URL - Maybe usable
+* Preformatted text - Usable
 * Text decoration - Partly supported
 ** Currently, there is no means to escape tags for inline decorations.
 ** The notation with backquote tags(``) for inline literals is not supported.
