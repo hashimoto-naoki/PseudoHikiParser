@@ -35,7 +35,7 @@ HTML_VERSIONS = %w(html4 xhtml1)
 FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
 WRITTEN_OPTION_PAT = {}
 OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
-HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][A-Za-z_\-.:]+)\]/o
+HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]/o
 
 def win32? 
   true if RUBY_PLATFORM =~ /win/i
