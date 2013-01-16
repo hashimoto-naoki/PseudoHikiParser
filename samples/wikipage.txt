@@ -10,7 +10,7 @@ Currently, only a limited range of notations can be converted into HTML4 or XHTM
 
 I am writing this tool with following objectives in mind,
 
-* provide some additional features that doesn't exist in the original Hiki
+* provide some additional features that do not exist in the original Hiki notation
 ** make the notation more line oriented
 ** allow to assign ids to elements such as headings
 * support several formats other than HTML
@@ -42,7 +42,7 @@ And one of them will be BSD 2-clause license or MIT license.
 * Definitions - Usable
 * Tables - Usable
 * Comments - Usable
-* Plugins - Not support (and will not be compatible with the original one)
+* Plugins - Not supported (and will not be compatible with the original one)
 
 !! Additional Features
 
