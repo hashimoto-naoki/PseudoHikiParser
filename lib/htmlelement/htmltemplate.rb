@@ -12,6 +12,7 @@ class HtmlTemplate
 
   def initialize(charset=ELEMENT[self.class]::CHARSET::UTF8, language="en", css_link="default.css", base_uri=nil)
     @html = ELEMENT[self.class].create("html")
+    @html["lang"] = language
     @head = ELEMENT[self.class].create("head")
     @charset = charset
     @content_language = create_meta("Content-Language", language)
@@ -52,6 +53,7 @@ class HtmlTemplate
 
   def language=(language)
     @content_language["content"] = language
+    @html["lang"] = language
   end
 
   def base=(base_uri)
@@ -128,5 +130,11 @@ class XhtmlTemplate < HtmlTemplate
   def initialize(*params)
     super(*params)
     @html['xmlns'] = 'http://www.w3.org/1999/xhtml'
+    @html["xml:lang"] =  params[1] #language
+  end
+
+  def language=(language)
+    super(language)
+    @html["xml:lang"] = language
   end
 end
