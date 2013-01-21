@@ -1,11 +1,15 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+# -*- coding: japanese-cp932 -*-
 
 require 'optparse'
 require 'erb'
 require 'pseudohiki/blockparser'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
+require 'htmlelement/start_of_page'
+require 'nkf'
+
+START_OF_PAGE = "ƒy[ƒW‚Ìæ“ª‚Ö"
 
 include PseudoHiki
 
@@ -240,6 +244,12 @@ end
 input_file_dir, input_file_name, input_file_basename = nil, nil, nil
 output_file_name = nil
 input_lines = ARGF.lines.to_a
+input_lines = input_lines.map {|line| NKF.nkf("-Sw", line) } if OPTIONS[:encoding] == 'utf8'
+if OPTIONS[:encoding] == 'utf8'
+  HtmlElement.set_start_of_page(NKF.nkf("-Sw",START_OF_PAGE))
+else
+  HtmlElement.set_start_of_page(START_OF_PAGE)
+end
 
 case ARGV.length
 when 0
