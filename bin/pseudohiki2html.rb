@@ -237,7 +237,7 @@ end
 
 if $KCODE
   ENCODING_REGEXP.each do |pat, encoding|
-    OPTIONS[:encoding] = encoding if pat =~ $KCODE
+    OPTIONS[:encoding] = encoding if pat =~ $KCODE and not OPTIONS[:force]
   end
 end
 
