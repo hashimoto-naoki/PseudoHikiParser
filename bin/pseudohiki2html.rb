@@ -20,7 +20,8 @@ OPTIONS = {
   :template => nil,
   :output => nil,
   :force => false,
-  :toc => nil
+  :toc => nil,
+  :split_main_heading => false
 }
 
 ENCODING_REGEXP = {
@@ -78,6 +79,15 @@ def create_style(path_to_css_file)
       element.push css_file.read
     end
   end
+end
+
+def split_main_heading(input_lines)
+  h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
+  if h1_pos
+    tree = BlockParser.parse([input_lines.delete_at(h1_pos)])
+    return OPTIONS.formatter.format(tree)
+  end
+  ""
 end
 
 class << OPTIONS
@@ -228,6 +238,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     OPTIONS[:toc] = toc_title
   end
 
+  opt.on("-s", "--split-main-heading",
+         "Split h1 element") do |should_be_split|
+    OPTIONS[:split_main_heading] = should_be_split
+  end
+
   opt.parse!
 end
 
@@ -254,6 +269,7 @@ end
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
+h1 = OPTIONS[:split_main_heading] ? split_main_heading(input_lines) : ""
 css = OPTIONS[:css]
 toc = create_table_of_contents(input_lines)
 tree = BlockParser.parse(input_lines)
