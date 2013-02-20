@@ -157,7 +157,7 @@ module PseudoHiki
           caption = get_caption(tree,link_sep_index)
           tree.shift(link_sep_index+1)
         end
-        ref = tree.last[0]
+        ref = tree.last.join("")
         if ImageSuffix =~ ref
           htmlelement = ImgFormat.make_html_element
           htmlelement[SRC] = tree.join("")
