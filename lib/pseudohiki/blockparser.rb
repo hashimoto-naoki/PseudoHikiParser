@@ -371,7 +371,7 @@ module PseudoHiki
 
     class VerbatimNodeFormatter < self
       def visit(tree)
-        make_html_element.configure do |element|
+        create_self_element.configure do |element|
           contents = HtmlElement.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
             create_element("a").configure do |a|
               a.push url
@@ -388,7 +388,7 @@ module PseudoHiki
     end
 
     class HeadingNodeFormatter < self
-      def make_html_element(tree)
+      def create_self_element(tree)
         super(tree).configure do |element|
           element['class'] ||= ""
           element['class'] +=  " h#{tree.first.nominal_level}"
@@ -399,7 +399,7 @@ module PseudoHiki
     class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
-        dt = make_html_element(tree)
+        dt = create_self_element(tree)
         dd = create_element(DD)
         element = HtmlElement::Children.new
         element.push dt
@@ -444,7 +444,7 @@ module PseudoHiki
       end
 
       def visit(tree)
-        row = make_html_element(tree)
+        row = create_self_element(tree)
         cells = tree.dup
         cells.push TableSep
         while i = cells.index(TableSep)
@@ -466,7 +466,7 @@ module PseudoHiki
     end
 
     class HeadingLeafFormatter < self
-      def make_html_element(tree)
+      def create_self_element(tree)
         create_element(@element_name+tree.nominal_level.to_s).configure do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end
@@ -474,7 +474,7 @@ module PseudoHiki
     end
 
     class ListLeafNodeFormatter < self
-      def make_html_element(tree)
+      def create_self_element(tree)
         super(tree).configure do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end

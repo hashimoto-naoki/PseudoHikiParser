@@ -137,14 +137,14 @@ module PseudoHiki
     end
 
     def visit(tree)
-      htmlelement = make_html_element(tree)
+      htmlelement = create_self_element(tree)
       tree.each do |element|
         htmlelement.push visited_result(element)
       end
       htmlelement
     end
 
-    def make_html_element(tree=nil)
+    def create_self_element(tree=nil)
       create_element(@element_name)
     end
 
@@ -167,11 +167,11 @@ module PseudoHiki
           end
         end
         if ImageSuffix =~ ref
-          htmlelement = ImgFormat.make_html_element
+          htmlelement = ImgFormat.create_self_element
           htmlelement[SRC] = tree.join("")
           htmlelement[ALT] = caption.join("") if caption
         else
-          htmlelement = make_html_element
+          htmlelement = create_self_element
           htmlelement[HREF] = tree.join("")
           htmlelement.push caption||tree.join("")
         end
@@ -192,7 +192,7 @@ module PseudoHiki
     end
 
     class PlainNodeFormatter < self
-      def make_html_element(tree=nil)
+      def create_self_element(tree=nil)
         HtmlElement::Children.new
       end
     end
