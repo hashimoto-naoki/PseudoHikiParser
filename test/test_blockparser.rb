@@ -332,7 +332,7 @@ class TC_HtmlFormat < Test::Unit::TestCase
   end
 
   def convert_text_to_html(text)
-    formatter = HtmlFormat.create_plain
+    formatter = HtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     tree.accept(formatter).to_s
   end
@@ -587,7 +587,7 @@ paragraph3.</p>
 </div>
 HTML
 
-    formatter = XhtmlFormat.create_plain
+    formatter = XhtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
@@ -613,7 +613,7 @@ TEXT
 </ul>
 HTML
 
-    formatter = XhtmlFormat.create_plain
+    formatter = XhtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
@@ -632,7 +632,7 @@ a line with a <a href="http://www.example.org/">link</a> in it.</p>
 <li>a list item with a <a href="http://www.example.org/">link</a> in it.</li>
 </ul>
 HTML
-    formatter = XhtmlFormat.create_plain
+    formatter = XhtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end

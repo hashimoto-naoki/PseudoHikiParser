@@ -50,7 +50,7 @@ class TC_HtmlFormat < Test::Unit::TestCase
   include PseudoHiki
 
   def test_visit_linknode
-    formatter = HtmlFormat.create_plain
+    formatter = HtmlFormat.get_plain
 
     tree = InlineParser.parse("[[image.html]] is a link to a html file.")
     assert_equal('<a href="image.html">image.html</a> is a link to a html file.', tree.accept(formatter).to_s)
@@ -78,7 +78,7 @@ class TC_HtmlFormat < Test::Unit::TestCase
   end
 
   def test_visit_leafnode
-    formatter = HtmlFormat.create_plain
+    formatter = HtmlFormat.get_plain
     tree = InlineParser.parse("a string with <charactors> that are replaced by &entity references.")
     assert_equal("a string with &lt;charactors&gt; that are replaced by &amp;entity references.", tree.accept(formatter).to_s)
     tree = InlineParser.parse("a string with a token |.")
@@ -86,7 +86,7 @@ class TC_HtmlFormat < Test::Unit::TestCase
   end
 
   def test_visit_pluginnode
-    formatter = HtmlFormat.create_plain
+    formatter = HtmlFormat.get_plain
     tree = InlineParser.new("{{co2}} represents the carbon dioxide.").parse.tree
     assert_equal("<span>co2</span> represents the carbon dioxide.",tree.accept(formatter).to_s)
   end

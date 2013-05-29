@@ -208,12 +208,12 @@ module PseudoHiki
     Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
     Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
 
-    def self.create_plain
+    def self.get_plain
       self::Formatter[PlainNode]
     end
 
     def self.format(tree)
-      formatter = self.create_plain
+      formatter = self.get_plain
       tree.accept(formatter)
     end
   end
