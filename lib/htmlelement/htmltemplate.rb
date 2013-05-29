@@ -87,10 +87,12 @@ class HtmlTemplate
 
   def euc_jp!
     self.charset = ELEMENT[self.class]::CHARSET::EUC_JP
+    self.language = "ja"
   end
 
   def sjis!
     self.charset = ELEMENT[self.class]::CHARSET::SJIS
+    self.language = "ja"
   end
 
   def utf8!
@@ -130,7 +132,7 @@ class XhtmlTemplate < HtmlTemplate
   def initialize(*params)
     super(*params)
     @html['xmlns'] = 'http://www.w3.org/1999/xhtml'
-    @html["xml:lang"] =  params[1] #language
+    @html["xml:lang"] =  @html["lang"] #language
   end
 
   def language=(language)
