@@ -157,7 +157,15 @@ module PseudoHiki
           caption = get_caption(tree,link_sep_index)
           tree.shift(link_sep_index+1)
         end
-        ref = tree.last.join("")
+        begin
+          ref = tree.last.join("")
+        rescue NoMethodError
+          if tree.empty?
+            STDERR.puts "No uri is specified for #{caption}"
+          else
+            raise NoMethodError
+          end
+        end
         if ImageSuffix =~ ref
           htmlelement = ImgFormat.make_html_element
           htmlelement[SRC] = tree.join("")

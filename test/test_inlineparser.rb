@@ -72,6 +72,9 @@ class TC_HtmlFormat < Test::Unit::TestCase
 
     tree = InlineParser.parse("[[image.png]] is a link to a image file.")
     assert_equal("<img src=\"image.png\">\n is a link to a image file.", tree.accept(formatter).to_s)
+
+    tree = InlineParser.parse("[[link with an empty uri|]]")
+    assert_equal("<a href=\"\">link with an empty uri</a>", tree.accept(formatter).to_s)
   end
 
   def test_visit_leafnode
