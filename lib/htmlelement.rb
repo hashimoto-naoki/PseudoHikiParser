@@ -123,7 +123,7 @@ class HtmlElement
     TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
 
-  def self.doctype(encoding="euc-jp")
+  def self.doctype(encoding="UTF-8")
     Html4Doctype
   end
   alias to_str to_s
@@ -172,7 +172,7 @@ class XhtmlElement < HtmlElement
     XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
 
-  def self.doctype(encoding="euc-jp")
+  def self.doctype(encoding="UTF-8")
     Xhtml1Doctype%[encoding]
   end
 
