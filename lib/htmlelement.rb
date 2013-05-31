@@ -18,14 +18,8 @@ class HtmlElement
     LATIN1 = "ISO-8859-1"
   end
 
-  Html4Doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
-
-  Xhtml1Doctype = '<?xml version="1.0" encoding="%s"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
-
-
 
   ESC = {
     '&' => '&amp;',
@@ -124,7 +118,7 @@ class HtmlElement
   end
 
   def self.doctype(encoding="UTF-8")
-    Html4Doctype
+    self::DOCTYPE%[encoding]
   end
   alias to_str to_s
 
@@ -167,13 +161,13 @@ end
 
 class XhtmlElement < HtmlElement
 
+  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
+
   def to_s
     add_end_comment_for_div
     XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-  end
-
-  def self.doctype(encoding="UTF-8")
-    Xhtml1Doctype%[encoding]
   end
 
   alias to_str to_s
