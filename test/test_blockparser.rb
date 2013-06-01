@@ -31,7 +31,7 @@ class TC_BlockLeaf < Test::Unit::TestCase
   end
 
   def test_block_head_re_when_commentoutleaf
-    assert_equal(/\A(\/\/)/o, CommentOutLeaf.new.head_re)
+    assert_equal(/\A(\/\/)/o.to_s, CommentOutLeaf.new.head_re.to_s)
   end
 
   def test_block_head_re_when_commentoutleaf2
