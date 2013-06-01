@@ -47,13 +47,16 @@ class HtmlElement
     :EMPTY_BLOCK => "<%s%s>#{$/}"
   }
 
-  TagFormats = Hash.new(ELEMENTS_FORMAT[:INLINE])
-
-  ELEMENT_TYPES.each do |type, names|
-    names.each {|name| TagFormats[name] = ELEMENTS_FORMAT[type] }
+  def self.assign_tagformats
+    tagformats = Hash.new(ELEMENTS_FORMAT[:INLINE])
+    ELEMENT_TYPES.each do |type, names|
+      names.each {|name| tagformats[name] = ELEMENTS_FORMAT[type] }
+    end
+    tagformats[""] = "%s%s%s"
+    tagformats
   end
-  
-  TagFormats[""] = "%s%s%s"
+
+  TagFormats = self.assign_tagformats
 
   Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
   XhtmlTagFormats = TagFormats.dup
