@@ -31,16 +31,26 @@ class HtmlElement
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
   
-  TagFormats = Hash.new("<%s%s>%s</%s>")
+
+  ELEMENT_TYPES = {
+    :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
+    :HEADING_TYPE_BLOCK => %w(dt dd tr title h1 h2 h3 h4 h5 h6),
+    :LIST_ITEM_TYPE_BLOCK => %w(li col),
+    :EMPTY_BLOCK => %w(img meta link base input hr)
+  }
   
-  [[%w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),"<%s%s>#{$/}%s</%s>#{$/}"],
-   [%w(dt dd tr title h1 h2 h3 h4 h5 h6),"<%s%s>%s</%s>#{$/}"],
-   [%w(li col),"<%s%s>%s#{$/}"],
-   [%w(img meta link base input hr), "<%s%s>#{$/}"]
-  ].each do |tags,format|
-    tags.each do |tag|
-      TagFormats[tag] = format
-    end
+  ELEMENTS_FORMAT = {
+    :INLINE => "<%s%s>%s</%s>",
+    :BLOCK => "<%s%s>#{$/}%s</%s>#{$/}",
+    :HEADING_TYPE_BLOCK => "<%s%s>%s</%s>#{$/}",
+    :LIST_ITEM_TYPE_BLOCK => "<%s%s>%s#{$/}",
+    :EMPTY_BLOCK => "<%s%s>#{$/}"
+  }
+
+  TagFormats = Hash.new(ELEMENTS_FORMAT[:INLINE])
+
+  ELEMENT_TYPES.each do |type, names|
+    names.each {|name| TagFormats[name] = ELEMENTS_FORMAT[type] }
   end
   
   TagFormats[""] = "%s%s%s"
