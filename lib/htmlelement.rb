@@ -11,6 +11,9 @@ class HtmlElement
     end
   end
 
+  attr_reader :tagname
+  attr_accessor :parent, :children
+
   module CHARSET
     EUC_JP = "EUC-JP"
     SJIS = "Shift_JIS"
@@ -31,6 +34,7 @@ class HtmlElement
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
   
+  Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
 
   ELEMENT_TYPES = {
     :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
@@ -58,8 +62,6 @@ class HtmlElement
 
   TagFormats = self.assign_tagformats
 
-  Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
-
   def HtmlElement.escape(str)
     str.gsub(/[&"<>]/on) {|pat| ESC[pat] }
   end
@@ -75,9 +77,6 @@ class HtmlElement
     @attributes = {}
     @end_comment_not_added = true
   end
-
-  attr_reader :tagname
-  attr_accessor :parent, :children
 
   def empty?
     @children.empty?
@@ -120,21 +119,17 @@ class HtmlElement
     add_end_comment_for_div
     self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
-
-  def self.doctype(encoding="UTF-8")
-    self::DOCTYPE%[encoding]
-  end
   alias to_str to_s
-
-  def HtmlElement.comment(content)
-    "<!-- #{content} -->#{$/}"
-  end
 
   def configure
     yield self
     self
   end
       
+  def self.doctype(encoding="UTF-8")
+    self::DOCTYPE%[encoding]
+  end
+
   def self.create(tagname,content=nil)
     if Html5Tags.include? tagname
       tag = self.new("div")
@@ -145,6 +140,10 @@ class HtmlElement
     tag.push content if content
     yield tag if block_given?
     tag
+  end
+
+  def HtmlElement.comment(content)
+    "<!-- #{content} -->#{$/}"
   end
 
   def HtmlElement.urlencode(str)
