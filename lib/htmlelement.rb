@@ -50,7 +50,7 @@ class HtmlElement
   def self.assign_tagformats
     tagformats = Hash.new(ELEMENTS_FORMAT[:INLINE])
     ELEMENT_TYPES.each do |type, names|
-      names.each {|name| tagformats[name] = ELEMENTS_FORMAT[type] }
+      names.each {|name| tagformats[name] = self::ELEMENTS_FORMAT[type] }
     end
     tagformats[""] = "%s%s%s"
     tagformats
@@ -59,15 +59,6 @@ class HtmlElement
   TagFormats = self.assign_tagformats
 
   Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
-  XhtmlTagFormats = TagFormats.dup
-  XhtmlTagFormats.each do |key, value|
-    case value
-    when "<%s%s>%s#{$/}"
-      XhtmlTagFormats[key] = "<%s%s>%s</%s>#{$/}"
-    when "<%s%s>#{$/}"
-      XhtmlTagFormats[key] = "<%s%s />#{$/}"
-    end
-  end
 
   def HtmlElement.escape(str)
     str.gsub(/[&"<>]/on) {|pat| ESC[pat] }
@@ -127,7 +118,7 @@ class HtmlElement
 
   def to_s
     add_end_comment_for_div
-    TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
+    self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
 
   def self.doctype(encoding="UTF-8")
@@ -178,10 +169,13 @@ class XhtmlElement < HtmlElement
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
 
-  def to_s
-    add_end_comment_for_div
-    XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-  end
+  ELEMENTS_FORMAT = {
+    :INLINE => "<%s%s>%s</%s>",
+    :BLOCK => "<%s%s>#{$/}%s</%s>#{$/}",
+    :HEADING_TYPE_BLOCK => "<%s%s>%s</%s>#{$/}",
+    :LIST_ITEM_TYPE_BLOCK => "<%s%s>%s</%s>#{$/}",
+    :EMPTY_BLOCK => "<%s%s />#{$/}"
+  }
 
-  alias to_str to_s
+  TagFormats = self.assign_tagformats
 end
