@@ -64,4 +64,18 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(expected_text, @formatter.format(tree).to_s)
   end
+
+  def test_heading
+    text = <<TEXT
+!!heading
+a normal line
+TEXT
+
+    expected_text = <<TEXT
+heading
+a normal line
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, @formatter.format(tree).to_s)
+  end
 end
