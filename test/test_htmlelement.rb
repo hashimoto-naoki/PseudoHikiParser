@@ -11,6 +11,20 @@ class TC_HtmlElement < Test::Unit::TestCase
     assert_equal('<a href="http://www.example.net/example.cgi&amp;param=value"></a>', a.to_s)
   end
 
+  def test_empty_elements
+    xhtml_img = XhtmlElement.create("img")
+    assert_equal('<img />'+$/, xhtml_img.to_s)
+
+    img = HtmlElement.create("img")
+    assert_equal('<img>'+$/, img.to_s)
+
+    xhtml_img = XhtmlElement.create("img")
+    assert_equal('<img />'+$/, xhtml_img.to_s)
+
+    img = HtmlElement.create("img")
+    assert_equal('<img>'+$/, img.to_s)
+  end
+
   def test_doc_type
     html_doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
