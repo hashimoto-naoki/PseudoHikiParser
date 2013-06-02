@@ -5,13 +5,17 @@ require 'pseudohiki/plaintextformat'
 
 class TC_PlainTextFormat < Test::Unit::TestCase
   include PseudoHiki
+
+  def setup
+    @formatter = PlainTextFormat.create
+  end
   
   def test_plain
     text = <<TEXT
 test string
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("test string\n", PlainTextFormat.create.format(tree).to_s)
+    assert_equal("test string\n", @formatter.format(tree).to_s)
   end
 
   def test_em
@@ -19,7 +23,7 @@ TEXT
 A test string with ''emphasis'' is here.
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("A test string with emphasis is here.\n", PlainTextFormat.create.format(tree).to_s)
+    assert_equal("A test string with emphasis is here.\n", @formatter.format(tree).to_s)
   end
 
   def test_strong
@@ -27,7 +31,7 @@ TEXT
 A test string with '''strong''' is here.
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("A test string with strong is here.\n", PlainTextFormat.create.format(tree).to_s)
+    assert_equal("A test string with strong is here.\n", @formatter.format(tree).to_s)
   end
 
   def test_link_url
@@ -35,7 +39,7 @@ TEXT
 A test string with a [[link|http://www.example.org/]] is here.
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("A test string with a link is here.\n", PlainTextFormat.create.format(tree).to_s)
+    assert_equal("A test string with a link is here.\n", @formatter.format(tree).to_s)
   end
 
   def test_link_image
@@ -43,7 +47,7 @@ TEXT
 A test string with an [[image|image.jpg]] is here.
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("A test string with an image is here.\n", PlainTextFormat.create.format(tree).to_s)
+    assert_equal("A test string with an image is here.\n", @formatter.format(tree).to_s)
   end
 
   def test_commentout
@@ -58,6 +62,6 @@ another line
 TEXT
 
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal(expected_text, PlainTextFormat.create.format(tree).to_s)
+    assert_equal(expected_text, @formatter.format(tree).to_s)
   end
 end
