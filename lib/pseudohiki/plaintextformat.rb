@@ -15,14 +15,12 @@ module PseudoHiki
       end
     end
 
-    Formatter = {}
-
     def create_self_element(tree=nil)
       Node.new
     end
 
     def visited_result(node)
-      visitor = Formatter[node.class]||Formatter[PlainNode]
+      visitor = @formatter[node.class]||@formatter[PlainNode]
       node.accept(visitor)
     end
 
@@ -34,20 +32,72 @@ module PseudoHiki
       element
     end
 
+#    def []=(node_class, formatter_instance)
+#      @formatter[node_class] = formatter_instance
+#    end
+
+    def initialize(formatter={}, verbose_mode=false)
+      @formatter = formatter
+      @verbose_mode = verbose_mode
+    end
+
+    def self.create(verbose_mode=false)
+      formatter = {}
+      main = self.new(formatter, verbose_mode)
+      formatter[PlainNode] = PlainNodeFormatter.new(formatter, verbose_mode)
+      formatter[InlineNode] = InlineNodeFormatter.new(formatter, verbose_mode)
+      formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, verbose_mode)
+      formatter[LinkNode] = LinkNodeFormatter.new(formatter, verbose_mode)
+      formatter[EmNode] = EmNodeFormatter.new(formatter, verbose_mode)
+      formatter[StrongNode] = StrongNodeFormatter.new(formatter, verbose_mode)
+      formatter[DelNode] = DelNodeFormatter.new(formatter, verbose_mode)
+      formatter[PluginNode] = PluginNodeFormatter.new(formatter, verbose_mode)
+      formatter[DescLeaf] = DescLeafFormatter.new(formatter, verbose_mode)
+      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, verbose_mode)
+      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, verbose_mode)
+      formatter[TableLeaf] = TableLeafFormatter.new(formatter, verbose_mode)
+      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, verbose_mode)
+      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, verbose_mode)
+      formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, verbose_mode)
+      formatter[HrLeaf] = HrLeafFormatter.new(formatter, verbose_mode)
+      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, verbose_mode)
+      formatter[ListLeaf] = ListLeafFormatter.new(formatter, verbose_mode)
+      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, verbose_mode)
+      formatter[DescNode] = DescNodeFormatter.new(formatter, verbose_mode)
+      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, verbose_mode)
+      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, verbose_mode)
+      formatter[TableNode] = TableNodeFormatter.new(formatter, verbose_mode)
+      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, verbose_mode)
+      formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, verbose_mode)
+      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, verbose_mode)
+      formatter[HrNode] = HrNodeFormatter.new(formatter, verbose_mode)
+      formatter[ListNode] = ListNodeFormatter.new(formatter, verbose_mode)
+      formatter[EnumNode] = EnumNodeFormatter.new(formatter, verbose_mode)
+      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, verbose_mode)
+      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, verbose_mode)
+      main
+    end
+
+    def get_plain
+      @formatter[PlainNode]
+    end
+
+    def format(tree)
+      formatter = get_plain
+      tree.accept(formatter)
+    end
+
 ## Definitions of subclasses of PlainTextFormat begins here.
 
     class PlainNodeFormatter < self; end
-    Formatter[PlainNode] = PlainNodeFormatter.new
 
     class InlineNodeFormatter < self; end
-    Formatter[InlineNode] = InlineNodeFormatter.new
 
     class InlineLeafFormatter < self
       def visit(leaf)
         leaf.join
       end
     end
-    Formatter[InlineLeaf] = InlineLeafFormatter.new
 
     class LinkNodeFormatter < self
       def visit(tree)
@@ -82,99 +132,37 @@ module PseudoHiki
         end
       end
     end
-    Formatter[LinkNode] = LinkNodeFormatter.new
 
     class EmNodeFormatter < self; end
-    Formatter[EmNode] = EmNodeFormatter.new
-
     class StrongNodeFormatter < self; end
-    Formatter[StrongNode] = StrongNodeFormatter.new
-
     class DelNodeFormatter < self; end
-    Formatter[DelNode] = DelNodeFormatter.new
-
     class PluginNodeFormatter < self; end
-    Formatter[PluginNode] = PluginNodeFormatter.new
-
     class DescLeafFormatter < self; end
-    Formatter[DescLeaf] = DescLeafFormatter.new
-
     class VerbatimLeafFormatter < self; end
-    Formatter[VerbatimLeaf] = VerbatimLeafFormatter.new
-
     class QuoteLeafFormatter < self; end
-    Formatter[QuoteLeaf] = QuoteLeafFormatter.new
-
     class TableLeafFormatter < self; end
-    Formatter[TableLeaf] = TableLeafFormatter.new
-
     class CommentOutLeafFormatter < self; end
-    Formatter[CommentOutLeaf] = CommentOutLeafFormatter.new
-
     class HeadingLeafFormatter < self; end
-    Formatter[HeadingLeaf] = HeadingLeafFormatter.new
-
     class ParagraphLeafFormatter < self; end
-    Formatter[ParagraphLeaf] = ParagraphLeafFormatter.new
-
     class HrLeafFormatter < self; end
-    Formatter[HrLeaf] = HrLeafFormatter.new
-
     class BlockNodeEndFormatter < self; end
-    Formatter[BlockNodeEnd] = BlockNodeEndFormatter.new
-
     class ListLeafFormatter < self; end
-    Formatter[ListLeaf] = ListLeafFormatter.new
-
     class EnumLeafFormatter < self; end
-    Formatter[EnumLeaf] = EnumLeafFormatter.new
-
     class DescNodeFormatter < self; end
-    Formatter[DescNode] = DescNodeFormatter.new
-
     class VerbatimNodeFormatter < self; end
-    Formatter[VerbatimNode] = VerbatimNodeFormatter.new
-
     class QuoteNodeFormatter < self; end
-    Formatter[QuoteNode] = QuoteNodeFormatter.new
-
     class TableNodeFormatter < self; end
-    Formatter[TableNode] = TableNodeFormatter.new
 
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
     end
-    Formatter[CommentOutNode] = CommentOutNodeFormatter.new
 
     class HeadingNodeFormatter < self; end
-    Formatter[HeadingNode] = HeadingNodeFormatter.new
-
     class ParagraphNodeFormatter < self; end
-    Formatter[ParagraphNode] = ParagraphNodeFormatter.new
-
     class HrNodeFormatter < self; end
-    Formatter[HrNode] = HrNodeFormatter.new
-
     class ListNodeFormatter < self; end
-    Formatter[ListNode] = ListNodeFormatter.new
-
     class EnumNodeFormatter < self; end
-    Formatter[EnumNode] = EnumNodeFormatter.new
-
     class ListWrapNodeFormatter < self; end
-    Formatter[ListWrapNode] = ListWrapNodeFormatter.new
-
     class EnumWrapNodeFormatter < self; end
-    Formatter[EnumWrapNode] = EnumWrapNodeFormatter.new
-
-
-    def self.get_plain
-      self::Formatter[PlainNode]
-    end
-    
-    def self.format(tree)
-      formatter = self.get_plain
-      tree.accept(formatter)
-    end
   end
 end
