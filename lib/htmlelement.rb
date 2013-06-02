@@ -168,7 +168,7 @@ class XhtmlElement < HtmlElement
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
 
-  ELEMENTS_FORMAT = self.superclass::ELEMENTS_FORMAT
+  ELEMENTS_FORMAT = self.superclass::ELEMENTS_FORMAT.dup
   ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
   ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%s%s />#{$/}"
 
