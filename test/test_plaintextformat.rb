@@ -8,6 +8,7 @@ class TC_PlainTextFormat < Test::Unit::TestCase
 
   def setup
     @formatter = PlainTextFormat.create
+    @verbose_formatter = PlainTextFormat.create(true)
   end
   
   def test_plain
@@ -40,6 +41,8 @@ A test string with a [[link|http://www.example.org/]] is here.
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal("A test string with a link is here.\n", @formatter.format(tree).to_s)
+    assert_equal("A test string with a link (http://www.example.org/) is here.\n",
+                 @verbose_formatter.format(tree).to_s)
   end
 
   def test_link_image
