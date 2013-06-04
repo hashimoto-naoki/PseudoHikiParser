@@ -425,7 +425,7 @@ module PseudoHiki
       MODIFIED_CELL_PAT = /^!?[>^]*/o
 
       def parse_first_token(token)
-        parsed_token, cell_type, rowsan, colspan = token, TD, nil, nil
+        parsed_token, cell_type, rowspan, colspan = token, TD, nil, nil
         m, cell_modifiers = nil, nil
         m = MODIFIED_CELL_PAT.match(token) if token.kind_of? String
         if m
