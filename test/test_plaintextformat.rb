@@ -81,4 +81,20 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(expected_text, @formatter.format(tree).to_s)
   end
+
+  def test_desc
+    text = <<TEXT
+:tel: 03-xxxx-xxxx
+:: 03-yyyy-yyyy
+:fax: 03-xxxx-xxxx
+TEXT
+
+    expected_text = <<TEXT
+tel:	03-xxxx-xxxx
+	03-yyyy-yyyy
+fax:	03-xxxx-xxxx
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, @formatter.format(tree).to_s)
+  end
 end

@@ -8,6 +8,8 @@ module PseudoHiki
     include InlineParser::InlineElement
     include BlockParser::BlockElement
 
+    DescSep = [InlineParser::DescSep]
+
     class Node < Array
 
       def to_s
@@ -138,7 +140,27 @@ module PseudoHiki
     class StrongNodeFormatter < self; end
     class DelNodeFormatter < self; end
     class PluginNodeFormatter < self; end
-    class DescLeafFormatter < self; end
+
+    class DescLeafFormatter < self
+      def visit(tree)
+        tree = tree.dup
+        element = create_self_element(tree)
+        dt_sep_index = tree.index(DescSep)
+        if dt_sep_index
+          tree.shift(dt_sep_index).each do |token|
+            element.push visited_result(token)
+          end
+          tree.shift
+        end
+        dd = tree.map {|token| visited_result(token) }.join.lstrip
+        unless dd.empty?
+          element.push element.empty? ? "\t" : ":\t"
+          element.push dd
+        end
+        element
+      end
+    end
+
     class VerbatimLeafFormatter < self; end
     class QuoteLeafFormatter < self; end
     class TableLeafFormatter < self; end
