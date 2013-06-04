@@ -229,7 +229,13 @@ module PseudoHiki
     class ListLeafFormatter < self; end
     class EnumLeafFormatter < self; end
     class DescNodeFormatter < self; end
-    class VerbatimNodeFormatter < self; end
+
+    class VerbatimNodeFormatter < self
+      def visit(tree)
+        tree.join("")
+      end
+    end
+
     class QuoteNodeFormatter < self; end
 
     class TableNodeFormatter < self
