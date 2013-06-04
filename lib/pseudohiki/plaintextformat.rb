@@ -174,7 +174,53 @@ module PseudoHiki
 
     class VerbatimLeafFormatter < self; end
     class QuoteLeafFormatter < self; end
-    class TableLeafFormatter < self; end
+
+    class TableLeafFormatter < self
+      TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
+      MODIFIED_CELL_PAT = /^!?[>^]*/o
+
+      def parse_first_token(token)
+        parsed_token, cell_type, rowspan, colspan = token, TD, nil, nil
+        m, cell_modifiers = nil, nil
+        m = MODIFIED_CELL_PAT.match(token) if token.kind_of? String
+        if m
+          cell_modifiers = m[0].split(//o)
+          if cell_modifiers.first == TH_PAT
+            cell_modifiers.shift
+            cell_type = TH
+          end
+          parsed_token = token.sub(MODIFIED_CELL_PAT,"").lstrip
+          row_width = cell_modifiers.count(ROW_EXPANDER) + 1
+          rowspan = row_width if row_width > 1
+          col_width = cell_modifiers.count(COL_EXPANDER) + 1
+          colspan = col_width if col_width > 1
+        end
+        [parsed_token, cell_type, rowspan, colspan]
+      end
+
+      def visit(tree)
+        row = create_self_element(tree)
+        cells = tree.dup
+        cells.push TableSep
+        while i = cells.index(TableSep)
+          first_cell = cells.shift.dup
+          first_cell[0], cell_type, rowspan, colspan = parse_first_token(first_cell[0])
+          col = TableCell.new
+          col.push visited_result(first_cell)
+          row.push col
+          col.rowspan = rowspan if rowspan
+          col.colspan = colspan if colspan
+
+          (i-1).times do
+            cell = cells.shift
+            col.push visited_result(cell)
+          end
+          cells.shift
+        end
+        row
+      end
+    end
+
     class CommentOutLeafFormatter < self; end
     class HeadingLeafFormatter < self; end
     class ParagraphLeafFormatter < self; end
@@ -185,7 +231,50 @@ module PseudoHiki
     class DescNodeFormatter < self; end
     class VerbatimNodeFormatter < self; end
     class QuoteNodeFormatter < self; end
-    class TableNodeFormatter < self; end
+
+    class TableNodeFormatter < self
+      def visit(tree)
+        table = create_self_element(tree)
+        rows = tree.map {|row| visited_result(row) }
+        rows.length.times { table.push Node.new }
+        max_col = rows.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
+        max_row = rows.length - 1
+        cur_row = nil
+        each_cell_with_index(table, max_row, max_col) do |cell, r, c|
+          cur_row = rows.shift if c == 0
+          next if table[r][c]
+          if cell.nil?
+            table[r][c] = cur_row.shift
+            fill_expand(table, r, c, table[r][c])
+          end
+        end
+        table.map {|row| row.join("\t") }.join
+      end
+
+      def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
+        initial_row.upto(max_row) do |r|
+          initial_col.upto(max_col) do |c|
+            yield table[r][c], r, c
+          end
+        end
+      end
+
+      def fill_expand(table, initial_row, initial_col, cur_cell)
+        row_expand, col_expand = "", ""
+        row_expand, col_expand = "||", "==" if @verbose_mode
+        max_row = initial_row + cur_cell.rowspan - 1
+        max_col = initial_col + cur_cell.colspan - 1
+        each_cell_with_index(table, max_row, max_col,
+                             initial_row, initial_col) do |cell, r, c|
+          next if initial_row == r and initial_col == c
+          if initial_row == r
+            table[r][c] = col_expand
+          else
+            table[r][c] = row_expand
+          end
+        end
+      end
+    end
 
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
