@@ -14,7 +14,7 @@ module PseudoHiki
     class Node < Array
 
       def to_s
-        self.join
+        self.join("")
       end
     end
 
@@ -108,7 +108,7 @@ module PseudoHiki
 
     class InlineLeafFormatter < self
       def visit(leaf)
-        leaf.join
+        leaf.join("")
       end
     end
 
@@ -135,7 +135,7 @@ module PseudoHiki
           element.push (caption||tree).join("")
         else
           element.push caption||tree.join("")
-          element.push " (#{tree.join("")})" if @verbose_mode and caption
+          element.push " (#{tree.join('')})" if @verbose_mode and caption
         end
         element
       end
@@ -163,7 +163,7 @@ module PseudoHiki
           end
           tree.shift
         end
-        dd = tree.map {|token| visited_result(token) }.join.lstrip
+        dd = tree.map {|token| visited_result(token) }.join("").lstrip
         unless dd.empty?
           element.push element.empty? ? "\t" : ":\t"
           element.push dd
@@ -248,7 +248,7 @@ module PseudoHiki
             fill_expand(table, r, c, table[r][c])
           end
         end
-        table.map {|row| row.join("\t") }.join
+        table.map {|row| row.join("\t") }.join("")
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
