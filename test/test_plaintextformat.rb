@@ -111,4 +111,18 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(expected_text, @formatter.format(tree).to_s)
   end
+
+  def test_verbose_mode_table
+    text = <<TEXT
+||cell 1-1||^>> cell 1-2||cell 1-5
+||cell 2-1||cell 2-5
+TEXT
+
+    expected_verbose_text = <<TEXT
+cell 1-1	cell 1-2	==	==	cell 1-5
+cell 2-1	||	||	||	cell 2-5
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_verbose_text, @verbose_formatter.format(tree).to_s)
+  end
 end
