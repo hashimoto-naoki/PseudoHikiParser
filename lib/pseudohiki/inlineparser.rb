@@ -136,10 +136,8 @@ module PseudoHiki
             @cell_type = TH
           end
           parsed_token[0] = token_str.sub(MODIFIED_CELL_PAT,"")
-          row_width = cell_modifiers.count(ROW_EXPANDER) + 1
-          @rowspan = row_width if row_width > 1
-          col_width = cell_modifiers.count(COL_EXPANDER) + 1
-          @colspan = col_width if col_width > 1
+          @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
+          @colspan = cell_modifiers.count(COL_EXPANDER) + 1
         end
         parsed_token
       end
