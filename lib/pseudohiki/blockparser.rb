@@ -368,6 +368,7 @@ end
 module PseudoHiki
   class HtmlFormat
     include BlockParser::BlockElement
+    include TableRowParser::InlineElement
 
     DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
     SECTION = "section"
@@ -426,48 +427,22 @@ module PseudoHiki
       end
     end
 
-    class TableLeafFormatter < self
-      TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
-      MODIFIED_CELL_PAT = /^!?[>^]*/o
-
-      def parse_first_token(token)
-        parsed_token, cell_type, rowspan, colspan = token, TD, nil, nil
-        m, cell_modifiers = nil, nil
-        m = MODIFIED_CELL_PAT.match(token) if token.kind_of? String
-        if m
-          cell_modifiers = m[0].split(//o)
-          if cell_modifiers.first == TH_PAT
-            cell_modifiers.shift
-            cell_type = TH
-          end
-          parsed_token = token.sub(MODIFIED_CELL_PAT,"")
-          row_width = cell_modifiers.count(ROW_EXPANDER) + 1
-          rowspan = row_width if row_width > 1
-          col_width = cell_modifiers.count(COL_EXPANDER) + 1
-          colspan = col_width if col_width > 1
-        end
-        [parsed_token, cell_type, rowspan, colspan]
-      end
-
+    class TableCellNodeFormatter < self
       def visit(tree)
-        row = create_self_element(tree)
-        cells = tree.dup
-        cells.push TableSep
-        while i = cells.index(TableSep)
-          first_cell = cells.shift.dup
-          first_cell[0], cell_type, rowspan, colspan = parse_first_token(first_cell[0])
-          col = create_element(cell_type, visited_result(first_cell))
-          row.push col
-          col["rowspan"] = rowspan if rowspan
-          col["colspan"] = colspan if colspan
-
-          (i-1).times do
-            cell = cells.shift
-            col.push visited_result(cell)
-          end
-          cells.shift
+        @element_name = tree.cell_type
+        create_self_element.configure do |element|
+          element["rowspan"] = tree.rowspan if tree.rowspan > 1
+          element["colspan"] = tree.colspan if tree.colspan > 1
+          tree.each {|token| element.push visited_result(token) }
         end
-        row
+      end
+    end
+
+    class TableLeafFormatter < self
+      def visit(tree)
+        create_self_element(tree).configure do |row|
+          tree.each {|cell| row.push visited_result(cell) }
+        end
       end
     end
 
@@ -510,6 +485,7 @@ module PseudoHiki
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
+    Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
     Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
