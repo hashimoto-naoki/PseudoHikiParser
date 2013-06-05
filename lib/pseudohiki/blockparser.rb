@@ -58,10 +58,10 @@ module PseudoHiki
         false
       end
 
-      def self.create(line)
+      def self.create(line, inline_parser=InlineParser)
         line.sub!(self.head_re,"") if self.head_re
         leaf = self.new
-        leaf.concat(InlineParser.parse(line))
+        leaf.concat(inline_parser.parse(line))
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
@@ -240,11 +240,7 @@ module PseudoHiki
 
     class BlockElement::TableLeaf
       def self.create(line)
-        line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        result = leaf.concat(TableRowParser.parse(line))
-#        result = leaf.concat(InlineParser.parse(line))
-        result
+        super(line, TableRowParser)
       end
     end
 
