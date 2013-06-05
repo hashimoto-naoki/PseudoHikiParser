@@ -438,14 +438,6 @@ module PseudoHiki
       end
     end
 
-    class TableLeafFormatter < self
-      def visit(tree)
-        create_self_element(tree).configure do |row|
-          tree.each {|cell| row.push visited_result(cell) }
-        end
-      end
-    end
-
     class HeadingLeafFormatter < self
       def create_self_element(tree)
         create_element(@element_name+tree.nominal_level.to_s).configure do |element|
@@ -473,7 +465,7 @@ module PseudoHiki
      [ListNode, UL],
      [EnumNode, OL],
 #     [DescLeaf, DT],
-#     [TableLeaf, TR],
+     [TableLeaf, TR],
 #     [HeadingLeaf, HEADING],
 #     [ListLeaf, LI],
 #     [EnumLeaf, LI],
@@ -486,7 +478,6 @@ module PseudoHiki
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
-    Formatter[TableLeaf] = TableLeafFormatter.new(TR)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
