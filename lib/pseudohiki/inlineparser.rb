@@ -110,12 +110,48 @@ module PseudoHiki
 
   class TableRowParser < InlineParser
     module InlineElement
-      class TableCellNode < InlineParser::InlineElement::InlineNode; end
+      class TableCellNode < InlineParser::InlineElement::InlineNode
+        attr_accessor :cell_type, :rowspan, :colspan
+      end
     end
     include InlineElement
 
     TAIL[TableSep] = TableCellNode
     TokenPat[self] = InlineParser::TokenPat[InlineParser]
+
+    TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
+    MODIFIED_CELL_PAT = /^!?[>^]*/o
+
+    class InlineElement::TableCellNode
+
+      def parse_first_token(token)
+        @cell_type, @rowspan, @colspan, parsed_token = TD, 1, 1, token.dup
+        token_str = parsed_token[0]
+        m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
+
+        if m
+          cell_modifiers = m[0].split(//o)
+          if cell_modifiers.first == TH_PAT
+            cell_modifiers.shift
+            @cell_type = TH
+          end
+          parsed_token[0] = token_str.sub(MODIFIED_CELL_PAT,"")
+          row_width = cell_modifiers.count(ROW_EXPANDER) + 1
+          @rowspan = row_width if row_width > 1
+          col_width = cell_modifiers.count(COL_EXPANDER) + 1
+          @colspan = col_width if col_width > 1
+        end
+        parsed_token
+      end
+
+      def push(token)
+        if self.empty?
+          super(parse_first_token(token))
+        else
+          super(token)
+        end
+      end
+    end
 
     def treated_as_node_end(token)
       if token == TableSep

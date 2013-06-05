@@ -285,8 +285,8 @@ TEXT
 ||!col||![[link|http://www.example.org/]]||col
 TEXT
 
-    parsed_cells = [[[["!col"]],
-                     [["!"],
+    parsed_cells = [[[["col"]],
+                     [[""],
                      [["link"],
                       ["|"],
                       ["http"], [":"], ["//www.example.org/"]]],
@@ -703,11 +703,11 @@ HTML
   def test_tableleaf
     text = "||cell 1-1||!^>>cell 1-2||cell 1-5"
     tree = BlockParser.parse([text])
-    assert_equal([[[[["cell 1-1"]], [["!^>>cell 1-2"]], [["cell 1-5"]]]]], tree)
+    assert_equal([[[[["cell 1-1"]], [["cell 1-2"]], [["cell 1-5"]]]]], tree)
 
     text = "||cell 1-1 is ''emphasised'' partly||!^>>cell 1-2||cell 1-5"
     tree = BlockParser.parse([text])
-    assert_equal([[[[["cell 1-1 is "],[["emphasised"]], [" partly"]], [["!^>>cell 1-2"]], [["cell 1-5"]]]]], tree)
+    assert_equal([[[[["cell 1-1 is "],[["emphasised"]], [" partly"]], [["cell 1-2"]], [["cell 1-5"]]]]], tree)
   end
 
   def test_quote
