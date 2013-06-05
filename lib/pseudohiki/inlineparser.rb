@@ -108,6 +108,30 @@ module PseudoHiki
     end
   end
 
+  class TableRowParser < InlineParser
+    module InlineElement
+      class TableCellNode < InlineParser::InlineElement::InlineNode; end
+    end
+    include InlineElement
+
+    TAIL[TableSep] = TableCellNode
+    TokenPat[self] = InlineParser::TokenPat[InlineParser]
+
+    def treated_as_node_end(token)
+      if token == TableSep
+        self.pop
+        return (self.push TableCellNode.new)
+      end
+
+      super(token)
+    end
+
+    def parse
+      self.push TableCellNode.new
+      super
+    end
+  end
+
   include InlineParser::InlineElement
 end
 

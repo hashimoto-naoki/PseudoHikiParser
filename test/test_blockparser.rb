@@ -276,7 +276,7 @@ TEXT
                       ["|"],
                       ["http"], [":"], ["//www.example.org/"]],
                      ["."]]],
-                   [[["col"],["||"],["col"]]],
+                   [[[["col"]],[["col"]]]],
                    [[["item"], [":"], ["description"]]]]], tree)
   end
 
@@ -285,14 +285,12 @@ TEXT
 ||!col||![[link|http://www.example.org/]]||col
 TEXT
 
-    parsed_cells = [[["!col"],
-                     ["||"],
-                     ["!"],
+    parsed_cells = [[[["!col"]],
+                     [["!"],
                      [["link"],
                       ["|"],
-                      ["http"], [":"], ["//www.example.org/"]],
-                     ["||"],
-                     ["col"]]]
+                      ["http"], [":"], ["//www.example.org/"]]],
+                     [["col"]]]]
 
     tablenode = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o)).shift
     assert_equal(parsed_cells, tablenode)
@@ -700,6 +698,16 @@ HTML
 
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_tableleaf
+    text = "||cell 1-1||!^>>cell 1-2||cell 1-5"
+    tree = BlockParser.parse([text])
+    assert_equal([[[[["cell 1-1"]], [["!^>>cell 1-2"]], [["cell 1-5"]]]]], tree)
+
+    text = "||cell 1-1 is ''emphasised'' partly||!^>>cell 1-2||cell 1-5"
+    tree = BlockParser.parse([text])
+    assert_equal([[[[["cell 1-1 is "],[["emphasised"]], [" partly"]], [["!^>>cell 1-2"]], [["cell 1-5"]]]]], tree)
   end
 
   def test_quote

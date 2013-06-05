@@ -238,6 +238,16 @@ module PseudoHiki
       end
     end
 
+    class BlockElement::TableLeaf
+      def self.create(line)
+        line.sub!(self.head_re,"") if self.head_re
+        leaf = self.new
+        result = leaf.concat(TableRowParser.parse(line))
+#        result = leaf.concat(InlineParser.parse(line))
+        result
+      end
+    end
+
     class ListTypeLeaf
       include BlockElement
 
