@@ -101,11 +101,11 @@ module PseudoHiki
       end
       self
     end
-  end
 
-  def InlineParser.parse(str)
-    parser = new(str)
-    parser.parse.tree
+    def self.parse(str)
+      parser = new(str)
+      parser.parse.tree
+    end
   end
 
   include InlineParser::InlineElement
