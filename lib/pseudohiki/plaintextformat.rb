@@ -97,7 +97,7 @@ module PseudoHiki
 
     def format(tree)
       formatter = get_plain
-      tree.accept(formatter)
+      tree.accept(formatter).join("")
     end
 
 ## Definitions of subclasses of PlainTextFormat begins here.
