@@ -8,23 +8,10 @@ module PseudoHiki
     include InlineParser::InlineElement
     include BlockParser::BlockElement
 
-    TableSep = [InlineParser::TableSep]
-    DescSep = [InlineParser::DescSep]
-
     class Node < Array
 
       def to_s
         self.join("")
-      end
-    end
-
-    class TableCell < Node
-      attr_accessor :rowspan, :colspan
-
-      def initialize
-        super
-        @rowspan = 1
-        @colspan = 1
       end
     end
 

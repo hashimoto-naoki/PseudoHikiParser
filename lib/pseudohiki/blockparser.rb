@@ -373,7 +373,6 @@ module PseudoHiki
     DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
     SECTION = "section"
     DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
-    TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
     class VerbatimNodeFormatter < self
