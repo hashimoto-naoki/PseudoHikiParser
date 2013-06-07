@@ -125,4 +125,18 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(expected_verbose_text, @verbose_formatter.format(tree).to_s)
   end
+
+  def test_verbose_mode_table_with_expansion_in_the_last_column
+    text = <<TEXT
+||cell 1-1||^> cell 1-2||>cell 1-4
+||cell 2-1||cell 2-4||cell 2-5
+TEXT
+
+    expected_verbose_text = <<TEXT
+cell 1-1	cell 1-2	==	cell 1-4	==
+cell 2-1	||	||	cell 2-4	cell 2-5
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_verbose_text, @verbose_formatter.format(tree).to_s)
+  end
 end

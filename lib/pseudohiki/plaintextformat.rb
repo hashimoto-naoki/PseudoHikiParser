@@ -198,7 +198,7 @@ module PseudoHiki
             fill_expand(table, r, c, table[r][c])
           end
         end
-        table.map {|row| row.join("\t") }.join("")
+        table.map {|row| row.join("\t")+$/ }.join("")
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
@@ -217,7 +217,7 @@ module PseudoHiki
         each_cell_with_index(table, max_row, max_col,
                              initial_row, initial_col) do |cell, r, c|
           if initial_row == r and initial_col == c
-            table[r][c] = visited_result(cur_cell).join.lstrip
+            table[r][c] = visited_result(cur_cell).join.lstrip.chomp
             next
           end
           if initial_row == r
