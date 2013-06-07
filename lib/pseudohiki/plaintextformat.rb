@@ -8,6 +8,8 @@ module PseudoHiki
     include InlineParser::InlineElement
     include BlockParser::BlockElement
 
+    DescSep = [InlineParser::DescSep]
+
     class Node < Array
 
       def to_s
