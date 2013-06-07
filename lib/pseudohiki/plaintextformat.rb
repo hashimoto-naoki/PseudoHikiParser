@@ -181,7 +181,6 @@ module PseudoHiki
 
     class TableNodeFormatter < self
       def visit(tree)
-        p tree
         table = create_self_element(tree)
 #        rows = tree.map {|row| visited_result(row) }
         rows = tree.dup
