@@ -234,7 +234,13 @@ module PseudoHiki
     end
 
     class HeadingNodeFormatter < self; end
-    class ParagraphNodeFormatter < self; end
+
+    class ParagraphNodeFormatter < self
+      def visit(tree)
+        super(tree).join+$/
+      end
+    end
+
     class HrNodeFormatter < self; end
     class ListNodeFormatter < self; end
     class EnumNodeFormatter < self; end
