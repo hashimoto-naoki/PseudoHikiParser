@@ -34,10 +34,6 @@ module PseudoHiki
       element
     end
 
-#    def []=(node_class, formatter_instance)
-#      @formatter[node_class] = formatter_instance
-#    end
-
     def initialize(formatter={}, verbose_mode=false)
       @formatter = formatter
       @verbose_mode = verbose_mode
@@ -184,7 +180,6 @@ module PseudoHiki
     class TableNodeFormatter < self
       def visit(tree)
         table = create_self_element(tree)
-#        rows = tree.map {|row| visited_result(row) }
         rows = tree.dup
         rows.length.times { table.push Node.new }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
@@ -193,7 +188,7 @@ module PseudoHiki
         each_cell_with_index(table, max_row, max_col) do |cell, r, c|
           cur_row = rows.shift if c == 0
           next if table[r][c]
-          if cell.nil?
+          unless cell
             table[r][c] = cur_row.shift
             fill_expand(table, r, c, table[r][c])
           end
@@ -220,11 +215,7 @@ module PseudoHiki
             table[r][c] = visited_result(cur_cell).join.lstrip.chomp
             next
           end
-          if initial_row == r
-            table[r][c] = col_expand
-          else
-            table[r][c] = row_expand
-          end
+          table[r][c] = initial_row == r ? col_expand : row_expand
         end
       end
     end
