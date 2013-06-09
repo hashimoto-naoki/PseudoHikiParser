@@ -185,7 +185,10 @@ module PseudoHiki
 
     class TableNodeFormatter < self
       class MalFormedTableError < StandardError; end
-      ERROR_MESSAGE = "A malformed table row is found: %s"
+      ERROR_MESSAGE = <<ERROR_TEXT
+!! A malformed row is found: %s.
+!! Please recheck if it is really what you want.
+ERROR_TEXT
 
       def visit(tree)
         table = create_self_element(tree)
@@ -206,10 +209,7 @@ module PseudoHiki
               if @options.strict_mode
                 raise
               else
-                STDERR.puts <<ERROR_MESSAGE
-!! A malformed row is found: #{table[r].inspect}.
-!! Please recheck if it is really what you want.
-ERROR_MESSAGE
+                STDERR.puts ERROR_MESSAGE%[table[r].inspect]
                 next
               end
             end
