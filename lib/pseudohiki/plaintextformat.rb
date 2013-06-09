@@ -45,9 +45,8 @@ module PseudoHiki
       @options = OpenStruct.new(options)
     end
 
-    def self.create(verbose_mode=false)
+    def self.create(options = { :verbose_mode => false })
       formatter = {}
-      options = { :verbose_mode => verbose_mode }
       main = self.new(formatter, options)
       formatter[PlainNode] = PlainNodeFormatter.new(formatter, options)
       formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)

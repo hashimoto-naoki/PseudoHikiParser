@@ -8,7 +8,7 @@ class TC_PlainTextFormat < Test::Unit::TestCase
 
   def setup
     @formatter = PlainTextFormat.create
-    @verbose_formatter = PlainTextFormat.create(true)
+    @verbose_formatter = PlainTextFormat.create(:verbose_mode => true)
   end
   
   def test_plain
