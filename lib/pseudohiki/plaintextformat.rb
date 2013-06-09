@@ -140,7 +140,12 @@ module PseudoHiki
       end
     end
 
-    class DelNodeFormatter < self; end
+    class DelNodeFormatter < self
+      def visit(tree)
+        return "" unless @options.verbose_mode
+        "[deleted:#{tree.map {|token| visited_result(token) }.join}]"
+      end
+    end
 
     class DescLeafFormatter < self
       def visit(tree)

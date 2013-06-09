@@ -36,6 +36,24 @@ TEXT
     assert_equal("A test string with strong is here.\n\n", @formatter.format(tree).to_s)
   end
 
+  def test_del
+    text = <<TEXT
+A test string ==with deleted words ==is here.
+TEXT
+    expected_text = <<TEXT
+A test string is here.
+
+TEXT
+
+    expected_text_in_verbose_mode = <<TEXT
+A test string [deleted:with deleted words ]is here.
+
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, @formatter.format(tree).to_s)
+    assert_equal(expected_text_in_verbose_mode, @verbose_formatter.format(tree).to_s)
+  end
+
   def test_link_url
     text = <<TEXT
 A test string with a [[link|http://www.example.org/]] is here.
