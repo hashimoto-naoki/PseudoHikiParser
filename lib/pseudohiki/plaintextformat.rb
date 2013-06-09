@@ -2,6 +2,7 @@
 
 require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
+require 'ostruct'
 
 module PseudoHiki
   class PlainTextFormat
@@ -34,45 +35,51 @@ module PseudoHiki
       element
     end
 
-    def initialize(formatter={}, verbose_mode=false)
+    def initialize(formatter={}, options = { :verbose_mode=> false })
       @formatter = formatter
-      @verbose_mode = verbose_mode
+      options_given_via_block = nil
+      if block_given?
+        options_given_via_block = yield
+        options.merge!(options_given_via_block)
+      end
+      @options = OpenStruct.new(options)
     end
 
     def self.create(verbose_mode=false)
       formatter = {}
-      main = self.new(formatter, verbose_mode)
-      formatter[PlainNode] = PlainNodeFormatter.new(formatter, verbose_mode)
-      formatter[InlineNode] = InlineNodeFormatter.new(formatter, verbose_mode)
-      formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, verbose_mode)
-      formatter[LinkNode] = LinkNodeFormatter.new(formatter, verbose_mode)
-      formatter[EmNode] = EmNodeFormatter.new(formatter, verbose_mode)
-      formatter[StrongNode] = StrongNodeFormatter.new(formatter, verbose_mode)
-      formatter[DelNode] = DelNodeFormatter.new(formatter, verbose_mode)
-      formatter[PluginNode] = PluginNodeFormatter.new(formatter, verbose_mode)
-      formatter[DescLeaf] = DescLeafFormatter.new(formatter, verbose_mode)
-      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, verbose_mode)
-      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, verbose_mode)
-      formatter[TableLeaf] = TableLeafFormatter.new(formatter, verbose_mode)
-      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, verbose_mode)
-      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, verbose_mode)
-      formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, verbose_mode)
-      formatter[HrLeaf] = HrLeafFormatter.new(formatter, verbose_mode)
-      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, verbose_mode)
-      formatter[ListLeaf] = ListLeafFormatter.new(formatter, verbose_mode)
-      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, verbose_mode)
-      formatter[DescNode] = DescNodeFormatter.new(formatter, verbose_mode)
-      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, verbose_mode)
-      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, verbose_mode)
-      formatter[TableNode] = TableNodeFormatter.new(formatter, verbose_mode)
-      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, verbose_mode)
-      formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, verbose_mode)
-      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, verbose_mode)
-      formatter[HrNode] = HrNodeFormatter.new(formatter, verbose_mode)
-      formatter[ListNode] = ListNodeFormatter.new(formatter, verbose_mode)
-      formatter[EnumNode] = EnumNodeFormatter.new(formatter, verbose_mode)
-      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, verbose_mode)
-      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, verbose_mode)
+      options = { :verbose_mode => verbose_mode }
+      main = self.new(formatter, options)
+      formatter[PlainNode] = PlainNodeFormatter.new(formatter, options)
+      formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)
+      formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
+      formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
+      formatter[EmNode] = EmNodeFormatter.new(formatter, options)
+      formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
+      formatter[DelNode] = DelNodeFormatter.new(formatter, options)
+      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
+      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
+      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
+      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, options)
+      formatter[TableLeaf] = TableLeafFormatter.new(formatter, options)
+      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
+      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, options)
+      formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, options)
+      formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
+      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, options)
+      formatter[ListLeaf] = ListLeafFormatter.new(formatter, options)
+      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
+      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
+      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
+      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
+      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
+      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
+      formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
+      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
+      formatter[HrNode] = HrNodeFormatter.new(formatter, options)
+      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
+      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
+      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
+      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
       main
     end
 
@@ -120,7 +127,7 @@ module PseudoHiki
           element.push (caption||tree).join("")
         else
           element.push caption||tree.join("")
-          element.push " (#{tree.join('')})" if @verbose_mode and caption
+          element.push " (#{tree.join('')})" if @options.verbose_mode and caption
         end
         element
       end
@@ -218,7 +225,7 @@ module PseudoHiki
 
       def fill_expand(table, initial_row, initial_col, cur_cell)
         row_expand, col_expand = "", ""
-        row_expand, col_expand = "||", "==" if @verbose_mode
+        row_expand, col_expand = "||", "==" if @options.verbose_mode
         max_row = initial_row + cur_cell.rowspan - 1
         max_col = initial_col + cur_cell.colspan - 1
         each_cell_with_index(table, max_row, max_col,
