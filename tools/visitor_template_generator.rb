@@ -62,7 +62,7 @@ module PseudoHiki
       [
 %2$s
       ].each do |node_class|
-        @formatter[node_class] = self.new(formatter, options)
+        formatter[node_class] = self.new(formatter, options)
       end
 
 %3$s
