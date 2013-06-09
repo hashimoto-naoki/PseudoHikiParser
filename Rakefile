@@ -30,6 +30,15 @@ plaintextformat
   end
 end
 
+task :generate_visitor, [:visitor_prefix] do |t, args|
+  ruby "tools/visitor_template_generator.rb %s"%args[:visitor_prefix]
+
+  #How to invoke:
+  # rake 'generate_visitor[PlainText]'
+  #or
+  # rake generate_visitor\[PlainText\]
+end
+
 #Rake::TestTask.new do |t|
 #  t.libs << "test"
 #  t.libs << "."
