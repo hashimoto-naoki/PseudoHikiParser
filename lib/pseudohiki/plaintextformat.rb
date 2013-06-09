@@ -52,13 +52,9 @@ module PseudoHiki
       [
        PlainNode,
        InlineNode,
-#       InlineLeaf,
-#       LinkNode,
        EmNode,
        StrongNode,
-#       DelNode,
        PluginNode,
-#       DescLeaf,
        VerbatimLeaf,
        QuoteLeaf,
        TableLeaf,
@@ -70,12 +66,8 @@ module PseudoHiki
        ListLeaf,
        EnumLeaf,
        DescNode,
-#       VerbatimNode,
        QuoteNode,
-#       TableNode,
-#       CommentOutNode,
        HeadingNode,
-#       ParagraphNode,
        HrNode,
        ListNode,
        EnumNode,
@@ -85,37 +77,14 @@ module PseudoHiki
         formatter[node_class] = self.new(formatter, options)
       end
 
-#      formatter[PlainNode] = PlainNodeFormatter.new(formatter, options)
-#      formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)
       formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
-#      formatter[EmNode] = EmNodeFormatter.new(formatter, options)
-#      formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
       formatter[DelNode] = DelNodeFormatter.new(formatter, options)
-#      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
       formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
-#      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
-#      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, options)
-#      formatter[TableLeaf] = TableLeafFormatter.new(formatter, options)
-#      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
-#      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, options)
-#      formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, options)
-#      formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
-#      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, options)
-#      formatter[ListLeaf] = ListLeafFormatter.new(formatter, options)
-#      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
-#      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
       formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
-#      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
       formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
-#      formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
-#      formatter[HrNode] = HrNodeFormatter.new(formatter, options)
-#      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
-#      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
-#      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
-#      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
       main
     end
 
@@ -129,9 +98,6 @@ module PseudoHiki
     end
 
 ## Definitions of subclasses of PlainTextFormat begins here.
-
-#    class PlainNodeFormatter < self; end
-#    class InlineNodeFormatter < self; end
 
     class InlineLeafFormatter < self
       def visit(leaf)
@@ -174,10 +140,7 @@ module PseudoHiki
       end
     end
 
-#    class EmNodeFormatter < self; end
-#    class StrongNodeFormatter < self; end
     class DelNodeFormatter < self; end
-#    class PluginNodeFormatter < self; end
 
     class DescLeafFormatter < self
       def visit(tree)
@@ -199,25 +162,11 @@ module PseudoHiki
       end
     end
 
-#    class VerbatimLeafFormatter < self; end
-#    class QuoteLeafFormatter < self; end
-#    class TableLeafFormatter < self;    end
-#    class CommentOutLeafFormatter < self; end
-#    class HeadingLeafFormatter < self; end
-#    class ParagraphLeafFormatter < self; end
-#    class HrLeafFormatter < self; end
-#    class BlockNodeEndFormatter < self; end
-#    class ListLeafFormatter < self; end
-#    class EnumLeafFormatter < self; end
-#    class DescNodeFormatter < self; end
-
     class VerbatimNodeFormatter < self
       def visit(tree)
         tree.join("")
       end
     end
-
-#    class QuoteNodeFormatter < self; end
 
     class TableNodeFormatter < self
       class MalFormedTableError < StandardError; end
@@ -279,18 +228,10 @@ ERROR_TEXT
       def visit(tree); ""; end
     end
 
-#    class HeadingNodeFormatter < self; end
-
     class ParagraphNodeFormatter < self
       def visit(tree)
         super(tree).join+$/
       end
     end
-#
-#    class HrNodeFormatter < self; end
-#    class ListNodeFormatter < self; end
-#    class EnumNodeFormatter < self; end
-#    class ListWrapNodeFormatter < self; end
-#    class EnumWrapNodeFormatter < self; end
   end
 end
