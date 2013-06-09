@@ -9,6 +9,7 @@ class TC_PlainTextFormat < Test::Unit::TestCase
   def setup
     @formatter = PlainTextFormat.create
     @verbose_formatter = PlainTextFormat.create(:verbose_mode => true)
+    @strict_formatter = PlainTextFormat.create(:strict_mode => true)
   end
   
   def test_plain
@@ -157,6 +158,7 @@ cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
 cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 TEXT
+
     tree = BlockParser.parse(well_formed_text.lines.to_a)
     assert_equal(expected_well_formed_text, @verbose_formatter.format(tree).to_s)
 
@@ -167,9 +169,19 @@ TEXT
 ||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
 TEXT
 
+    expected_mal_formed_text = <<TEXT
+cell 1-1	cell 1-2,3,4	==	==	cell 1-5
+cell 2-1	cell 2-2,3 3-2,3	==	cell 2-5
+cell 3-1	||	||	cell 3-4	cell 3-5
+cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
+TEXT
+
     assert_raise(PlainTextFormat::TableNodeFormatter::MalFormedTableError) do
       tree = BlockParser.parse(mal_formed_text.lines.to_a)
-      @verbose_formatter.format(tree).to_s
+      @strict_formatter.format(tree).to_s
     end
+
+    tree = BlockParser.parse(mal_formed_text.lines.to_a)
+    assert_equal(expected_mal_formed_text, @verbose_formatter.format(tree).to_s)
   end
 end

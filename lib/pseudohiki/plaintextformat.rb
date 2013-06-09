@@ -202,12 +202,16 @@ module PseudoHiki
               raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
               table[r][c] = cur_row.shift
               fill_expand(table, r, c, table[r][c])
-#            rescue
-#              STDERR.puts <<ERROR_MESSAGE
-#!! A malformed row is found: #{table[r].inspect}.
-#!! Please recheck if it is really what you want.
-#ERROR_MESSAGE
-#              next
+            rescue
+              if @options.strict_mode
+                raise
+              else
+                STDERR.puts <<ERROR_MESSAGE
+!! A malformed row is found: #{table[r].inspect}.
+!! Please recheck if it is really what you want.
+ERROR_MESSAGE
+                next
+              end
             end
           end
         end
