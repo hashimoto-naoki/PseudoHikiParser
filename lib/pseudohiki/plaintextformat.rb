@@ -206,12 +206,9 @@ ERROR_TEXT
               table[r][c] = cur_row.shift
               fill_expand(table, r, c, table[r][c])
             rescue
-              if @options.strict_mode
-                raise
-              else
-                STDERR.puts ERROR_MESSAGE%[table[r].inspect]
-                next
-              end
+              raise if @options.strict_mode
+              STDERR.puts ERROR_MESSAGE%[table[r].inspect]
+              next
             end
           end
         end
