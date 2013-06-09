@@ -178,6 +178,9 @@ module PseudoHiki
     class QuoteNodeFormatter < self; end
 
     class TableNodeFormatter < self
+      class MalFormedTableError < StandardError; end
+      ERROR_MESSAGE = "A malformed table row is found: %s"
+
       def visit(tree)
         table = create_self_element(tree)
         rows = tree.dup
@@ -189,8 +192,17 @@ module PseudoHiki
           cur_row = rows.shift if c == 0
           next if table[r][c]
           unless cell
-            table[r][c] = cur_row.shift
-            fill_expand(table, r, c, table[r][c])
+            begin
+              raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
+              table[r][c] = cur_row.shift
+              fill_expand(table, r, c, table[r][c])
+#            rescue
+#              STDERR.puts <<ERROR_MESSAGE
+#!! A malformed row is found: #{table[r].inspect}.
+#!! Please recheck if it is really what you want.
+#ERROR_MESSAGE
+#              next
+            end
           end
         end
         table.map {|row| row.join("\t")+$/ }.join("")
