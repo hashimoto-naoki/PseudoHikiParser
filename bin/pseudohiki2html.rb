@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: japanese-cp932 -*-
+# -*- coding: utf-8 -*-
 
 require 'optparse'
 require 'erb'
@@ -10,7 +10,7 @@ require 'htmlelement'
 require 'htmlelement/start_of_page'
 require 'nkf'
 
-START_OF_PAGE = "ƒy[ƒW‚Ìæ“ª‚Ö"
+START_OF_PAGE = "ãƒšãƒ¼ã‚¸ã®å…ˆé ­ã¸".encode("Windows-31J")
 
 include PseudoHiki
 
@@ -96,7 +96,8 @@ def split_main_heading(input_lines)
   h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
   if h1_pos
     tree = BlockParser.parse([input_lines.delete_at(h1_pos)])
-    return OPTIONS.formatter.format(tree)
+#    return OPTIONS.formatter.format(tree)
+    return PlainFormat.format(tree)
   end
   ""
 end
@@ -268,9 +269,9 @@ output_file_name = nil
 input_lines = ARGF.lines.to_a
 input_lines = input_lines.map {|line| NKF.nkf("-Sw", line) } if OPTIONS[:encoding] == 'utf8'
 if OPTIONS[:encoding] == 'utf8'
-  HtmlElement.set_start_of_page(NKF.nkf("-Sw",START_OF_PAGE))
+  HtmlElement.set_start_of_page(NKF.nkf("-Sw",START_OF_PAGE), "#top")
 else
-  HtmlElement.set_start_of_page(START_OF_PAGE)
+  HtmlElement.set_start_of_page(START_OF_PAGE, "#top")
 end
 
 case ARGV.length
