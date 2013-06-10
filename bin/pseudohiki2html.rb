@@ -4,6 +4,7 @@
 require 'optparse'
 require 'erb'
 require 'pseudohiki/blockparser'
+require 'pseudohiki/plaintextformat'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 require 'htmlelement/start_of_page'
@@ -42,6 +43,12 @@ WRITTEN_OPTION_PAT = {}
 OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
 HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]/o
 
+PlainFormat = PlainTextFormat.create
+
+def to_plain(line)
+  PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
+end
+
 def win32? 
   true if RUBY_PLATFORM =~ /win/i
 end
@@ -54,7 +61,7 @@ def create_table_of_contents(lines)
   toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
     m = HEADING_WITH_ID_PAT.match(line)
     heading_depth, id = m[1].length, m[2].upcase
-    "%s[[%s|#%s]]"%['*'*heading_depth, line.sub(HEADING_WITH_ID_PAT,''), id]
+    "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
   end
   OPTIONS.formatter.format(BlockParser.parse(toc_lines))
 end

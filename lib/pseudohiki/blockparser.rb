@@ -1,4 +1,4 @@
-#/usr/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'treestack'
 require 'pseudohiki/inlineparser'
@@ -58,10 +58,10 @@ module PseudoHiki
         false
       end
 
-      def self.create(line)
+      def self.create(line, inline_parser=InlineParser)
         line.sub!(self.head_re,"") if self.head_re
         leaf = self.new
-        leaf.concat(InlineParser.parse(line))
+        leaf.concat(inline_parser.parse(line))
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
@@ -238,6 +238,12 @@ module PseudoHiki
       end
     end
 
+    class BlockElement::TableLeaf
+      def self.create(line)
+        super(line, TableRowParser)
+      end
+    end
+
     class ListTypeLeaf
       include BlockElement
 
@@ -362,16 +368,16 @@ end
 module PseudoHiki
   class HtmlFormat
     include BlockParser::BlockElement
+    include TableRowParser::InlineElement
 
     DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
     SECTION = "section"
     DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
-    TableSep = [InlineParser::TableSep]
     DescSep = [InlineParser::DescSep]
 
     class VerbatimNodeFormatter < self
       def visit(tree)
-        make_html_element.configure do |element|
+        create_self_element.configure do |element|
           contents = HtmlElement.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
             create_element("a").configure do |a|
               a.push url
@@ -388,7 +394,7 @@ module PseudoHiki
     end
 
     class HeadingNodeFormatter < self
-      def make_html_element(tree)
+      def create_self_element(tree)
         super(tree).configure do |element|
           element['class'] ||= ""
           element['class'] +=  " h#{tree.first.nominal_level}"
@@ -399,7 +405,7 @@ module PseudoHiki
     class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
-        dt = make_html_element(tree)
+        dt = create_self_element(tree)
         dd = create_element(DD)
         element = HtmlElement::Children.new
         element.push dt
@@ -420,53 +426,19 @@ module PseudoHiki
       end
     end
 
-    class TableLeafFormatter < self
-      TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
-      MODIFIED_CELL_PAT = /^!?[>^]*/o
-
-      def parse_first_token(token)
-        parsed_token, cell_type, rowsan, colspan = token, TD, nil, nil
-        m, cell_modifiers = nil, nil
-        m = MODIFIED_CELL_PAT.match(token) if token.kind_of? String
-        if m
-          cell_modifiers = m[0].split(//o)
-          if cell_modifiers.first == TH_PAT
-            cell_modifiers.shift
-            cell_type = TH
-          end
-          parsed_token = token.sub(MODIFIED_CELL_PAT,"")
-          row_width = cell_modifiers.count(ROW_EXPANDER) + 1
-          rowspan = row_width if row_width > 1
-          col_width = cell_modifiers.count(COL_EXPANDER) + 1
-          colspan = col_width if col_width > 1
-        end
-        [parsed_token, cell_type, rowspan, colspan]
-      end
-
+    class TableCellNodeFormatter < self
       def visit(tree)
-        row = make_html_element(tree)
-        cells = tree.dup
-        cells.push TableSep
-        while i = cells.index(TableSep)
-          first_cell = cells.shift.dup
-          first_cell[0], cell_type, rowspan, colspan = parse_first_token(first_cell[0])
-          col = create_element(cell_type, visited_result(first_cell))
-          row.push col
-          col["rowspan"] = rowspan if rowspan
-          col["colspan"] = colspan if colspan
-
-          (i-1).times do
-            cell = cells.shift
-            col.push visited_result(cell)
-          end
-          cells.shift
+        @element_name = tree.cell_type
+        create_self_element.configure do |element|
+          element["rowspan"] = tree.rowspan if tree.rowspan > 1
+          element["colspan"] = tree.colspan if tree.colspan > 1
+          tree.each {|token| element.push visited_result(token) }
         end
-        row
       end
     end
 
     class HeadingLeafFormatter < self
-      def make_html_element(tree)
+      def create_self_element(tree)
         create_element(@element_name+tree.nominal_level.to_s).configure do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end
@@ -474,7 +446,7 @@ module PseudoHiki
     end
 
     class ListLeafNodeFormatter < self
-      def make_html_element(tree)
+      def create_self_element(tree)
         super(tree).configure do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end
@@ -492,7 +464,7 @@ module PseudoHiki
      [ListNode, UL],
      [EnumNode, OL],
 #     [DescLeaf, DT],
-#     [TableLeaf, TR],
+     [TableLeaf, TR],
 #     [HeadingLeaf, HEADING],
 #     [ListLeaf, LI],
 #     [EnumLeaf, LI],
@@ -504,7 +476,7 @@ module PseudoHiki
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
-    Formatter[TableLeaf] = TableLeafFormatter.new(TR)
+    Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)

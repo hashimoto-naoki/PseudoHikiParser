@@ -11,6 +11,9 @@ class HtmlElement
     end
   end
 
+  attr_reader :tagname
+  attr_accessor :parent, :children
+
   module CHARSET
     EUC_JP = "EUC-JP"
     SJIS = "Shift_JIS"
@@ -18,14 +21,8 @@ class HtmlElement
     LATIN1 = "ISO-8859-1"
   end
 
-  Html4Doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
-
-  Xhtml1Doctype = '<?xml version="1.0" encoding="%s"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
-
-
 
   ESC = {
     '&' => '&amp;',
@@ -37,30 +34,33 @@ class HtmlElement
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
   
-  TagFormats = Hash.new("<%s%s>%s</%s>")
-  
-  [[%w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),"<%s%s>#{$/}%s</%s>#{$/}"],
-   [%w(dt dd tr title h1 h2 h3 h4 h5 h6),"<%s%s>%s</%s>#{$/}"],
-   [%w(li col),"<%s%s>%s#{$/}"],
-   [%w(img meta link base input hr), "<%s%s>#{$/}"]
-  ].each do |tags,format|
-    tags.each do |tag|
-      TagFormats[tag] = format
-    end
-  end
-  
-  TagFormats[""] = "%s%s%s"
-
   Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
-  XhtmlTagFormats = TagFormats.dup
-  XhtmlTagFormats.each do |key, value|
-    case value
-    when "<%s%s>%s#{$/}"
-      XhtmlTagFormats[key] = "<%s%s>%s</%s>#{$/}"
-    when "<%s%s>#{$/}"
-      XhtmlTagFormats[key] = "<%s%s />#{$/}"
+
+  ELEMENT_TYPES = {
+    :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
+    :HEADING_TYPE_BLOCK => %w(dt dd tr title h1 h2 h3 h4 h5 h6),
+    :LIST_ITEM_TYPE_BLOCK => %w(li col),
+    :EMPTY_BLOCK => %w(img meta link base input hr)
+  }
+  
+  ELEMENTS_FORMAT = {
+    :INLINE => "<%s%s>%s</%s>",
+    :BLOCK => "<%s%s>#{$/}%s</%s>#{$/}",
+    :HEADING_TYPE_BLOCK => "<%s%s>%s</%s>#{$/}",
+    :LIST_ITEM_TYPE_BLOCK => "<%s%s>%s#{$/}",
+    :EMPTY_BLOCK => "<%s%s>#{$/}"
+  }
+
+  def self.assign_tagformats
+    tagformats = Hash.new(ELEMENTS_FORMAT[:INLINE])
+    ELEMENT_TYPES.each do |type, names|
+      names.each {|name| tagformats[name] = self::ELEMENTS_FORMAT[type] }
     end
+    tagformats[""] = "%s%s%s"
+    tagformats
   end
+
+  TagFormats = self.assign_tagformats
 
   def HtmlElement.escape(str)
     str.gsub(/[&"<>]/on) {|pat| ESC[pat] }
@@ -77,9 +77,6 @@ class HtmlElement
     @attributes = {}
     @end_comment_not_added = true
   end
-
-  attr_reader :tagname
-  attr_accessor :parent, :children
 
   def empty?
     @children.empty?
@@ -120,23 +117,19 @@ class HtmlElement
 
   def to_s
     add_end_comment_for_div
-    TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-  end
-
-  def self.doctype(encoding="euc-jp")
-    Html4Doctype
+    self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
   alias to_str to_s
-
-  def HtmlElement.comment(content)
-    "<!-- #{content} -->#{$/}"
-  end
 
   def configure
     yield self
     self
   end
       
+  def self.doctype(encoding="UTF-8")
+    self::DOCTYPE%[encoding]
+  end
+
   def self.create(tagname,content=nil)
     if Html5Tags.include? tagname
       tag = self.new("div")
@@ -147,6 +140,10 @@ class HtmlElement
     tag.push content if content
     yield tag if block_given?
     tag
+  end
+
+  def HtmlElement.comment(content)
+    "<!-- #{content} -->#{$/}"
   end
 
   def HtmlElement.urlencode(str)
@@ -167,14 +164,13 @@ end
 
 class XhtmlElement < HtmlElement
 
-  def to_s
-    add_end_comment_for_div
-    XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-  end
+  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
 
-  def self.doctype(encoding="euc-jp")
-    Xhtml1Doctype%[encoding]
-  end
+  ELEMENTS_FORMAT = self.superclass::ELEMENTS_FORMAT.dup
+  ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
+  ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%s%s />#{$/}"
 
-  alias to_str to_s
+  TagFormats = self.assign_tagformats
 end

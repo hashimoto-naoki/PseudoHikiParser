@@ -31,7 +31,7 @@ class TC_BlockLeaf < Test::Unit::TestCase
   end
 
   def test_block_head_re_when_commentoutleaf
-    assert_equal(/\A(\/\/)/o, CommentOutLeaf.new.head_re)
+    assert_equal(/\A(\/\/)/o.to_s, CommentOutLeaf.new.head_re.to_s)
   end
 
   def test_block_head_re_when_commentoutleaf2
@@ -276,7 +276,7 @@ TEXT
                       ["|"],
                       ["http"], [":"], ["//www.example.org/"]],
                      ["."]]],
-                   [[["col"],["||"],["col"]]],
+                   [[[["col"]],[["col"]]]],
                    [[["item"], [":"], ["description"]]]]], tree)
   end
 
@@ -285,14 +285,12 @@ TEXT
 ||!col||![[link|http://www.example.org/]]||col
 TEXT
 
-    parsed_cells = [[["!col"],
-                     ["||"],
-                     ["!"],
+    parsed_cells = [[[["col"]],
+                     [[""],
                      [["link"],
                       ["|"],
-                      ["http"], [":"], ["//www.example.org/"]],
-                     ["||"],
-                     ["col"]]]
+                      ["http"], [":"], ["//www.example.org/"]]],
+                     [["col"]]]]
 
     tablenode = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o)).shift
     assert_equal(parsed_cells, tablenode)
@@ -332,7 +330,7 @@ class TC_HtmlFormat < Test::Unit::TestCase
   end
 
   def convert_text_to_html(text)
-    formatter = HtmlFormat.create_plain
+    formatter = HtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     tree.accept(formatter).to_s
   end
@@ -587,7 +585,7 @@ paragraph3.</p>
 </div>
 HTML
 
-    formatter = XhtmlFormat.create_plain
+    formatter = XhtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
@@ -613,7 +611,7 @@ TEXT
 </ul>
 HTML
 
-    formatter = XhtmlFormat.create_plain
+    formatter = XhtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
@@ -632,7 +630,7 @@ a line with a <a href="http://www.example.org/">link</a> in it.</p>
 <li>a list item with a <a href="http://www.example.org/">link</a> in it.</li>
 </ul>
 HTML
-    formatter = XhtmlFormat.create_plain
+    formatter = XhtmlFormat.get_plain
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(html,tree.accept(formatter).to_s)
   end
@@ -700,6 +698,16 @@ HTML
 
     tree = BlockParser.parse(text.split(/\r?\n/o))
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_tableleaf
+    text = "||cell 1-1||!^>>cell 1-2||cell 1-5"
+    tree = BlockParser.parse([text])
+    assert_equal([[[[["cell 1-1"]], [["cell 1-2"]], [["cell 1-5"]]]]], tree)
+
+    text = "||cell 1-1 is ''emphasised'' partly||!^>>cell 1-2||cell 1-5"
+    tree = BlockParser.parse([text])
+    assert_equal([[[[["cell 1-1 is "],[["emphasised"]], [" partly"]], [["cell 1-2"]], [["cell 1-5"]]]]], tree)
   end
 
   def test_quote
