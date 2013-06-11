@@ -8,9 +8,21 @@ require 'pseudohiki/plaintextformat'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 require 'htmlelement/start_of_page'
-require 'nkf'
+require 'iconv'
 
-START_OF_PAGE = "ページの先頭へ".encode("Windows-31J")
+if /^1\.8/io =~ RUBY_VERSION
+  require 'iconv'
+
+  class String
+    def encode(to, from)
+      iconv = Iconv.new(to, from)
+      str = iconv.iconv(self)
+      str << iconv.iconv(nil)
+    end
+  end
+end
+
+START_OF_PAGE = "ページの先頭へ".encode("Windows-31J", "UTF-8")
 
 include PseudoHiki
 
@@ -266,11 +278,12 @@ end
 
 input_file_dir, input_file_name, input_file_basename = nil, nil, nil
 output_file_name = nil
-input_lines = ARGF.lines.to_a
-input_lines = input_lines.map {|line| NKF.nkf("-Sw", line) } if OPTIONS[:encoding] == 'utf8'
+
 if OPTIONS[:encoding] == 'utf8'
-  HtmlElement.set_start_of_page(NKF.nkf("-Sw",START_OF_PAGE), "#top")
+  input_lines = ARGF.read.encode("UTF-8", "Windows-31J").lines.to_a
+  HtmlElement.set_start_of_page(START_OF_PAGE.encode("UTF-8", "Windows-31J"), "#top")
 else
+  input_lines = ARGF.read.lines.to_a
   HtmlElement.set_start_of_page(START_OF_PAGE, "#top")
 end
 
@@ -280,7 +293,7 @@ when 0
    raise "You must specify a file name for output"
  end
 when 1
-  input_file_dir, input_file_name = File.split(File.expand_path(ARGV[0]))
+  input_file_dir, input_file_name = File.split(File.expand_path(ARGV[0]).encode("UTF-8", "Windows-31J"))
   input_file_basename = File.basename(input_file_name,".*")
 end
 
