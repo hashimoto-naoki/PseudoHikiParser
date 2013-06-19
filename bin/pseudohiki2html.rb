@@ -154,7 +154,7 @@ class << OPTIONS
   end
 
   def read_template_file
-    File.read(File.expand_path(self[:template]))
+    File.read(File.expand_path(self[:template]), encoding: charset)
   end
 
   def set_html_version(version)
