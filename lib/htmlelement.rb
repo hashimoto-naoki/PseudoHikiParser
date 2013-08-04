@@ -53,7 +53,7 @@ class HtmlElement
 
   def self.assign_tagformats
     tagformats = Hash.new(ELEMENTS_FORMAT[:INLINE])
-    ELEMENT_TYPES.each do |type, names|
+    self::ELEMENT_TYPES.each do |type, names|
       names.each {|name| tagformats[name] = self::ELEMENTS_FORMAT[type] }
     end
     tagformats[""] = "%s%s%s"
@@ -131,7 +131,7 @@ class HtmlElement
   end
 
   def self.create(tagname,content=nil)
-    if Html5Tags.include? tagname
+    if self::Html5Tags.include? tagname
       tag = self.new("div")
       tag["class"] = tagname
     else
@@ -171,6 +171,18 @@ class XhtmlElement < HtmlElement
   ELEMENTS_FORMAT = self.superclass::ELEMENTS_FORMAT.dup
   ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
   ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%s%s />#{$/}"
+
+  TagFormats = self.assign_tagformats
+end
+
+class Xhtml5Element < XhtmlElement
+
+  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+<!DOCTYPE html>'.split(/\r?\n/o).join($/)+"#{$/}"
+
+  ELEMENT_TYPES = self.superclass::ELEMENT_TYPES.dup
+  ELEMENT_TYPES[:BLOCK] = self.superclass::ELEMENT_TYPES[:BLOCK] + self.superclass::Html5Tags
+  Html5Tags = %w(main)
 
   TagFormats = self.assign_tagformats
 end

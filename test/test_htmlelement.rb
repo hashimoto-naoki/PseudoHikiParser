@@ -43,5 +43,31 @@ class TC_HtmlElement < Test::Unit::TestCase
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
 
     assert_equal(xhtml_default_doctype, XhtmlElement.doctype)
+
+    html5_doctype = '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>'.split(/\r?\n/o).join($/)+"#{$/}"
+
+    assert_equal(html5_doctype, Xhtml5Element.doctype)
+  end
+
+  def test_html5_elements
+    html_section = <<SECTION
+<div class="section">
+<!-- end of section -->
+</div>
+SECTION
+
+    html_section = html_section.split(/\r?\n/o).join($/)+"#{$/}"
+
+    assert_equal(html_section, HtmlElement.create("section").to_s)
+
+    html5_section = <<SECTION
+<section>
+</section>
+SECTION
+
+    html5_section = html5_section.split(/\r?\n/o).join($/)+"#{$/}"
+
+    assert_equal(html5_section, Xhtml5Element.create("section").to_s)
   end
 end
