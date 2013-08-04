@@ -34,7 +34,7 @@ class HtmlElement
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
   
-  Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
+  Html5Tags = %w(article section hgroup aside nav menu header footer figure details legend)
 
   ELEMENT_TYPES = {
     :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
