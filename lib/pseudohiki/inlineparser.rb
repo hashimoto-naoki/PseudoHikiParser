@@ -174,7 +174,7 @@ module PseudoHiki
     include InlineParser::InlineElement
 
     attr_reader :element_name
-    attr_writer :generator
+    attr_writer :generator, :formatter
 
     LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
     HREF, SRC, ALT = %w(href src alt)
@@ -185,6 +185,7 @@ module PseudoHiki
     def initialize(element_name, generator=HtmlElement)
       @element_name = element_name
       @generator = generator
+      @formatter = Formatter
     end
 
     def create_element(element_name, content=nil)
@@ -192,7 +193,7 @@ module PseudoHiki
     end
 
     def visited_result(element)
-      visitor = Formatter[element.class]||Formatter[PlainNode]
+      visitor = @formatter[element.class]||@formatter[PlainNode]
       element.accept(visitor)
     end
 

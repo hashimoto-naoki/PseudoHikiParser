@@ -515,13 +515,7 @@ module PseudoHiki
     Formatter.each do |node_class, formatter|
       Formatter[node_class] = formatter.dup
       Formatter[node_class].generator = XhtmlElement
-
-      class << Formatter[node_class]
-        def visited_result(element)
-          visitor = Formatter[element.class]||Formatter[PlainNode]
-          element.accept(visitor)
-        end
-      end
+      Formatter[node_class].formatter = Formatter
     end
   end
 end
