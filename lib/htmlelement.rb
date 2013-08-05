@@ -107,8 +107,8 @@ class HtmlElement
   end
   private :format_attributes
 
-  def add_end_comment_for_div
-    if @tagname == "div" and @end_comment_not_added
+  def add_end_comment_for_div_or_section
+    if @tagname == "div" or @tagname == "section" and @end_comment_not_added
       id_or_class = self["id"]||self["class"]
       self.push HtmlElement.comment("end of #{id_or_class}") if id_or_class
       @end_comment_not_added = false
@@ -116,7 +116,7 @@ class HtmlElement
   end
 
   def to_s
-    add_end_comment_for_div
+    add_end_comment_for_div_or_section
     self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
   alias to_str to_s
