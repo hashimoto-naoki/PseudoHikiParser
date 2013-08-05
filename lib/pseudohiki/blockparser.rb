@@ -514,12 +514,9 @@ module PseudoHiki
 
     Formatter.each do |node_class, formatter|
       Formatter[node_class] = formatter.dup
+      Formatter[node_class].generator = XhtmlElement
 
       class << Formatter[node_class]
-        def create_element(element_name, content=nil)
-          XhtmlElement.create(element_name, content)
-        end
-
         def visited_result(element)
           visitor = Formatter[element.class]||Formatter[PlainNode]
           element.accept(visitor)
