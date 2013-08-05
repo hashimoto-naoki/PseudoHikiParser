@@ -513,4 +513,9 @@ module PseudoHiki
     Formatter = HtmlFormat::Formatter.dup
     setup_new_formatter(Formatter, XhtmlElement)
   end
+
+  class Xhtml5Format < XhtmlFormat
+    Formatter = HtmlFormat::Formatter.dup
+    setup_new_formatter(Formatter, Xhtml5Element)
+  end
 end
