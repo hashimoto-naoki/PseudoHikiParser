@@ -396,8 +396,9 @@ module PseudoHiki
     class HeadingNodeFormatter < self
       def create_self_element(tree)
         super(tree).configure do |element|
-          element['class'] ||= ""
-          element['class'] +=  " h#{tree.first.nominal_level}"
+          heading_level = "h#{tree.first.nominal_level}"
+          element['class'] ||= heading_level
+          element['class'] +=  " " + heading_level unless element['class'] == heading_level
         end
       end
     end
