@@ -174,6 +174,7 @@ module PseudoHiki
     include InlineParser::InlineElement
 
     attr_reader :element_name
+    attr_writer :generator
 
     LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
     HREF, SRC, ALT = %w(href src alt)
@@ -181,12 +182,13 @@ module PseudoHiki
 
     Formatter = {}
 
-    def initialize(element_name)
+    def initialize(element_name, generator=HtmlElement)
       @element_name = element_name
+      @generator = generator
     end
 
     def create_element(element_name, content=nil)
-      HtmlElement.create(element_name, content)
+      @generator.create(element_name, content)
     end
 
     def visited_result(element)
@@ -245,13 +247,13 @@ module PseudoHiki
 
     class InlineLeafFormatter < self
       def visit(leaf)
-        HtmlElement.escape(leaf.first)
+        @generator.escape(leaf.first)
       end
     end
 
     class PlainNodeFormatter < self
       def create_self_element(tree=nil)
-        HtmlElement::Children.new
+        @generator::Children.new
       end
     end
 

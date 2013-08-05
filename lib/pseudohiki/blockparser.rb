@@ -378,7 +378,7 @@ module PseudoHiki
     class VerbatimNodeFormatter < self
       def visit(tree)
         create_self_element.configure do |element|
-          contents = HtmlElement.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
+          contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
             create_element("a").configure do |a|
               a.push url
               a["href"] = url
@@ -407,7 +407,7 @@ module PseudoHiki
         tree = tree.dup
         dt = create_self_element(tree)
         dd = create_element(DD)
-        element = HtmlElement::Children.new
+        element = @generator::Children.new
         element.push dt
         dt_sep_index = tree.index(DescSep)
         if dt_sep_index
