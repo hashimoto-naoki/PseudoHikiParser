@@ -269,6 +269,14 @@ module PseudoHiki
     Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
     Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
 
+    def self.setup_new_formatter(new_formatter, generator)
+      new_formatter.each do |node_class, formatter|
+        new_formatter[node_class] = formatter.dup
+        new_formatter[node_class].generator = generator
+        new_formatter[node_class].formatter = new_formatter
+      end
+    end
+
     def self.get_plain
       self::Formatter[PlainNode]
     end

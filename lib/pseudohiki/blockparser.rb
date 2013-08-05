@@ -511,11 +511,6 @@ module PseudoHiki
 
   class XhtmlFormat < HtmlFormat
     Formatter = HtmlFormat::Formatter.dup
-
-    Formatter.each do |node_class, formatter|
-      Formatter[node_class] = formatter.dup
-      Formatter[node_class].generator = XhtmlElement
-      Formatter[node_class].formatter = Formatter
-    end
+    setup_new_formatter(Formatter, XhtmlElement)
   end
 end
