@@ -31,7 +31,7 @@ ENCODING_REGEXP = {
   /^l[a-zA-Z]*1/io => 'latin1'
 }
 
-HTML_VERSIONS = %w(html4 xhtml1)
+HTML_VERSIONS = %w(html4 xhtml1 html5)
 
 FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
 WRITTEN_OPTION_PAT = {}
@@ -98,8 +98,8 @@ class << OPTIONS
     'latin1' => LATIN1
   }
 
-  HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate]).flatten]
-  FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat]).flatten]
+  HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template]).flatten]
+  FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format]).flatten]
 
   def html_template
     HTML_TEMPLATES[self[:html_version]]
@@ -137,6 +137,8 @@ class << OPTIONS
       case version
       when /^x/io
         self[:html_version] = HTML_VERSIONS[1] #xhtml1
+      when /^h5/io
+        self[:html_version] = HTML_VERSIONS[2] #html5
       end
       STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
     end

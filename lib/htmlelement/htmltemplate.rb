@@ -140,3 +140,7 @@ class XhtmlTemplate < HtmlTemplate
     @html["xml:lang"] = language
   end
 end
+
+class Xhtml5Template < XhtmlTemplate
+  ELEMENT[self] = Xhtml5Element
+end
