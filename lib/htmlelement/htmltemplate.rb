@@ -16,13 +16,7 @@ class HtmlTemplate
     @head = ELEMENT[self.class].create("head")
     @charset = charset
     @content_language = create_meta("Content-Language", language)
-    if base_uri
-      @base = ELEMENT[self.class].create("base") do |base|
-        base["href"] = base_uri
-      end
-    else
-      @base = ""
-    end
+    set_path_to_base(base_uri)
     @content_type = create_meta("Content-Type",META_CHARSET%[charset])
     @content_style_type = create_meta("Content-Style-Type","text/css")
     @content_script_type = create_meta("Content-Script-Type","text/javascript")
@@ -64,6 +58,16 @@ class HtmlTemplate
       @head.push @base
     else
       @base["href"] = base_uri
+    end
+  end
+
+  def set_path_to_base(base_uri)
+    if base_uri
+      @base = ELEMENT[self.class].create("base") do |base|
+        base["href"] = base_uri
+      end
+    else
+      @base = ""
     end
   end
 
