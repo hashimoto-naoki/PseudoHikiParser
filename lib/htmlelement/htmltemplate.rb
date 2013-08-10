@@ -39,6 +39,10 @@ class HtmlTemplate
   end
   attr_reader :title, :head
 
+  def create_element(*params)
+    ELEMENT[self.class].create(*params)
+  end
+
   def charset=(charset_name)
     @charset=charset_name
     @content_language["content"] = LANGUAGE[@charset]
