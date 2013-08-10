@@ -70,11 +70,11 @@ class HtmlElement
     str.gsub(CharEntityPat) {|ent| DECODE[ent]}
   end
 
-  def initialize(tagname)
+  def initialize(tagname, attributes={})
     @parent = nil
     @tagname = tagname
     @children = Children.new
-    @attributes = {}
+    @attributes = attributes
     @end_comment_not_added = true
   end
 
@@ -130,12 +130,12 @@ class HtmlElement
     self::DOCTYPE%[encoding]
   end
 
-  def self.create(tagname,content=nil)
+  def self.create(tagname, content=nil, attributes={})
     if self::Html5Tags.include? tagname
-      tag = self.new("div")
+      tag = self.new("div", attributes)
       tag["class"] = tagname
     else
-      tag = self.new(tagname)
+      tag = self.new(tagname, attributes)
     end
     tag.push content if content
     yield tag if block_given?
