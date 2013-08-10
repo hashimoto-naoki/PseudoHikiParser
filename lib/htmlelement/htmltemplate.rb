@@ -11,9 +11,9 @@ class HtmlTemplate
   ELEMENT = { self => HtmlElement }
 
   def initialize(charset=ELEMENT[self.class]::CHARSET::UTF8, language="en", css_link="default.css", base_uri=nil)
-    @html = ELEMENT[self.class].create("html")
+    @html = create_element("html")
     @html["lang"] = language
-    @head = ELEMENT[self.class].create("head")
+    @head = create_element("head")
     @charset = charset
     @content_language = create_meta("Content-Language", language)
     @base = set_path_to_base(base_uri)
@@ -22,8 +22,8 @@ class HtmlTemplate
     @content_script_type = create_meta("Content-Script-Type","text/javascript")
     @default_css_link = create_css_link(css_link)
     @title = nil
-    @title_element = ELEMENT[self.class].create("title")
-    @body = ELEMENT[self.class].create("body")
+    @title_element = create_element("title")
+    @body = create_element("body")
     @html.push @head
     @html.push @body
     [ @content_language,
@@ -56,9 +56,7 @@ class HtmlTemplate
 
   def base=(base_uri)
     if @base.empty?
-      @base = ELEMENT[self.class].create("base") do |base|
-        base["href"] = base_uri
-      end
+      @base = create_element("base", nil, "href" => base_uri)
       @head.push @base
     else
       @base["href"] = base_uri
@@ -67,9 +65,7 @@ class HtmlTemplate
 
   def set_path_to_base(base_uri)
     return "" unless base_uri
-    ELEMENT[self.class].create("base") do |base|
-      base["href"] = base_uri
-    end
+    create_element("base", nil, "href" => base_uri)
   end
 
   def add_css_file(file_path)
@@ -116,18 +112,16 @@ class HtmlTemplate
   private
 
   def create_meta(type,content)
-    ELEMENT[self.class].create("meta") do |meta| 
-      meta["http-equiv"] = type
-      meta["content"] = content
-    end
+    create_element("meta", nil,
+                   "http-equiv" => type,
+                   "content" => content)
   end
 
   def create_css_link(file_path)
-    ELEMENT[self.class].create("link") do |link|
-      link["rel"] = "stylesheet"
-      link["type"] = "text/css"
-      link["href"] = file_path
-    end
+    create_element("link", nil,
+                   "rel" => "stylesheet",
+                   "type" => "text/css",
+                   "href" => file_path)
   end
 end
 
