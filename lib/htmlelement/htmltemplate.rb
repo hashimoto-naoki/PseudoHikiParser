@@ -63,11 +63,6 @@ class HtmlTemplate
     end
   end
 
-  def set_path_to_base(base_uri)
-    return "" unless base_uri
-    create_element("base", nil, "href" => base_uri)
-  end
-
   def add_css_file(file_path)
     @head.push create_css_link(file_path)
   end
@@ -122,6 +117,11 @@ class HtmlTemplate
                    "rel" => "stylesheet",
                    "type" => "text/css",
                    "href" => file_path)
+  end
+
+  def set_path_to_base(base_uri)
+    return "" unless base_uri
+    create_element("base", nil, "href" => base_uri)
   end
 end
 
