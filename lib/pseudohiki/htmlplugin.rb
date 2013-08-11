@@ -55,12 +55,11 @@ module PseudoHiki
     #  end
 
     def anchor
-      name,anchor_mark = @data.split(/,\s*/o,2)
+      name, anchor_mark = @data.split(/,\s*/o,2)
       anchor_mark = "_" if (anchor_mark.nil? or anchor_mark.empty?)
-      HtmlElement.create("a",anchor_mark) do |element|
-        element["name"] = name
-        element["href"] = "#"+name
-      end
+      HtmlElement.create("a", anchor_mark,
+                         "name" => name,
+                         "href" => "#"+name)
     end
 
     def HtmlPlugin.add_chemical_formula(chemical_formula="CO2",en_word="carbon dioxide")
@@ -131,9 +130,7 @@ module PseudoHiki
 
 
     def method_missing
-      HtmlElement.create(@tag_type,@data) do |tag|
-        tag["class"] = "plugin"
-      end
+      HtmlElement.create(@tag_type, @data, "class" => "plugin")
     end
   end
 end
