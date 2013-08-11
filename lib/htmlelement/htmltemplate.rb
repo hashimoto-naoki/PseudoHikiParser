@@ -16,7 +16,7 @@ class HtmlTemplate
     @charset = charset
     @content_language = create_meta("Content-Language", language)
     @base = set_path_to_base(base_uri)
-    @content_type = create_meta("Content-Type",META_CHARSET%[charset])
+    @content_type = set_charset_in_meta(charset)
     @content_style_type = create_meta("Content-Style-Type","text/css")
     @content_script_type = create_meta("Content-Script-Type","text/javascript")
     @default_css_link = create_css_link(css_link)
@@ -118,6 +118,10 @@ class HtmlTemplate
                    "href" => file_path)
   end
 
+  def set_charset_in_meta(charset)
+    create_meta("Content-Type",META_CHARSET%[charset])
+  end
+
   def set_path_to_base(base_uri)
     return "" unless base_uri
     create_element("base", nil, "href" => base_uri)
@@ -148,5 +152,14 @@ class Xhtml5Template < XhtmlTemplate
     def @content_language.to_str
       ""
     end
+  end
+
+  def set_charset_in_meta(charset)
+    create_element("meta", nil, "charset" => charset)
+  end
+
+  def charset=(charset_name)
+    @charset=charset_name
+    @content_type["charset"] = @charset
   end
 end
