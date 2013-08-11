@@ -2,6 +2,7 @@
 
 require 'htmlelement'
 require 'pseudohiki/inlineparser'
+require 'pseudohiki/htmlformat'
 #require('hikiparser/hikiblockparser')
 
 module PseudoHiki

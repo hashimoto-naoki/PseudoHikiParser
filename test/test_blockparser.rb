@@ -2,6 +2,7 @@
 
 require 'test/unit'
 require 'lib/pseudohiki/blockparser'
+require 'lib/pseudohiki/htmlformat'
 
 =begin
 class TC_BlockParser < Test::Unit::TestCase

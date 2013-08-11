@@ -2,6 +2,7 @@
 
 require 'test/unit'
 require 'lib/pseudohiki/inlineparser'
+require 'lib/pseudohiki/htmlformat'
 
 
 class TC_InlineParser < Test::Unit::TestCase
