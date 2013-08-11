@@ -9,9 +9,6 @@ module PseudoHiki
     include BlockParser::BlockElement
     include TableRowParser::InlineElement
 
-    attr_reader :element_name
-    attr_writer :generator, :formatter
-
     #for InlineParser
     LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
     HREF, SRC, ALT = %w(href src alt)
@@ -23,6 +20,26 @@ module PseudoHiki
     DescSep = [InlineParser::DescSep]
 
     Formatter = {}
+
+    attr_reader :element_name
+    attr_writer :generator, :formatter
+
+    def self.setup_new_formatter(new_formatter, generator)
+      new_formatter.each do |node_class, formatter|
+        new_formatter[node_class] = formatter.dup
+        new_formatter[node_class].generator = generator
+        new_formatter[node_class].formatter = new_formatter
+      end
+    end
+
+    def self.get_plain
+      self::Formatter[PlainNode]
+    end
+
+    def self.format(tree)
+      formatter = self.get_plain
+      tree.accept(formatter)
+    end
 
     def initialize(element_name, generator=HtmlElement)
       @element_name = element_name
@@ -208,23 +225,6 @@ module PseudoHiki
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
-
-    def self.setup_new_formatter(new_formatter, generator)
-      new_formatter.each do |node_class, formatter|
-        new_formatter[node_class] = formatter.dup
-        new_formatter[node_class].generator = generator
-        new_formatter[node_class].formatter = new_formatter
-      end
-    end
-
-    def self.get_plain
-      self::Formatter[PlainNode]
-    end
-
-    def self.format(tree)
-      formatter = self.get_plain
-      tree.accept(formatter)
-    end
   end
 
   class XhtmlFormat < HtmlFormat
