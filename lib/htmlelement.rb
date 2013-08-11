@@ -3,9 +3,7 @@
 require 'kconv'
 
 class HtmlElement
-
   class Children < Array
-
     def to_s
       self.join("")
     end
@@ -163,7 +161,6 @@ def Tag(tagname,content=nil)
 end
 
 class XhtmlElement < HtmlElement
-
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
@@ -176,7 +173,6 @@ class XhtmlElement < HtmlElement
 end
 
 class Xhtml5Element < XhtmlElement
-
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html>'.split(/\r?\n/o).join($/)+"#{$/}"
 
