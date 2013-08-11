@@ -2,6 +2,7 @@
 
 require 'treestack'
 require 'pseudohiki/inlineparser'
+require 'pseudohiki/htmlformat'
 
 module PseudoHiki
 
