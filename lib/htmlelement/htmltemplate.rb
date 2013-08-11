@@ -152,6 +152,10 @@ class Xhtml5Template < XhtmlTemplate
     def @content_language.to_str
       ""
     end
+
+    def @content_script_type.to_str
+      ""
+    end
   end
 
   def set_charset_in_meta(charset)
