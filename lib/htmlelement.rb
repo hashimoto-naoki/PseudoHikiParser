@@ -156,10 +156,6 @@ class HtmlElement
   end
 end
   
-def Tag(tagname,content=nil)
-  HtmlElement.create(tagname,content)
-end
-
 class XhtmlElement < HtmlElement
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
