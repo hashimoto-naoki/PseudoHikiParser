@@ -123,7 +123,6 @@ module PseudoHiki
     MODIFIED_CELL_PAT = /^!?[>^]*/o
 
     class InlineElement::TableCellNode
-
       def parse_first_token(token)
         @cell_type, @rowspan, @colspan, parsed_token = TD, 1, 1, token.dup
         token_str = parsed_token[0]
