@@ -4,7 +4,6 @@ require 'treestack'
 require 'pseudohiki/inlineparser'
 
 module PseudoHiki
-
   class BlockParser
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
     ID_TAG_PAT = /^\[([^\[\]]+)\]/o
@@ -17,7 +16,6 @@ module PseudoHiki
     end
 
     ParentNode = {}
-
     HeadToLeaf = {}
 
     attr_reader :stack
@@ -32,6 +30,12 @@ module PseudoHiki
         leaf[0] = head.sub(ID_TAG_PAT,"")
       end
       node
+    end
+
+    def self.parse(lines)
+      parser = self.new
+      parser.read_lines(lines)
+      parser.stack.tree
     end
 
     class BlockStack < TreeStack
@@ -355,12 +359,6 @@ module PseudoHiki
         end
       end
       @stack.pop
-    end
-
-    def self.parse(lines)
-      parser = self.new
-      parser.read_lines(lines)
-      parser.stack.tree
     end
   end
 end
