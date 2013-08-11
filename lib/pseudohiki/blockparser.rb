@@ -379,8 +379,7 @@ module PseudoHiki
       def visit(tree)
         create_self_element.configure do |element|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            create_element("a").configure do |a|
-              a.push url
+            create_element("a", url).configure do |a|
               a["href"] = url
             end.to_s
           end
