@@ -6,13 +6,21 @@ require 'pseudohiki/blockparser'
 module PseudoHiki
   class HtmlFormat
     include InlineParser::InlineElement
+    include BlockParser::BlockElement
+    include TableRowParser::InlineElement
 
     attr_reader :element_name
     attr_writer :generator, :formatter
 
+    #for InlineParser
     LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
     HREF, SRC, ALT = %w(href src alt)
     PLAIN, PLUGIN = %w(plain span)
+    #for BlockParser
+    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
+    SECTION = "section"
+    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
+    DescSep = [InlineParser::DescSep]
 
     Formatter = {}
 
@@ -42,6 +50,8 @@ module PseudoHiki
     def create_self_element(tree=nil)
       create_element(@element_name)
     end
+
+    #for InlineParser
 
     class LinkNodeFormatter < self
       def visit(tree)
@@ -92,45 +102,7 @@ module PseudoHiki
       end
     end
 
-    [ [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
-      [PluginNode,PLUGIN]
-    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
-
-    ImgFormat = self.new(IMG)
-    Formatter[LinkNode] = LinkNodeFormatter.new(LINK)
-    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
-    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
-
-    def self.setup_new_formatter(new_formatter, generator)
-      new_formatter.each do |node_class, formatter|
-        new_formatter[node_class] = formatter.dup
-        new_formatter[node_class].generator = generator
-        new_formatter[node_class].formatter = new_formatter
-      end
-    end
-
-    def self.get_plain
-      self::Formatter[PlainNode]
-    end
-
-    def self.format(tree)
-      formatter = self.get_plain
-      tree.accept(formatter)
-    end
-  end
-end
-
-module PseudoHiki
-  class HtmlFormat
-    include BlockParser::BlockElement
-    include TableRowParser::InlineElement
-
-    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
-    SECTION = "section"
-    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
-    DescSep = [InlineParser::DescSep]
+    #for BlockParser
 
     class VerbatimNodeFormatter < self
       def visit(tree)
@@ -208,25 +180,26 @@ module PseudoHiki
       end
     end
 
-    [[DescNode, DESC],
-#     [VerbatimNode, VERB],
-     [QuoteNode, QUOTE],
-     [TableNode, TABLE],
-#     [CommentOutNode, nil],
-#     [HeadingNode, SECTION],
-     [ParagraphNode, PARA],
-     [HrNode, HR],
-     [ListNode, UL],
-     [EnumNode, OL],
-#     [DescLeaf, DT],
-     [TableLeaf, TR],
-#     [HeadingLeaf, HEADING],
-#     [ListLeaf, LI],
-#     [EnumLeaf, LI],
-#     [ListWrapNode, LI],
-#     [EnumWrapNode, LI]
+    [ [EmNode,EM],
+      [StrongNode,STRONG],
+      [DelNode,DEL],
+      [PluginNode,PLUGIN], #Until here is for InlineParser
+      [DescNode, DESC],
+      [QuoteNode, QUOTE],
+      [TableNode, TABLE],
+      [ParagraphNode, PARA],
+      [HrNode, HR],
+      [ListNode, UL],
+      [EnumNode, OL],
+      [TableLeaf, TR], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
+    #for InlineParser
+    ImgFormat = self.new(IMG)
+    Formatter[LinkNode] = LinkNodeFormatter.new(LINK)
+    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
+    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
+    #for BlockParser
     Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
@@ -236,31 +209,21 @@ module PseudoHiki
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
 
-    class << Formatter[DescNode]
+    def self.setup_new_formatter(new_formatter, generator)
+      new_formatter.each do |node_class, formatter|
+        new_formatter[node_class] = formatter.dup
+        new_formatter[node_class].generator = generator
+        new_formatter[node_class].formatter = new_formatter
+      end
     end
 
-    class << Formatter[QuoteNode]
+    def self.get_plain
+      self::Formatter[PlainNode]
     end
 
-    class << Formatter[TableNode]
-    end
-
-    class << Formatter[ParagraphNode]
-    end
-
-    class << Formatter[HrNode]
-    end
-
-    class << Formatter[ListNode]
-    end
-
-    class << Formatter[EnumNode]
-    end
-
-    class << Formatter[ListLeaf]
-    end
-
-    class << Formatter[EnumLeaf]
+    def self.format(tree)
+      formatter = self.get_plain
+      tree.accept(formatter)
     end
   end
 
