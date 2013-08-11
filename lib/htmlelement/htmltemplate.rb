@@ -141,4 +141,12 @@ end
 
 class Xhtml5Template < XhtmlTemplate
   ELEMENT[self] = Xhtml5Element
+
+  def initialize(*params)
+    super(*params)
+
+    def @content_language.to_str
+      ""
+    end
+  end
 end
