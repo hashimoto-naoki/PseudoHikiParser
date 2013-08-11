@@ -9,9 +9,6 @@ class HtmlElement
     end
   end
 
-  attr_reader :tagname
-  attr_accessor :parent, :children
-
   module CHARSET
     EUC_JP = "EUC-JP"
     SJIS = "Shift_JIS"
@@ -49,6 +46,40 @@ class HtmlElement
     :EMPTY_BLOCK => "<%s%s>#{$/}"
   }
 
+  attr_reader :tagname
+  attr_accessor :parent, :children
+
+  def self.doctype(encoding="UTF-8")
+    self::DOCTYPE%[encoding]
+  end
+
+  def self.create(tagname, content=nil, attributes={})
+    if self::Html5Tags.include? tagname
+      tag = self.new("div", attributes)
+      tag["class"] = tagname
+    else
+      tag = self.new(tagname, attributes)
+    end
+    tag.push content if content
+    yield tag if block_given?
+    tag
+  end
+
+  def HtmlElement.comment(content)
+    "<!-- #{content} -->#{$/}"
+  end
+
+  def HtmlElement.urlencode(str)
+    str.toutf8.gsub(/[^\w\.\-]/n) {|ch| format('%%%02X', ch[0]) }
+  end
+
+  def HtmlElement.urldecode(str)
+    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }
+    return utf.tosjis if $KCODE =~ /^s/io
+    return utf.toeuc if $KCODE =~ /^e/io
+    utf
+  end
+
   def self.assign_tagformats
     tagformats = Hash.new(ELEMENTS_FORMAT[:INLINE])
     self::ELEMENT_TYPES.each do |type, names|
@@ -58,8 +89,6 @@ class HtmlElement
     tagformats
   end
 
-  TagFormats = self.assign_tagformats
-
   def HtmlElement.escape(str)
     str.gsub(/[&"<>]/on) {|pat| ESC[pat] }
   end
@@ -67,6 +96,8 @@ class HtmlElement
   def HtmlElement.decode(str)
     str.gsub(CharEntityPat) {|ent| DECODE[ent]}
   end
+
+  TagFormats = self.assign_tagformats
 
   def initialize(tagname, attributes={})
     @parent = nil
@@ -122,37 +153,6 @@ class HtmlElement
   def configure
     yield self
     self
-  end
-      
-  def self.doctype(encoding="UTF-8")
-    self::DOCTYPE%[encoding]
-  end
-
-  def self.create(tagname, content=nil, attributes={})
-    if self::Html5Tags.include? tagname
-      tag = self.new("div", attributes)
-      tag["class"] = tagname
-    else
-      tag = self.new(tagname, attributes)
-    end
-    tag.push content if content
-    yield tag if block_given?
-    tag
-  end
-
-  def HtmlElement.comment(content)
-    "<!-- #{content} -->#{$/}"
-  end
-
-  def HtmlElement.urlencode(str)
-    str.toutf8.gsub(/[^\w\.\-]/n) {|ch| format('%%%02X', ch[0]) }
-  end
-
-  def HtmlElement.urldecode(str)
-    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }
-    return utf.tosjis if $KCODE =~ /^s/io
-    return utf.toeuc if $KCODE =~ /^e/io
-    utf
   end
 end
   
