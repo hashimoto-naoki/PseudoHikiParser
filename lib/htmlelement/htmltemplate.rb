@@ -11,8 +11,7 @@ class HtmlTemplate
   ELEMENT = { self => HtmlElement }
 
   def initialize(charset=ELEMENT[self.class]::CHARSET::UTF8, language="en", css_link="default.css", base_uri=nil)
-    @html = create_element("html")
-    @html["lang"] = language
+    @html = create_element("html", nil, "lang" => language)
     @head = create_element("head")
     @charset = charset
     @content_language = create_meta("Content-Language", language)
