@@ -188,8 +188,8 @@ module PseudoHiki
       @formatter = Formatter
     end
 
-    def create_element(element_name, content=nil)
-      @generator.create(element_name, content)
+    def create_element(element_name, content=nil, attributes={})
+      @generator.create(element_name, content, attributes)
     end
 
     def visited_result(element)
