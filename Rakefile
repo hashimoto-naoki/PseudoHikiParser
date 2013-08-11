@@ -13,6 +13,7 @@ htmltemplate
 inlineparser
 treestack
 blockparser
+htmlformat
 plaintextformat
 )
   failed_tests = []
