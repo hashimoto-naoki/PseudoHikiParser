@@ -75,12 +75,7 @@ module PseudoHiki
     class LinkNodeFormatter < self
       def visit(tree)
         tree = tree.dup
-        caption = nil
-        link_sep_index = tree.find_index([LinkSep])
-        if link_sep_index
-          caption = get_caption(tree,link_sep_index)
-          tree.shift(link_sep_index+1)
-        end
+        caption = get_caption(tree)
         begin
           ref = tree.last.join("")
         rescue NoMethodError
@@ -102,10 +97,12 @@ module PseudoHiki
         htmlelement
       end
 
-      def get_caption(tree,link_sep_index)
-        tree[0,link_sep_index].collect do |element|
-          visited_result(element)
-        end
+      def get_caption(tree)
+        link_sep_index = tree.find_index([LinkSep])
+        return nil unless link_sep_index
+        caption_part = tree.shift(link_sep_index)
+        tree.shift
+        caption_part.map {|token| visited_result(token) }
       end
     end
 
