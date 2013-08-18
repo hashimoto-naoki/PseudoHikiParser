@@ -62,9 +62,7 @@ module PseudoHiki
 
     def visit(tree)
       htmlelement = create_self_element(tree)
-      tree.each do |element|
-        htmlelement.push visited_result(element)
-      end
+      push_visited_results(htmlelement, tree)
       htmlelement
     end
 
@@ -159,16 +157,14 @@ module PseudoHiki
         element.push dt
         dt_sep_index = tree.index(DescSep)
         if dt_sep_index
-          tree.shift(dt_sep_index).each do |token|
-            dt.push visited_result(token)
-          end
+          push_visited_results(dt, tree.shift(dt_sep_index))
           tree.shift
           unless tree.empty?
-            tree.each {|token| dd.push visited_result(token) }
+            push_visited_results(dd, tree)
             element.push dd
           end
         else
-          tree.each {|token| dt.push visited_result(token) }
+          push_visited_results(dt, tree)
         end
         element
       end
@@ -180,7 +176,7 @@ module PseudoHiki
         create_self_element.configure do |element|
           element["rowspan"] = tree.rowspan if tree.rowspan > 1
           element["colspan"] = tree.colspan if tree.colspan > 1
-          tree.each {|token| element.push visited_result(token) }
+          push_visited_results(element, tree)
         end
       end
     end
