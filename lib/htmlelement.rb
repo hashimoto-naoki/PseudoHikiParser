@@ -5,7 +5,7 @@ require 'kconv'
 class HtmlElement
   class Children < Array
     def to_s
-      self.join("")
+      self.join
     end
   end
 
@@ -132,7 +132,7 @@ class HtmlElement
   def format_attributes
     @attributes.collect do |attr,value|
       ' %s="%s"'%[attr,HtmlElement.escape(value.to_s)]
-    end.sort.join("")
+    end.sort.join
   end
   private :format_attributes
 

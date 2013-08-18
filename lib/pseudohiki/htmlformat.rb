@@ -85,7 +85,7 @@ module PseudoHiki
         tree = tree.dup
         caption = get_caption(tree)
         begin
-          ref = tree.last.join("")
+          ref = tree.last.join
         rescue NoMethodError
           if tree.empty?
             STDERR.puts "No uri is specified for #{caption}"
@@ -95,12 +95,12 @@ module PseudoHiki
         end
         if ImageSuffix =~ ref
           htmlelement = ImgFormat.create_self_element
-          htmlelement[SRC] = tree.join("")
-          htmlelement[ALT] = caption.join("") if caption
+          htmlelement[SRC] = tree.join
+          htmlelement[ALT] = caption.join if caption
         else
           htmlelement = create_self_element
-          htmlelement[HREF] = tree.join("")
-          htmlelement.push caption||tree.join("")
+          htmlelement[HREF] = tree.join
+          htmlelement.push caption||tree.join
         end
         htmlelement
       end

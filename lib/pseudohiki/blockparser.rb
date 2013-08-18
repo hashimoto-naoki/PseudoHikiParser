@@ -95,7 +95,7 @@ module PseudoHiki
       end
 
       def parse_leafs
-        parsed = InlineParser.parse(self.join(""))
+        parsed = InlineParser.parse(self.join)
         self.clear
         self.concat(parsed)
       end
