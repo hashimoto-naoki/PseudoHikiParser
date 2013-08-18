@@ -106,11 +106,9 @@ module PseudoHiki
       end
 
       def get_caption(tree)
-        link_sep_index = tree.find_index([LinkSep])
-        return nil unless link_sep_index
-        caption_part = tree.shift(link_sep_index)
-        tree.shift
-        caption_part.map {|token| visited_result(token) }
+        first_part, second_part = split_into_parts(tree, [LinkSep])
+        return nil unless second_part
+        first_part.map {|token| visited_result(token) }
       end
     end
 
