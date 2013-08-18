@@ -152,18 +152,21 @@ module PseudoHiki
         dd = create_element(DD)
         element = @generator::Children.new
         element.push dt
-        dt_sep_index = tree.index(DescSep)
-        if dt_sep_index
-          push_visited_results(dt, tree.shift(dt_sep_index))
-          tree.shift
-          unless tree.empty?
-            push_visited_results(dd, tree)
-            element.push dd
-          end
-        else
-          push_visited_results(dt, tree)
+        dt_part, dd_part = split_into_parts(tree, DescSep)
+        push_visited_results(dt, dt_part)
+        unless dd_part.empty?
+          push_visited_results(dd, dd_part)
+          element.push dd
         end
         element
+      end
+
+      def split_into_parts(tree, separator)
+        sep_index = tree.index(separator)
+        return [tree, []] unless sep_index
+        first_part = tree.shift(sep_index)
+        tree.shift
+        [first_part, tree]
       end
     end
 
