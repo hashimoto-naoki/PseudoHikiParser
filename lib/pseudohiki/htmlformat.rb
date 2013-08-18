@@ -56,6 +56,10 @@ module PseudoHiki
       element.accept(visitor)
     end
 
+    def push_visited_results(element, tree)
+      tree.each {|token| element.push visited_result(token) }
+    end
+
     def visit(tree)
       htmlelement = create_self_element(tree)
       tree.each do |element|
