@@ -70,6 +70,14 @@ module PseudoHiki
       create_element(@element_name)
     end
 
+    def split_into_parts(tree, separator)
+      sep_index = tree.index(separator)
+      return [tree, []] unless sep_index
+      first_part = tree.shift(sep_index)
+      tree.shift
+      [first_part, tree]
+    end
+
     #for InlineParser
 
     class LinkNodeFormatter < self
@@ -159,14 +167,6 @@ module PseudoHiki
           element.push dd
         end
         element
-      end
-
-      def split_into_parts(tree, separator)
-        sep_index = tree.index(separator)
-        return [tree, []] unless sep_index
-        first_part = tree.shift(sep_index)
-        tree.shift
-        [first_part, tree]
       end
     end
 
