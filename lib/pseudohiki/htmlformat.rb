@@ -71,11 +71,12 @@ module PseudoHiki
     end
 
     def split_into_parts(tree, separator)
-      sep_index = tree.index(separator)
-      return [tree, nil] unless sep_index
-      first_part = tree.shift(sep_index)
-      tree.shift
-      [first_part, tree]
+      chunks = []
+      while sep_index = tree.index(separator)
+        chunks.push tree.shift(sep_index)
+        tree.shift
+      end
+      chunks.push tree
     end
 
     #for InlineParser
