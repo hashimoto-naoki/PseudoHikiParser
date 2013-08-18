@@ -72,7 +72,7 @@ module PseudoHiki
 
     def split_into_parts(tree, separator)
       sep_index = tree.index(separator)
-      return [tree, []] unless sep_index
+      return [tree, nil] unless sep_index
       first_part = tree.shift(sep_index)
       tree.shift
       [first_part, tree]
@@ -162,7 +162,7 @@ module PseudoHiki
         element.push dt
         dt_part, dd_part = split_into_parts(tree, DescSep)
         push_visited_results(dt, dt_part)
-        unless dd_part.empty?
+        unless dd_part.nil? or dd_part.empty?
           push_visited_results(dd, dd_part)
           element.push dd
         end
