@@ -47,10 +47,6 @@ module PseudoHiki
       @formatter = Formatter
     end
 
-    def create_element(element_name, content=nil, attributes={})
-      @generator.create(element_name, content, attributes)
-    end
-
     def visited_result(element)
       visitor = @formatter[element.class]||@formatter[PlainNode]
       element.accept(visitor)
@@ -67,7 +63,7 @@ module PseudoHiki
     end
 
     def create_self_element(tree=nil)
-      create_element(@element_name)
+      @generator.create(@element_name)
     end
 
     def split_into_parts(tree, separator)
@@ -131,7 +127,7 @@ module PseudoHiki
       def visit(tree)
         create_self_element.configure do |element|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            create_element("a", url, "href" => url).to_s
+            @generator.create("a", url, "href" => url).to_s
           end
           element.push contents
         end
@@ -156,7 +152,7 @@ module PseudoHiki
       def visit(tree)
         tree = tree.dup
         dt = create_self_element(tree)
-        dd = create_element(DD)
+        dd = @generator.create(DD)
         element = @generator::Children.new
         element.push dt
         dt_part, dd_part = split_into_parts(tree, DescSep)
@@ -182,7 +178,7 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def create_self_element(tree)
-        create_element(@element_name+tree.nominal_level.to_s).configure do |element|
+        @generator.create(@element_name+tree.nominal_level.to_s).configure do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end
       end
