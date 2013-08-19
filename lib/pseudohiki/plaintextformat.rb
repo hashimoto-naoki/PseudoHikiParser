@@ -27,11 +27,13 @@ module PseudoHiki
       node.accept(visitor)
     end
 
+    def push_visited_results(element, tree)
+      tree.each {|token| element.push visited_result(token) }
+    end
+
     def visit(tree)
       element = create_self_element(tree)
-      tree.each do |node|
-        element.push visited_result(node)
-      end
+      push_visited_results(element, tree)
       element
     end
 
@@ -147,9 +149,7 @@ module PseudoHiki
         element = create_self_element(tree)
         dt_sep_index = tree.index(DescSep)
         if dt_sep_index
-          tree.shift(dt_sep_index).each do |token|
-            element.push visited_result(token)
-          end
+          push_visited_results(element, tree.shift(dt_sep_index))
           tree.shift
         end
         dd = tree.map {|token| visited_result(token) }.join("").lstrip
