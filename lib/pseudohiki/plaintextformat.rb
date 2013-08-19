@@ -113,11 +113,8 @@ module PseudoHiki
         begin
           ref = tree.last.join("")
         rescue NoMethodError
-          if tree.empty?
-            STDERR.puts "No uri is specified for #{caption}"
-          else
-            raise NoMethodError
-          end
+          raise NoMethodError unless tree.empty?
+          STDERR.puts "No uri is specified for #{caption}"
         end
         if ImageSuffix =~ ref
           element.push (caption||tree).join("")
