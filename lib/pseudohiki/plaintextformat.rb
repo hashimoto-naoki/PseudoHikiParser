@@ -109,12 +109,7 @@ module PseudoHiki
       def visit(tree)
         tree = tree.dup
         element = Node.new
-        caption = nil
-        link_sep_index = tree.find_index([LinkSep])
-        if link_sep_index
-          caption = get_caption(tree,link_sep_index)
-          tree.shift(link_sep_index+1)
-        end
+        caption = get_caption(tree)
         begin
           ref = tree.last.join("")
         rescue NoMethodError
@@ -133,10 +128,12 @@ module PseudoHiki
         element
       end
 
-      def get_caption(tree,link_sep_index)
-        tree[0,link_sep_index].collect do |element|
-          visited_result(element)
-        end
+      def get_caption(tree)
+        link_sep_index = tree.find_index([LinkSep])
+        return nil unless link_sep_index
+        caption_part = tree.shift(link_sep_index)
+        tree.shift
+        caption_part.map {|element| visited_result(element) }
       end
     end
 
