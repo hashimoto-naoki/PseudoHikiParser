@@ -122,7 +122,7 @@ module PseudoHiki
 
     class VerbatimNodeFormatter < self
       def visit(tree)
-        create_self_element.configure do |element|
+        create_self_element.tap do |element|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
             @generator.create("a", url, "href" => url).to_s
           end
@@ -137,7 +137,7 @@ module PseudoHiki
 
     class HeadingNodeFormatter < self
       def create_self_element(tree)
-        super(tree).configure do |element|
+        super(tree).tap do |element|
           heading_level = "h#{tree.first.nominal_level}"
           element['class'] ||= heading_level
           element['class'] +=  " " + heading_level unless element['class'] == heading_level
@@ -165,7 +165,7 @@ module PseudoHiki
     class TableCellNodeFormatter < self
       def visit(tree)
         @element_name = tree.cell_type
-        create_self_element.configure do |element|
+        create_self_element.tap do |element|
           element["rowspan"] = tree.rowspan if tree.rowspan > 1
           element["colspan"] = tree.colspan if tree.colspan > 1
           push_visited_results(element, tree)
@@ -175,7 +175,7 @@ module PseudoHiki
 
     class HeadingLeafFormatter < self
       def create_self_element(tree)
-        @generator.create(@element_name+tree.nominal_level.to_s).configure do |element|
+        @generator.create(@element_name+tree.nominal_level.to_s).tap do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end
       end
@@ -183,7 +183,7 @@ module PseudoHiki
 
     class ListLeafNodeFormatter < self
       def create_self_element(tree)
-        super(tree).configure do |element|
+        super(tree).tap do |element|
           element["id"] = tree.node_id.upcase if tree.node_id
         end
       end
