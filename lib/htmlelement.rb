@@ -55,11 +55,10 @@ class HtmlElement
 
   def self.create(tagname, content=nil, attributes={})
     if self::Html5Tags.include? tagname
-      tag = self.new("div", attributes)
-      tag["class"] = tagname
-    else
-      tag = self.new(tagname, attributes)
+      attributes["class"] = tagname
+      tagname = "div"
     end
+    tag = self.new(tagname, attributes)
     tag.push content if content
     yield tag if block_given?
     tag
