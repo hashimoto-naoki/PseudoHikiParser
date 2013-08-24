@@ -106,9 +106,7 @@ module PseudoHiki
 
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
-        leaf
+        self.new.tap {|leaf| leaf.push line }
       end
 
       def push_self(stack)
@@ -128,9 +126,7 @@ module PseudoHiki
 
       def self.create(line)
         m = self.head_re.match(line)
-        leaf = super(line)
-        leaf.nominal_level = m[0].length
-        leaf
+        super(line).tap {|leaf| leaf.nominal_level = m[0].length }
       end
 
       def self.with_depth?
@@ -237,8 +233,7 @@ module PseudoHiki
     class BlockElement::VerbatimLeaf
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
+        self.new.tap {|leaf| leaf.push line }
       end
     end
 
