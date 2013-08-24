@@ -172,13 +172,13 @@ module PseudoHiki
 
     class ListTypeBlockNode < NestedBlockNode
       def breakable?(breaker)
-        (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level) ? false : true
+        not (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level)
       end
     end
 
     class ListLeafNode < NestedBlockNode
       def breakable?(breaker)
-        (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level) ? false : true
+        not (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level)
       end
     end
 
