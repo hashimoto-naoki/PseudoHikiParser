@@ -58,9 +58,7 @@ class HtmlElement
       attributes["class"] = tagname
       tagname = "div"
     end
-    tag = self.new(tagname, attributes, content)
-    yield tag if block_given?
-    tag
+    self.new(tagname, attributes, content)
   end
 
   def HtmlElement.comment(content)
