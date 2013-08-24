@@ -149,10 +149,12 @@ class HtmlElement
   end
   alias to_str to_s
 
-  def configure
-    yield self
-    self
-  end
+#  def configure
+#    yield self
+#    self
+#  end
+
+  alias configure tap
 end
   
 class XhtmlElement < HtmlElement
