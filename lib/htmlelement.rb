@@ -58,8 +58,7 @@ class HtmlElement
       attributes["class"] = tagname
       tagname = "div"
     end
-    tag = self.new(tagname, attributes)
-    tag.push content if content
+    tag = self.new(tagname, attributes, content)
     yield tag if block_given?
     tag
   end
@@ -98,10 +97,11 @@ class HtmlElement
 
   TagFormats = self.assign_tagformats
 
-  def initialize(tagname, attributes={})
+  def initialize(tagname, attributes={}, content=nil)
     @parent = nil
     @tagname = tagname
     @children = Children.new
+    @children.push content if content
     @attributes = attributes
     @end_comment_not_added = true
   end
