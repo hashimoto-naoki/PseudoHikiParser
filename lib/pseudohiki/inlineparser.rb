@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'treestack'
+require 'pseudohiki/treestack'
 require 'htmlelement'
 
 module PseudoHiki

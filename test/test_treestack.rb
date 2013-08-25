@@ -1,7 +1,7 @@
 #/usr/bin/env ruby
 
 require 'test/unit'
-require 'treestack'
+require 'pseudohiki/treestack'
 
 class TC_TreeStack < Test::Unit::TestCase
 
