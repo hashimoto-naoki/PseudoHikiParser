@@ -58,7 +58,7 @@ class HtmlElement
       attributes["class"] = tagname
       tagname = "div"
     end
-    self.new(tagname, attributes, content)
+    self.new(tagname, content, attributes)
   end
 
   def HtmlElement.comment(content)
@@ -95,7 +95,7 @@ class HtmlElement
 
   TagFormats = self.assign_tagformats
 
-  def initialize(tagname, attributes={}, content=nil)
+  def initialize(tagname, content=nil, attributes={})
     @parent = nil
     @tagname = tagname
     @children = Children.new
