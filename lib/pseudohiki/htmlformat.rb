@@ -165,10 +165,9 @@ module PseudoHiki
     class TableCellNodeFormatter < self
       def visit(tree)
         @element_name = tree.cell_type
-        create_self_element.tap do |element|
+        super(tree).tap do |element|
           element["rowspan"] = tree.rowspan if tree.rowspan > 1
           element["colspan"] = tree.colspan if tree.colspan > 1
-          push_visited_results(element, tree)
         end
       end
     end
