@@ -148,13 +148,12 @@ module PseudoHiki
     class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
-        dt = create_self_element(tree)
-        dd = @generator.create(DD)
         element = @generator::Children.new
-        element.push dt
         dt_part, dd_part = split_into_parts(tree, DescSep)
-        push_visited_results(dt, dt_part)
+        dt = super(dt_part)
+        element.push dt
         unless dd_part.nil? or dd_part.empty?
+          dd = @generator.create(DD)
           push_visited_results(dd, dd_part)
           element.push dd
         end
