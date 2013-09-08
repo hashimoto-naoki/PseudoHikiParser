@@ -63,16 +63,16 @@ def create_table_of_contents(lines)
 end
 
 def create_main(toc, body)
-  toc_container = HtmlElement.create("section").configure do |element|
+  toc_container = HtmlElement.create("section").tap do |element|
     element["id"] = "toc"
     element.push HtmlElement.create("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
     element.push toc
   end
-  contents_container = HtmlElement.create("section").configure do |element|
+  contents_container = HtmlElement.create("section").tap do |element|
     element["id"] = "contents"
     element.push body
   end
-  main = HtmlElement.create("section").configure do |element|
+  main = HtmlElement.create("section").tap do |element|
     element["id"] = "main"
     element.push toc_container
     element.push contents_container
@@ -80,7 +80,7 @@ def create_main(toc, body)
 end
 
 def create_style(path_to_css_file)
-  style = HtmlElement.create("style").configure do |element|
+  style = HtmlElement.create("style").tap do |element|
     element["type"] = "text/css"
     open(File.expand_path(path_to_css_file)) do |css_file|
       element.push css_file.read
