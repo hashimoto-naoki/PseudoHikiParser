@@ -41,6 +41,35 @@ HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]/o
 
 PlainFormat = PlainTextFormat.create
 
+class HtmlComposer
+  def create_table_of_contents(lines)
+    toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
+      m = HEADING_WITH_ID_PAT.match(line)
+      heading_depth, id = m[1].length, m[2].upcase
+      "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
+    end
+    OPTIONS.formatter.format(BlockParser.parse(toc_lines))
+  end
+
+  def create_main(toc, body)
+    return nil unless OPTIONS[:toc]
+    toc_container = HtmlElement.create("section").tap do |element|
+      element["id"] = "toc"
+      element.push HtmlElement.create("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
+      element.push toc
+    end
+    contents_container = HtmlElement.create("section").tap do |element|
+      element["id"] = "contents"
+      element.push body
+    end
+    main = HtmlElement.create("section").tap do |element|
+      element["id"] = "main"
+      element.push toc_container
+      element.push contents_container
+    end
+  end
+end
+
 def to_plain(line)
   PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
 end
@@ -51,32 +80,6 @@ end
 
 def value_given?(value)
   value and not value.empty?
-end
-
-def create_table_of_contents(lines)
-  toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
-    m = HEADING_WITH_ID_PAT.match(line)
-    heading_depth, id = m[1].length, m[2].upcase
-    "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
-  end
-  OPTIONS.formatter.format(BlockParser.parse(toc_lines))
-end
-
-def create_main(toc, body)
-  toc_container = HtmlElement.create("section").tap do |element|
-    element["id"] = "toc"
-    element.push HtmlElement.create("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
-    element.push toc
-  end
-  contents_container = HtmlElement.create("section").tap do |element|
-    element["id"] = "contents"
-    element.push body
-  end
-  main = HtmlElement.create("section").tap do |element|
-    element["id"] = "main"
-    element.push toc_container
-    element.push contents_container
-  end
 end
 
 def create_style(path_to_css_file)
@@ -250,6 +253,7 @@ end
 input_file_dir, input_file_name, input_file_basename = nil, nil, nil
 output_file_name = nil
 input_lines = ARGF.lines.to_a
+html_composer = HtmlComposer.new
 
 case ARGV.length
 when 0
@@ -265,11 +269,11 @@ OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
 css = OPTIONS[:css]
-toc = create_table_of_contents(input_lines)
+toc = html_composer.create_table_of_contents(input_lines)
 tree = BlockParser.parse(input_lines)
 body = OPTIONS.formatter.format(tree)
 title =  OPTIONS.title
-main = OPTIONS[:toc] ? create_main(toc,body) : nil
+main = html_composer.create_main(toc,body)
 
 if OPTIONS[:template]
   erb = ERB.new(OPTIONS.read_template_file)
