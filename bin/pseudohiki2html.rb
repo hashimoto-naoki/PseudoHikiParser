@@ -42,6 +42,10 @@ HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]/o
 PlainFormat = PlainTextFormat.create
 
 class HtmlComposer
+  def formatter
+    @formatter ||= OPTIONS.html_template.new
+  end
+
   def create_table_of_contents(lines)
     toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
       m = HEADING_WITH_ID_PAT.match(line)
@@ -53,16 +57,16 @@ class HtmlComposer
 
   def create_main(toc, body)
     return nil unless OPTIONS[:toc]
-    toc_container = HtmlElement.create("section").tap do |element|
+    toc_container = formatter.create_element("section").tap do |element|
       element["id"] = "toc"
-      element.push HtmlElement.create("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
+      element.push formatter.create_element("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
       element.push toc
     end
-    contents_container = HtmlElement.create("section").tap do |element|
+    contents_container = formatter.create_element("section").tap do |element|
       element["id"] = "contents"
       element.push body
     end
-    main = HtmlElement.create("section").tap do |element|
+    main = formatter.create_element("section").tap do |element|
       element["id"] = "main"
       element.push toc_container
       element.push contents_container
