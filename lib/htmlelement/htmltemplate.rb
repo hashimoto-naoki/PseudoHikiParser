@@ -11,25 +11,18 @@ class HtmlTemplate
   ELEMENT = { self => HtmlElement }
 
   def initialize(charset=ELEMENT[self.class]::CHARSET::UTF8, language="en", css_link="default.css", base_uri=nil)
-    @html = ELEMENT[self.class].create("html")
-    @html["lang"] = language
-    @head = ELEMENT[self.class].create("head")
+    @html = create_element("html", nil, "lang" => language)
+    @head = create_element("head")
     @charset = charset
     @content_language = create_meta("Content-Language", language)
-    if base_uri
-      @base = ELEMENT[self.class].create("base") do |base|
-        base["href"] = base_uri
-      end
-    else
-      @base = ""
-    end
-    @content_type = create_meta("Content-Type",META_CHARSET%[charset])
+    @base = set_path_to_base(base_uri)
+    @content_type = set_charset_in_meta(charset)
     @content_style_type = create_meta("Content-Style-Type","text/css")
     @content_script_type = create_meta("Content-Script-Type","text/javascript")
     @default_css_link = create_css_link(css_link)
     @title = nil
-    @title_element = ELEMENT[self.class].create("title")
-    @body = ELEMENT[self.class].create("body")
+    @title_element = create_element("title")
+    @body = create_element("body")
     @html.push @head
     @html.push @body
     [ @content_language,
@@ -45,6 +38,10 @@ class HtmlTemplate
   end
   attr_reader :title, :head
 
+  def create_element(*params)
+    ELEMENT[self.class].create(*params)
+  end
+
   def charset=(charset_name)
     @charset=charset_name
     @content_language["content"] = LANGUAGE[@charset]
@@ -58,9 +55,7 @@ class HtmlTemplate
 
   def base=(base_uri)
     if @base.empty?
-      @base = ELEMENT[self.class].create("base") do |base|
-        base["href"] = base_uri
-      end
+      @base = create_element("base", nil, "href" => base_uri)
       @head.push @base
     else
       @base["href"] = base_uri
@@ -87,10 +82,12 @@ class HtmlTemplate
 
   def euc_jp!
     self.charset = ELEMENT[self.class]::CHARSET::EUC_JP
+    self.language = "ja"
   end
 
   def sjis!
     self.charset = ELEMENT[self.class]::CHARSET::SJIS
+    self.language = "ja"
   end
 
   def utf8!
@@ -109,18 +106,25 @@ class HtmlTemplate
   private
 
   def create_meta(type,content)
-    ELEMENT[self.class].create("meta") do |meta| 
-      meta["http-equiv"] = type
-      meta["content"] = content
-    end
+    create_element("meta", nil,
+                   "http-equiv" => type,
+                   "content" => content)
   end
 
   def create_css_link(file_path)
-    ELEMENT[self.class].create("link") do |link|
-      link["rel"] = "stylesheet"
-      link["type"] = "text/css"
-      link["href"] = file_path
-    end
+    create_element("link", nil,
+                   "rel" => "stylesheet",
+                   "type" => "text/css",
+                   "href" => file_path)
+  end
+
+  def set_charset_in_meta(charset)
+    create_meta("Content-Type",META_CHARSET%[charset])
+  end
+
+  def set_path_to_base(base_uri)
+    return "" unless base_uri
+    create_element("base", nil, "href" => base_uri)
   end
 end
 
@@ -130,11 +134,36 @@ class XhtmlTemplate < HtmlTemplate
   def initialize(*params)
     super(*params)
     @html['xmlns'] = 'http://www.w3.org/1999/xhtml'
-    @html["xml:lang"] =  params[1] #language
+    @html["xml:lang"] =  @html["lang"] #language
   end
 
   def language=(language)
     super(language)
     @html["xml:lang"] = language
+  end
+end
+
+class Xhtml5Template < XhtmlTemplate
+  ELEMENT[self] = Xhtml5Element
+
+  def initialize(*params)
+    super(*params)
+
+    def @content_language.to_str
+      ""
+    end
+
+    def @content_script_type.to_str
+      ""
+    end
+  end
+
+  def set_charset_in_meta(charset)
+    create_element("meta", nil, "charset" => charset)
+  end
+
+  def charset=(charset_name)
+    @charset=charset_name
+    @content_type["charset"] = @charset
   end
 end

@@ -4,6 +4,8 @@
 require 'optparse'
 require 'erb'
 require 'pseudohiki/blockparser'
+require 'pseudohiki/htmlformat'
+require 'pseudohiki/plaintextformat'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 
@@ -31,12 +33,18 @@ ENCODING_REGEXP = {
   /^l[a-zA-Z]*1/io => 'latin1'
 }
 
-HTML_VERSIONS = %w(html4 xhtml1)
+HTML_VERSIONS = %w(html4 xhtml1 html5)
 
 FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
 WRITTEN_OPTION_PAT = {}
 OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
 HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]/o
+
+PlainFormat = PlainTextFormat.create
+
+def to_plain(line)
+  PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
+end
 
 def win32? 
   true if RUBY_PLATFORM =~ /win/i
@@ -50,7 +58,7 @@ def create_table_of_contents(lines)
   toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
     m = HEADING_WITH_ID_PAT.match(line)
     heading_depth, id = m[1].length, m[2].upcase
-    "%s[[%s|#%s]]"%['*'*heading_depth, line.sub(HEADING_WITH_ID_PAT,''), id]
+    "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
   end
   OPTIONS.formatter.format(BlockParser.parse(toc_lines))
 end
@@ -101,8 +109,8 @@ class << OPTIONS
     'latin1' => LATIN1
   }
 
-  HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate]).flatten]
-  FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat]).flatten]
+  HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template]).flatten]
+  FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format]).flatten]
 
   def html_template
     HTML_TEMPLATES[self[:html_version]]
@@ -140,6 +148,8 @@ class << OPTIONS
       case version
       when /^x/io
         self[:html_version] = HTML_VERSIONS[1] #xhtml1
+      when /^h5/io
+        self[:html_version] = HTML_VERSIONS[2] #html5
       end
       STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
     end

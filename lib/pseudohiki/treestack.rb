@@ -49,9 +49,7 @@ class TreeStack
     include LeafType
 
     def self.create(content=nil)
-      leaf = self.new
-      leaf.push content if content
-      leaf
+      self.new.tap {|leaf| leaf.push content if content }
     end
   end
 

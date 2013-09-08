@@ -7,7 +7,7 @@ class TC_HtmlPlugin < Test::Unit::TestCase
   include PseudoHiki
 
   def test_visit_pluginnode
-    formatter = HtmlFormat.create_plain
+    formatter = HtmlFormat.get_plain
     tree = InlineParser.new("{{co2}} represents the carbon dioxide.").parse.tree
     assert_equal("CO<sub>2</sub> represents the carbon dioxide.",tree.accept(formatter).to_s)
   end

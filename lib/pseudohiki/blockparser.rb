@@ -1,10 +1,9 @@
-#/usr/bin/env ruby
+#!/usr/bin/env ruby
 
-require 'treestack'
+require 'pseudohiki/treestack'
 require 'pseudohiki/inlineparser'
 
 module PseudoHiki
-
   class BlockParser
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
     ID_TAG_PAT = /^\[([^\[\]]+)\]/o
@@ -17,7 +16,6 @@ module PseudoHiki
     end
 
     ParentNode = {}
-
     HeadToLeaf = {}
 
     attr_reader :stack
@@ -32,6 +30,12 @@ module PseudoHiki
         leaf[0] = head.sub(ID_TAG_PAT,"")
       end
       node
+    end
+
+    def self.parse(lines)
+      parser = self.new
+      parser.read_lines(lines)
+      parser.stack.tree
     end
 
     class BlockStack < TreeStack
@@ -58,10 +62,10 @@ module PseudoHiki
         false
       end
 
-      def self.create(line)
+      def self.create(line, inline_parser=InlineParser)
         line.sub!(self.head_re,"") if self.head_re
         leaf = self.new
-        leaf.concat(InlineParser.parse(line))
+        leaf.concat(inline_parser.parse(line))
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
@@ -91,7 +95,7 @@ module PseudoHiki
       end
 
       def parse_leafs
-        parsed = InlineParser.parse(self.join(""))
+        parsed = InlineParser.parse(self.join)
         self.clear
         self.concat(parsed)
       end
@@ -102,9 +106,7 @@ module PseudoHiki
 
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
-        leaf
+        self.new.tap {|leaf| leaf.push line }
       end
 
       def push_self(stack)
@@ -124,9 +126,7 @@ module PseudoHiki
 
       def self.create(line)
         m = self.head_re.match(line)
-        leaf = super(line)
-        leaf.nominal_level = m[0].length
-        leaf
+        super(line).tap {|leaf| leaf.nominal_level = m[0].length }
       end
 
       def self.with_depth?
@@ -172,13 +172,13 @@ module PseudoHiki
 
     class ListTypeBlockNode < NestedBlockNode
       def breakable?(breaker)
-        (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level) ? false : true
+        not (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level)
       end
     end
 
     class ListLeafNode < NestedBlockNode
       def breakable?(breaker)
-        (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level) ? false : true
+        not (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level)
       end
     end
 
@@ -233,8 +233,13 @@ module PseudoHiki
     class BlockElement::VerbatimLeaf
       def self.create(line)
         line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
+        self.new.tap {|leaf| leaf.push line }
+      end
+    end
+
+    class BlockElement::TableLeaf
+      def self.create(line)
+        super(line, TableRowParser)
       end
     end
 
@@ -349,210 +354,6 @@ module PseudoHiki
         end
       end
       @stack.pop
-    end
-
-    def self.parse(lines)
-      parser = self.new
-      parser.read_lines(lines)
-      parser.stack.tree
-    end
-  end
-end
-
-module PseudoHiki
-  class HtmlFormat
-    include BlockParser::BlockElement
-
-    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
-    SECTION = "section"
-    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
-    TableSep = [InlineParser::TableSep]
-    DescSep = [InlineParser::DescSep]
-
-    class VerbatimNodeFormatter < self
-      def visit(tree)
-        make_html_element.configure do |element|
-          contents = HtmlElement.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            create_element("a").configure do |a|
-              a.push url
-              a["href"] = url
-            end.to_s
-          end
-          element.push contents
-        end
-      end
-    end
-
-    class CommentOutNodeFormatter < self
-      def visit(tree); ""; end
-    end
-
-    class HeadingNodeFormatter < self
-      def make_html_element(tree)
-        super(tree).configure do |element|
-          element['class'] ||= ""
-          element['class'] +=  " h#{tree.first.nominal_level}"
-        end
-      end
-    end
-
-    class DescLeafFormatter < self
-      def visit(tree)
-        tree = tree.dup
-        dt = make_html_element(tree)
-        dd = create_element(DD)
-        element = HtmlElement::Children.new
-        element.push dt
-        dt_sep_index = tree.index(DescSep)
-        if dt_sep_index
-          tree.shift(dt_sep_index).each do |token|
-            dt.push visited_result(token)
-          end
-          tree.shift
-          unless tree.empty?
-            tree.each {|token| dd.push visited_result(token) }
-            element.push dd
-          end
-        else
-          tree.each {|token| dt.push visited_result(token) }
-        end
-        element
-      end
-    end
-
-    class TableLeafFormatter < self
-      TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
-      MODIFIED_CELL_PAT = /^!?[>^]*/o
-
-      def parse_first_token(token)
-        parsed_token, cell_type, rowsan, colspan = token, TD, nil, nil
-        m, cell_modifiers = nil, nil
-        m = MODIFIED_CELL_PAT.match(token) if token.kind_of? String
-        if m
-          cell_modifiers = m[0].split(//o)
-          if cell_modifiers.first == TH_PAT
-            cell_modifiers.shift
-            cell_type = TH
-          end
-          parsed_token = token.sub(MODIFIED_CELL_PAT,"")
-          row_width = cell_modifiers.count(ROW_EXPANDER) + 1
-          rowspan = row_width if row_width > 1
-          col_width = cell_modifiers.count(COL_EXPANDER) + 1
-          colspan = col_width if col_width > 1
-        end
-        [parsed_token, cell_type, rowspan, colspan]
-      end
-
-      def visit(tree)
-        row = make_html_element(tree)
-        cells = tree.dup
-        cells.push TableSep
-        while i = cells.index(TableSep)
-          first_cell = cells.shift.dup
-          first_cell[0], cell_type, rowspan, colspan = parse_first_token(first_cell[0])
-          col = create_element(cell_type, visited_result(first_cell))
-          row.push col
-          col["rowspan"] = rowspan if rowspan
-          col["colspan"] = colspan if colspan
-
-          (i-1).times do
-            cell = cells.shift
-            col.push visited_result(cell)
-          end
-          cells.shift
-        end
-        row
-      end
-    end
-
-    class HeadingLeafFormatter < self
-      def make_html_element(tree)
-        create_element(@element_name+tree.nominal_level.to_s).configure do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    class ListLeafNodeFormatter < self
-      def make_html_element(tree)
-        super(tree).configure do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    [[DescNode, DESC],
-#     [VerbatimNode, VERB],
-     [QuoteNode, QUOTE],
-     [TableNode, TABLE],
-#     [CommentOutNode, nil],
-#     [HeadingNode, SECTION],
-     [ParagraphNode, PARA],
-     [HrNode, HR],
-     [ListNode, UL],
-     [EnumNode, OL],
-#     [DescLeaf, DT],
-#     [TableLeaf, TR],
-#     [HeadingLeaf, HEADING],
-#     [ListLeaf, LI],
-#     [EnumLeaf, LI],
-#     [ListWrapNode, LI],
-#     [EnumWrapNode, LI]
-    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
-
-    Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
-    Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
-    Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
-    Formatter[DescLeaf] = DescLeafFormatter.new(DT)
-    Formatter[TableLeaf] = TableLeafFormatter.new(TR)
-    Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
-    Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
-    Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
-
-    class << Formatter[DescNode]
-    end
-
-    class << Formatter[QuoteNode]
-    end
-
-    class << Formatter[TableNode]
-    end
-
-    class << Formatter[ParagraphNode]
-    end
-
-    class << Formatter[HrNode]
-    end
-
-    class << Formatter[ListNode]
-    end
-
-    class << Formatter[EnumNode]
-    end
-
-    class << Formatter[ListLeaf]
-    end
-
-    class << Formatter[EnumLeaf]
-    end
-  end
-
-  class XhtmlFormat < HtmlFormat
-    Formatter = HtmlFormat::Formatter.dup
-
-    Formatter.each do |node_class, formatter|
-      Formatter[node_class] = formatter.dup
-
-      class << Formatter[node_class]
-        def create_element(element_name, content=nil)
-          XhtmlElement.create(element_name, content)
-        end
-
-        def visited_result(element)
-          visitor = Formatter[element.class]||Formatter[PlainNode]
-          element.accept(visitor)
-        end
-      end
     end
   end
 end

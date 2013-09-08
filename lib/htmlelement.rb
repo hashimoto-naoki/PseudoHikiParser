@@ -3,11 +3,9 @@
 require 'kconv'
 
 class HtmlElement
-
   class Children < Array
-
     def to_s
-      self.join("")
+      self.join
     end
   end
 
@@ -18,14 +16,8 @@ class HtmlElement
     LATIN1 = "ISO-8859-1"
   end
 
-  Html4Doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
-
-  Xhtml1Doctype = '<?xml version="1.0" encoding="%s"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
-
-
 
   ESC = {
     '&' => '&amp;',
@@ -37,29 +29,60 @@ class HtmlElement
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
   
-  TagFormats = Hash.new("<%s%s>%s</%s>")
-  
-  [[%w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),"<%s%s>#{$/}%s</%s>#{$/}"],
-   [%w(dt dd tr title h1 h2 h3 h4 h5 h6),"<%s%s>%s</%s>#{$/}"],
-   [%w(li col),"<%s%s>%s#{$/}"],
-   [%w(img meta link base input hr), "<%s%s>#{$/}"]
-  ].each do |tags,format|
-    tags.each do |tag|
-      TagFormats[tag] = format
-    end
-  end
-  
-  TagFormats[""] = "%s%s%s"
+  Html5Tags = %w(article section hgroup aside nav menu header footer figure details legend)
 
-  Html5Tags = %w(article section hgroup aside nav menu header footer menu figure details legend)
-  XhtmlTagFormats = TagFormats.dup
-  XhtmlTagFormats.each do |key, value|
-    case value
-    when "<%s%s>%s#{$/}"
-      XhtmlTagFormats[key] = "<%s%s>%s</%s>#{$/}"
-    when "<%s%s>#{$/}"
-      XhtmlTagFormats[key] = "<%s%s />#{$/}"
+  ELEMENT_TYPES = {
+    :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
+    :HEADING_TYPE_BLOCK => %w(dt dd tr title h1 h2 h3 h4 h5 h6),
+    :LIST_ITEM_TYPE_BLOCK => %w(li col),
+    :EMPTY_BLOCK => %w(img meta link base input hr)
+  }
+  
+  ELEMENTS_FORMAT = {
+    :INLINE => "<%s%s>%s</%s>",
+    :BLOCK => "<%s%s>#{$/}%s</%s>#{$/}",
+    :HEADING_TYPE_BLOCK => "<%s%s>%s</%s>#{$/}",
+    :LIST_ITEM_TYPE_BLOCK => "<%s%s>%s#{$/}",
+    :EMPTY_BLOCK => "<%s%s>#{$/}"
+  }
+
+  attr_reader :tagname
+  attr_accessor :parent, :children
+
+  def self.doctype(encoding="UTF-8")
+    self::DOCTYPE%[encoding]
+  end
+
+  def self.create(tagname, content=nil, attributes={})
+    if self::Html5Tags.include? tagname
+      attributes["class"] = tagname
+      tagname = "div"
     end
+    self.new(tagname, content, attributes)
+  end
+
+  def HtmlElement.comment(content)
+    "<!-- #{content} -->#{$/}"
+  end
+
+  def HtmlElement.urlencode(str)
+    str.toutf8.gsub(/[^\w\.\-]/n) {|ch| format('%%%02X', ch[0]) }
+  end
+
+  def HtmlElement.urldecode(str)
+    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }
+    return utf.tosjis if $KCODE =~ /^s/io
+    return utf.toeuc if $KCODE =~ /^e/io
+    utf
+  end
+
+  def self.assign_tagformats
+    tagformats = Hash.new(ELEMENTS_FORMAT[:INLINE])
+    self::ELEMENT_TYPES.each do |type, names|
+      names.each {|name| tagformats[name] = self::ELEMENTS_FORMAT[type] }
+    end
+    tagformats[""] = "%s%s%s"
+    tagformats
   end
 
   def HtmlElement.escape(str)
@@ -70,16 +93,16 @@ class HtmlElement
     str.gsub(CharEntityPat) {|ent| DECODE[ent]}
   end
 
-  def initialize(tagname)
+  TagFormats = self.assign_tagformats
+
+  def initialize(tagname, content=nil, attributes={})
     @parent = nil
     @tagname = tagname
     @children = Children.new
-    @attributes = {}
+    @children.push content if content
+    @attributes = attributes
     @end_comment_not_added = true
   end
-
-  attr_reader :tagname
-  attr_accessor :parent, :children
 
   def empty?
     @children.empty?
@@ -106,12 +129,12 @@ class HtmlElement
   def format_attributes
     @attributes.collect do |attr,value|
       ' %s="%s"'%[attr,HtmlElement.escape(value.to_s)]
-    end.sort.join("")
+    end.sort.join
   end
   private :format_attributes
 
-  def add_end_comment_for_div
-    if @tagname == "div" and @end_comment_not_added
+  def add_end_comment_for_div_or_section
+    if @tagname == "div" or @tagname == "section" and @end_comment_not_added
       id_or_class = self["id"]||self["class"]
       self.push HtmlElement.comment("end of #{id_or_class}") if id_or_class
       @end_comment_not_added = false
@@ -119,62 +142,31 @@ class HtmlElement
   end
 
   def to_s
-    add_end_comment_for_div
-    TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-  end
-
-  def self.doctype(encoding="euc-jp")
-    Html4Doctype
+    add_end_comment_for_div_or_section
+    self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
   alias to_str to_s
-
-  def HtmlElement.comment(content)
-    "<!-- #{content} -->#{$/}"
-  end
-
-  def configure
-    yield self
-    self
-  end
-      
-  def self.create(tagname,content=nil)
-    if Html5Tags.include? tagname
-      tag = self.new("div")
-      tag["class"] = tagname
-    else
-      tag = self.new(tagname)
-    end
-    tag.push content if content
-    yield tag if block_given?
-    tag
-  end
-
-  def HtmlElement.urlencode(str)
-    str.toutf8.gsub(/[^\w\.\-]/n) {|ch| format('%%%02X', ch[0]) }
-  end
-
-  def HtmlElement.urldecode(str)
-    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }
-    return utf.tosjis if $KCODE =~ /^s/io
-    return utf.toeuc if $KCODE =~ /^e/io
-    utf
-  end
 end
   
-def Tag(tagname,content=nil)
-  HtmlElement.create(tagname,content)
+class XhtmlElement < HtmlElement
+  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
+
+  ELEMENTS_FORMAT = self.superclass::ELEMENTS_FORMAT.dup
+  ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
+  ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%s%s />#{$/}"
+
+  TagFormats = self.assign_tagformats
 end
 
-class XhtmlElement < HtmlElement
+class Xhtml5Element < XhtmlElement
+  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+<!DOCTYPE html>'.split(/\r?\n/o).join($/)+"#{$/}"
 
-  def to_s
-    add_end_comment_for_div
-    XhtmlTagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
-  end
+  ELEMENT_TYPES = self.superclass::ELEMENT_TYPES.dup
+  ELEMENT_TYPES[:BLOCK] = self.superclass::ELEMENT_TYPES[:BLOCK] + self.superclass::Html5Tags
+  Html5Tags = %w(main)
 
-  def self.doctype(encoding="euc-jp")
-    Xhtml1Doctype%[encoding]
-  end
-
-  alias to_str to_s
+  TagFormats = self.assign_tagformats
 end
