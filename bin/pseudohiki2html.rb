@@ -72,6 +72,15 @@ class HtmlComposer
       element.push contents_container
     end
   end
+
+  def create_style(path_to_css_file)
+    style = formatter.create_element("style").tap do |element|
+      element["type"] = "text/css"
+      open(File.expand_path(path_to_css_file)) do |css_file|
+        element.push css_file.read
+      end
+    end
+  end
 end
 
 def to_plain(line)
@@ -84,15 +93,6 @@ end
 
 def value_given?(value)
   value and not value.empty?
-end
-
-def create_style(path_to_css_file)
-  style = HtmlElement.create("style").tap do |element|
-    element["type"] = "text/css"
-    open(File.expand_path(path_to_css_file)) do |css_file|
-      element.push css_file.read
-    end
-  end
 end
 
 class << OPTIONS
@@ -284,7 +284,7 @@ if OPTIONS[:template]
   html = erb.result(binding)
 else
   html = OPTIONS.create_html_with_current_options
-  html.head.push  create_style(OPTIONS[:embed_css]) if OPTIONS[:embed_css]
+  html.head.push  html_composer.create_style(OPTIONS[:embed_css]) if OPTIONS[:embed_css]
   html.push main||body
 end
 
