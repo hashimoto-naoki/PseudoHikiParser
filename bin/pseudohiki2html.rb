@@ -41,7 +41,7 @@ HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]/o
 
 PlainFormat = PlainTextFormat.create
 
-class HtmlComposer
+class InputManager
   def formatter
     @formatter ||= OPTIONS.html_template.new
   end
@@ -289,7 +289,7 @@ end
 
 input_file_dir, input_file_name, input_file_basename = nil, nil, nil
 output_file_name = nil
-html_composer = HtmlComposer.new
+input_manager = InputManager.new
 
 case ARGV.length
 when 0
@@ -306,7 +306,7 @@ input_lines = ARGF.lines.to_a
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
-html = html_composer.compose_html(input_lines)
+html = input_manager.compose_html(input_lines)
 output_file_name = OPTIONS.output_file_name(input_file_dir, input_file_basename)
 
 if output_file_name
