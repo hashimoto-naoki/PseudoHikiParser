@@ -122,6 +122,7 @@ end
 class << OPTIONS
   include HtmlElement::CHARSET
   attr_accessor :need_output_file, :default_title
+  attr_reader :input_file_basename
 
   ENCODING_TO_CHARSET = {
     'utf8' => UTF8,
@@ -209,12 +210,17 @@ class << OPTIONS
     html
   end
 
-  def output_file_name(input_file_dir, input_file_basename)
+  def read_input_filename(filename)
+    @input_file_dir, @input_file_name = File.split(File.expand_path(filename))
+    @input_file_basename = File.basename(@input_file_name,".*")
+  end
+
+  def output_file_name
     return nil unless self.need_output_file
     if self[:output]
       File.expand_path(self[:output])
     else
-      File.join(input_file_dir, input_file_basename+".html")
+      File.join(@input_file_dir, @input_file_basename+".html")
     end
   end
 end
@@ -287,8 +293,6 @@ if $KCODE
   end
 end
 
-input_file_dir, input_file_name, input_file_basename = nil, nil, nil
-output_file_name = nil
 input_manager = InputManager.new
 
 case ARGV.length
@@ -297,17 +301,16 @@ when 0
     raise "You must specify a file name for output"
   end
 when 1
-  input_file_dir, input_file_name = File.split(File.expand_path(ARGV[0]))
-  input_file_basename = File.basename(input_file_name,".*")
+  OPTIONS.read_input_filename(ARGV[0])
 end
 
 input_lines = ARGF.lines.to_a
 
 OPTIONS.set_options_from_input_file(input_lines)
-OPTIONS.default_title = input_file_basename
+OPTIONS.default_title = OPTIONS.input_file_basename
 
 html = input_manager.compose_html(input_lines)
-output_file_name = OPTIONS.output_file_name(input_file_dir, input_file_basename)
+output_file_name = OPTIONS.output_file_name
 
 if output_file_name
   open(output_file_name, "w") {|f| f.puts html }
