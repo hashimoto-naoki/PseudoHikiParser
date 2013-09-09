@@ -311,15 +311,3 @@ if output_file_name
 else
   STDOUT.puts html
 end
-
-#html.default_css = opts[:css_file]||File.join((root_dir||CONFIG_DIR),"default.css")
-#html.title.push opts[:title]||input_file_name
-#
-#html.push HikiBlockParser.new.parse_lines(input_lines).join
-#orig_data_link["href"] = "file:///"+input_file_dir
-#
-#puts output_file_full_name
-#
-#open(output_file_full_name,"w") do |output_file|
-#  output_file.puts html
-#end
