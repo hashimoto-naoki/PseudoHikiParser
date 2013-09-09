@@ -293,9 +293,9 @@ html_composer = HtmlComposer.new
 
 case ARGV.length
 when 0
- if OPTIONS.need_output_file and not OPTIONS[:output]
-   raise "You must specify a file name for output"
- end
+  if OPTIONS.need_output_file and not OPTIONS[:output]
+    raise "You must specify a file name for output"
+  end
 when 1
   input_file_dir, input_file_name = File.split(File.expand_path(ARGV[0]))
   input_file_basename = File.basename(input_file_name,".*")
