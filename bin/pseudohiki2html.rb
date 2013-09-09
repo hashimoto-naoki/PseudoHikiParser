@@ -280,7 +280,6 @@ end
 
 input_file_dir, input_file_name, input_file_basename = nil, nil, nil
 output_file_name = nil
-input_lines = ARGF.lines.to_a
 html_composer = HtmlComposer.new
 
 case ARGV.length
@@ -292,6 +291,8 @@ when 1
   input_file_dir, input_file_name = File.split(File.expand_path(ARGV[0]))
   input_file_basename = File.basename(input_file_name,".*")
 end
+
+input_lines = ARGF.lines.to_a
 
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
