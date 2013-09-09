@@ -81,6 +81,30 @@ class HtmlComposer
       end
     end
   end
+
+  def compose_body(input_lines)
+    tree = BlockParser.parse(input_lines)
+    OPTIONS.formatter.format(tree)
+  end
+
+  def compose_html(input_lines)
+    css = OPTIONS[:css]
+    toc = create_table_of_contents(input_lines)
+    body = compose_body(input_lines)
+    title = OPTIONS.title
+    main = create_main(toc,body)
+
+    if OPTIONS[:template]
+      erb = ERB.new(OPTIONS.read_template_file)
+      html = erb.result(binding)
+    else
+      html = OPTIONS.create_html_with_current_options
+      html.head.push create_style(OPTIONS[:embed_css]) if OPTIONS[:embed_css]
+      html.push main||body
+    end
+
+    html
+  end
 end
 
 def to_plain(line)
@@ -272,21 +296,7 @@ end
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
-css = OPTIONS[:css]
-toc = html_composer.create_table_of_contents(input_lines)
-tree = BlockParser.parse(input_lines)
-body = OPTIONS.formatter.format(tree)
-title =  OPTIONS.title
-main = html_composer.create_main(toc,body)
-
-if OPTIONS[:template]
-  erb = ERB.new(OPTIONS.read_template_file)
-  html = erb.result(binding)
-else
-  html = OPTIONS.create_html_with_current_options
-  html.head.push  html_composer.create_style(OPTIONS[:embed_css]) if OPTIONS[:embed_css]
-  html.push main||body
-end
+html = html_composer.compose_html(input_lines)
 
 if OPTIONS.need_output_file
   if OPTIONS[:output]
