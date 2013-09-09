@@ -208,6 +208,15 @@ class << OPTIONS
     html.title = self.title
     html
   end
+
+  def output_file_name(input_file_dir, input_file_basename)
+    return nil unless self.need_output_file
+    if self[:output]
+      File.expand_path(self[:output])
+    else
+      File.join(input_file_dir, input_file_basename+".html")
+    end
+  end
 end
 
 OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
@@ -298,14 +307,7 @@ OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = input_file_basename
 
 html = html_composer.compose_html(input_lines)
-
-if OPTIONS.need_output_file
-  if OPTIONS[:output]
-    output_file_name = File.expand_path(OPTIONS[:output])
-  else
-    output_file_name = File.join(input_file_dir, input_file_basename+".html")
-  end
-end
+output_file_name = OPTIONS.output_file_name(input_file_dir, input_file_basename)
 
 if output_file_name
   open(output_file_name, "w") {|f| f.puts html }
