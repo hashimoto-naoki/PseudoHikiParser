@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["hashimoto.naoki@gmail.com"]
   spec.description   = %q{PseudoHikiParser is a parser of texts written in a Hiki like notation, and coverts them into HTML or other formats.}
   spec.summary       = %q{PseudoHikiParser: a parser of texts in a Hiki like notation.}
-  spec.homepage      = "https://github.com/hashimoto-naoki/PseudoHikiParser/wiki"
+  spec.homepage      = "https://github.com/nico-hn/PseudoHikiParser/wiki"
   spec.license       = "Not decided yet"
   
   spec.files         = [
