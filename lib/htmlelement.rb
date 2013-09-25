@@ -4,9 +4,7 @@ require 'kconv'
 
 class HtmlElement
   class Children < Array
-    def to_s
-      self.join
-    end
+    alias to_s join
   end
 
   module CHARSET
