@@ -304,7 +304,7 @@ when 1
   OPTIONS.read_input_filename(ARGV[0])
 end
 
-input_lines = ARGF.lines.to_a
+input_lines = ARGF.readlines
 
 OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = OPTIONS.input_file_basename
