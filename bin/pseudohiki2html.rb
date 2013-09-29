@@ -228,7 +228,7 @@ end
 OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   opt.on("-h [html_version]", "--html_version [=html_version]",
-         "HTML version to be used. Choose html4 or xhtml1 (default: #{OPTIONS[:html_version]})") do |version|
+         "HTML version to be used. Choose html4, xhtml1 or html5 (default: #{OPTIONS[:html_version]})") do |version|
     OPTIONS.set_html_version(version)
   end
 
@@ -254,7 +254,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   end
 
   opt.on("-C [path_to_css_file]", "--embed-css [=path_to_css_file]",
-           "Set the path to a css file to be used (default: not to embed)") do |path_to_css_file|
+           "Set the path to a css file to embed (default: not to embed)") do |path_to_css_file|
     OPTIONS[:embed_css] = path_to_css_file
   end
 
