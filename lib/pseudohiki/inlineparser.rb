@@ -151,12 +151,9 @@ module PseudoHiki
     end
 
     def treated_as_node_end(token)
-      if token == TableSep
-        self.pop
-        return (self.push TableCellNode.new)
-      end
-
-      super(token)
+      return super(token) unless token == TableSep
+      self.pop
+      self.push TableCellNode.new
     end
 
     def parse
