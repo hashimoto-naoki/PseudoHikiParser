@@ -142,11 +142,8 @@ module PseudoHiki
       end
 
       def push(token)
-        if self.empty?
-          super(parse_first_token(token))
-        else
-          super(token)
-        end
+        return super(token) unless self.empty?
+        super(parse_first_token(token))
       end
     end
 
