@@ -47,6 +47,7 @@ class InputManager
   end
 
   def create_table_of_contents(lines)
+    return "" unless OPTIONS[:toc]
     toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
       m = HEADING_WITH_ID_PAT.match(line)
       heading_depth, id = m[1].length, m[2].upcase
