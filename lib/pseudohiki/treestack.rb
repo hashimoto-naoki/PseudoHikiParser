@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 class TreeStack
-
   class NotLeafError < Exception; end
 
   module Mergeable; end
@@ -59,6 +58,7 @@ class TreeStack
       nil
     end
   end
+
   attr_reader :node_end, :last_leaf
 
   def initialize(root_node=Node.new)
