@@ -65,7 +65,7 @@ class InputManager
     OPTIONS.formatter.format(tree)
   end
 
-  def create_main(toc, body)
+  def create_main(toc, body, h1)
     return nil unless OPTIONS[:toc]
     toc_container = formatter.create_element("section").tap do |element|
       element["id"] = "toc"
@@ -78,6 +78,7 @@ class InputManager
     end
     main = formatter.create_element("section").tap do |element|
       element["id"] = "main"
+      element.push h1 unless h1.empty?
       element.push toc_container
       element.push contents_container
     end
@@ -103,7 +104,7 @@ class InputManager
     toc = create_table_of_contents(input_lines)
     body = compose_body(input_lines)
     title = OPTIONS.title
-    main = create_main(toc,body)
+    main = create_main(toc,body, h1)
 
     if OPTIONS[:template]
       erb = ERB.new(OPTIONS.read_template_file)
