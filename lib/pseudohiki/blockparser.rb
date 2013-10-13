@@ -311,14 +311,12 @@ module PseudoHiki
       @stack.current_node.breakable?(breaker)
     end
 
+    def in_link_tag?(preceding_str)
+      preceding_str[-2,2] == "[[" or preceding_str[-1,1] == "|"
+    end
+
     def tagfy_link(line)
-      line.gsub(URI_RE) do |url|
-        unless ($`)[-2,2] == "[[" or ($`)[-1,1] == "|"
-          "[[#{url}]]"
-        else
-          url
-        end
-      end
+      line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
     end
 
     def select_leaf_type(line)
