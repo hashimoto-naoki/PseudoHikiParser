@@ -22,7 +22,8 @@ OPTIONS = {
   :template => nil,
   :output => nil,
   :force => false,
-  :toc => nil
+  :toc => nil,
+  :split_main_heading => false
 }
 
 ENCODING_REGEXP = {
@@ -54,6 +55,14 @@ class InputManager
       "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
     end
     OPTIONS.formatter.format(BlockParser.parse(toc_lines))
+  end
+
+  def split_main_heading(input_lines)
+    return "" unless OPTIONS[:split_main_heading]
+    h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
+    return "" unless h1_pos
+    tree = BlockParser.parse([input_lines.delete_at(h1_pos)])
+    OPTIONS.formatter.format(tree)
   end
 
   def create_main(toc, body)
@@ -89,6 +98,7 @@ class InputManager
   end
 
   def compose_html(input_lines)
+    h1 = split_main_heading(input_lines)
     css = OPTIONS[:css]
     toc = create_table_of_contents(input_lines)
     body = compose_body(input_lines)
@@ -283,6 +293,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   opt.on("-m [contents-title]", "--table-of-contents [=contents-title]",
          "Include the list of h2 and/or h3 headings with ids.(default: nil)") do |toc_title|
     OPTIONS[:toc] = toc_title
+  end
+
+  opt.on("-s", "--split-main-heading",
+         "Split the first h1 element") do |should_be_split|
+    OPTIONS[:split_main_heading] = should_be_split
   end
 
   opt.parse!
