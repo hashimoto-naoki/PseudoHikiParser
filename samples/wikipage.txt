@@ -1,8 +1,8 @@
-//title: 
+//title: A sample of PseudoHikiParser
 
 !Welcome to the PseudoHikiParser wiki!
 
-!! About PseudoHikiParser
+!![about] About PseudoHikiParser
 
 PseudoHikiParser is a converter of texts written in a [[Hiki|http://hikiwiki.org/en/]] like notation, into html or other formats. 
 
@@ -18,13 +18,109 @@ I am writing this tool with following objectives in mind,
 
 And, it would not be compatible with the original Hiki notation.
 
-!! License
+!![license] License
 
 I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. 
 
 And one of them will be BSD 2-clause license or MIT license.
 
-!! Development status of features from the original [[Hiki notation|http://hikiwiki.org/en/TextFormattingRules.html]]
+!![installation] Installation
+
+<<<
+gem install pseudohikiparser --pre
+>>>
+
+!![usage] Usage
+
+!!! pseudohiki2html.rb
+
+After the installation of PseudoHikiParser, you could use a command, _pseudohiki2html.rb_.
+
+''Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.''
+
+Typing the following lines at the command prompt:
+
+<<<
+pseudohiki2html.rb <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+>>>
+
+will return the following result to stdout:
+
+<<<
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta content="en" http-equiv="Content-Language">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="text/javascript" http-equiv="Content-Script-Type">
+<title>-</title>
+<link href="default.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="section h2">
+<h2> The first heading
+</h2>
+<p>
+The first paragraph
+</p>
+<!-- end of section h2 -->
+</div>
+</body>
+</html>
+>>>
+
+And if you specify a file name with `--output` option:
+
+<<<
+pseudohiki2html.rb --output first_example.html <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+>>>
+
+the result will be saved in first_example.html.
+
+For more options, please try `pseudohiki2html.rb --help`
+
+!!! module PseudoHiki
+
+If you save the lines below as a ruby script and execute it:
+
+<<<
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+plain = <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
+html = PseudoHiki::HtmlFormat.format(tree)
+puts html
+>>>
+
+you will get the following output:
+
+<<<
+<div class="section h2">
+<h2> The first heading
+</h2>
+<p>
+The first paragraph
+</p>
+<!-- end of section h2 -->
+</div>
+>>>
+
+Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
+
+!![develepment_status] Development status of features from the original [[Hiki notation|http://hikiwiki.org/en/TextFormattingRules.html]]
 
 * Paragraphs - Usable
 * Links
@@ -44,7 +140,7 @@ And one of them will be BSD 2-clause license or MIT license.
 * Comments - Usable
 * Plugins - Not supported (and will not be compatible with the original one)
 
-!! Additional Features
+!![additional_features] Additional Features
 
 !!! Already Implemented
 
@@ -71,6 +167,44 @@ will be rendered as
  <!-- end of section h2 -->
  </div>
 
+!!! Partly Implemented
+
+!!!! A visitor that removes markups and returns plain texts
+The visitor, [[PlainTextFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]]. Below are examples
+
+<<<
+:tel:03-xxxx-xxxx
+::03-yyyy-yyyy
+:fax:03-xxxx-xxxx
+>>>
+will be rendered as
+
+<<<
+tel:	03-xxxx-xxxx
+	03-yyyy-yyyy
+fax:	03-xxxx-xxxx
+>>>
+
+And
+
+<<<
+||cell 1-1||>>cell 1-2,3,4||cell 1-5
+||cell 2-1||^>cell 2-2,3 3-2,3||cell 2-4||cell 2-5
+||cell 3-1||cell 3-4||cell 3-5
+||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
+>>>
+
+will be rendered as
+
+<<<
+cell 1-1	cell 1-2,3,4	==	==	cell 1-5
+cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
+cell 3-1	||	||	cell 3-4	cell 3-5
+cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
+>>>
+
+!!!! A visitor for HTML5
+The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L225]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]].
 
 !!! Not Implemented Yet
 

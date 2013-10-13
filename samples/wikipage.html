@@ -1,11 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html lang="en">
 <head>
 <meta content="en" http-equiv="Content-Language">
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 <meta content="text/javascript" http-equiv="Content-Script-Type">
-<title></title>
+<title>A sample of PseudoHikiParser</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -13,7 +13,7 @@
 <h1>Welcome to the PseudoHikiParser wiki!
 </h1>
 <div class="section h2">
-<h2> About PseudoHikiParser
+<h2 id="ABOUT"> About PseudoHikiParser
 </h2>
 <p>
 PseudoHikiParser is a converter of texts written in a <a href="http://hikiwiki.org/en/">Hiki</a> like notation, into html or other formats. 
@@ -46,7 +46,7 @@ And, it would not be compatible with the original Hiki notation.
 <!-- end of section h2 -->
 </div>
 <div class="section h2">
-<h2> License
+<h2 id="LICENSE"> License
 </h2>
 <p>
 I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. 
@@ -57,7 +57,119 @@ And one of them will be BSD 2-clause license or MIT license.
 <!-- end of section h2 -->
 </div>
 <div class="section h2">
-<h2> Development status of features from the original <a href="http://hikiwiki.org/en/TextFormattingRules.html">Hiki notation</a>
+<h2 id="INSTALLATION"> Installation
+</h2>
+<pre>
+gem install pseudohikiparser --pre
+</pre>
+<!-- end of section h2 -->
+</div>
+<div class="section h2">
+<h2 id="USAGE"> Usage
+</h2>
+<div class="section h3">
+<h3> pseudohiki2html.rb
+</h3>
+<p>
+After the installation of PseudoHikiParser, you could use a command, _pseudohiki2html.rb_.
+</p>
+<p>
+<em>Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.</em>
+</p>
+<p>
+Typing the following lines at the command prompt:
+</p>
+<pre>
+pseudohiki2html.rb &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+</pre>
+<p>
+will return the following result to stdout:
+</p>
+<pre>
+&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
+ &quot;<a href="http://www.w3.org/TR/html4/loose.dtd&amp;quot;&amp;gt;">http://www.w3.org/TR/html4/loose.dtd&quot;&gt;</a>
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta content=&quot;en&quot; http-equiv=&quot;Content-Language&quot;&gt;
+&lt;meta content=&quot;text/html; charset=UTF-8&quot; http-equiv=&quot;Content-Type&quot;&gt;
+&lt;meta content=&quot;text/javascript&quot; http-equiv=&quot;Content-Script-Type&quot;&gt;
+&lt;title&gt;-&lt;/title&gt;
+&lt;link href=&quot;default.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2&gt; The first heading
+&lt;/h2&gt;
+&lt;p&gt;
+The first paragraph
+&lt;/p&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>
+And if you specify a file name with `--output` option:
+</p>
+<pre>
+pseudohiki2html.rb --output first_example.html &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+</pre>
+<p>
+the result will be saved in first_example.html.
+</p>
+<p>
+For more options, please try `pseudohiki2html.rb --help`
+</p>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3> module PseudoHiki
+</h3>
+<p>
+If you save the lines below as a ruby script and execute it:
+</p>
+<pre>
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+plain = &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
+html = PseudoHiki::HtmlFormat.format(tree)
+puts html
+</pre>
+<p>
+you will get the following output:
+</p>
+<pre>
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2&gt; The first heading
+&lt;/h2&gt;
+&lt;p&gt;
+The first paragraph
+&lt;/p&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+</pre>
+<p>
+Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
+</p>
+<!-- end of section h3 -->
+</div>
+<!-- end of section h2 -->
+</div>
+<div class="section h2">
+<h2 id="DEVELEPMENT_STATUS"> Development status of features from the original <a href="http://hikiwiki.org/en/TextFormattingRules.html">Hiki notation</a>
 </h2>
 <ul>
 <li> Paragraphs - Usable
@@ -102,7 +214,7 @@ And one of them will be BSD 2-clause license or MIT license.
 <!-- end of section h2 -->
 </div>
 <div class="section h2">
-<h2> Additional Features
+<h2 id="ADDITIONAL_FEATURES"> Additional Features
 </h2>
 <div class="section h3">
 <h3> Already Implemented
@@ -132,6 +244,58 @@ will be rendered as
 &lt;!-- end of section h2 --&gt;
 &lt;/div&gt;
 </pre>
+<!-- end of section h4 -->
+</div>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3> Partly Implemented
+</h3>
+<div class="section h4">
+<h4> A visitor that removes markups and returns plain texts
+</h4>
+<p>
+The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb">PlainTextFormat</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>. Below are examples
+</p>
+<pre>
+:tel:03-xxxx-xxxx
+::03-yyyy-yyyy
+:fax:03-xxxx-xxxx
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+tel:	03-xxxx-xxxx
+03-yyyy-yyyy
+fax:	03-xxxx-xxxx
+</pre>
+<p>
+And
+</p>
+<pre>
+||cell 1-1||&gt;&gt;cell 1-2,3,4||cell 1-5
+||cell 2-1||^&gt;cell 2-2,3 3-2,3||cell 2-4||cell 2-5
+||cell 3-1||cell 3-4||cell 3-5
+||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+cell 1-1	cell 1-2,3,4	==	==	cell 1-5
+cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
+cell 3-1	||	||	cell 3-4	cell 3-5
+cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
+</pre>
+<!-- end of section h4 -->
+</div>
+<div class="section h4">
+<h4> A visitor for HTML5
+</h4>
+<p>
+The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L225">Xhtml5Format</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>.
+</p>
 <!-- end of section h4 -->
 </div>
 <!-- end of section h3 -->
