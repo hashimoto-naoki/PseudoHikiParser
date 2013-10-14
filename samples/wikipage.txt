@@ -34,7 +34,7 @@ gem install pseudohikiparser --pre
 
 !!! pseudohiki2html.rb
 
-After the installation of PseudoHikiParser, you could use a command, _pseudohiki2html.rb_.
+After the installation of PseudoHikiParser, you could use a command, '''pseudohiki2html.rb'''.
 
 ''Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.''
 
