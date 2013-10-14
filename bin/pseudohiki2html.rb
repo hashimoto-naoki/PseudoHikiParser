@@ -47,6 +47,10 @@ class InputManager
     @formatter ||= OPTIONS.html_template.new
   end
 
+  def to_plain(line)
+    PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
+  end
+
   def create_table_of_contents(lines)
     return "" unless OPTIONS[:toc]
     toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
@@ -117,10 +121,6 @@ class InputManager
 
     html
   end
-end
-
-def to_plain(line)
-  PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
 end
 
 def win32? 
