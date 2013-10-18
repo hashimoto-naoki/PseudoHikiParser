@@ -20,9 +20,13 @@ And, it would not be compatible with the original Hiki notation.
 
 !![license] License
 
-I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. 
+BSD 2-Clause license
 
-And one of them will be BSD 2-clause license or MIT license.
+==I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. ==
+
+==And one of them will be BSD 2-clause license or MIT license.==
+
+(It seems bothersome for me to manage a dual-licensed script.)
 
 !![installation] Installation
 
