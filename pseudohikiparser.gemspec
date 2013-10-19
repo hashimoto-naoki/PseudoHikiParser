@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
   spec.license       = "BSD 2-Clause license"
   
   spec.files         = [
+                        "README.md",
+                        "LICENSE",
                         "lib/pseudohikiparser.rb",
                         "lib/pseudohiki/treestack.rb",
                         "lib/pseudohiki/inlineparser.rb",
