@@ -93,14 +93,14 @@ module PseudoHiki
 
     def format(tree)
       formatter = get_plain
-      tree.accept(formatter).join("")
+      tree.accept(formatter).join
     end
 
 ## Definitions of subclasses of PlainTextFormat begins here.
 
     class InlineLeafFormatter < self
       def visit(leaf)
-        leaf.join("")
+        leaf.join
       end
     end
 
@@ -110,15 +110,15 @@ module PseudoHiki
         element = Node.new
         caption = get_caption(tree)
         begin
-          ref = tree.last.join("")
+          ref = tree.last.join
         rescue NoMethodError
           raise NoMethodError unless tree.empty?
           STDERR.puts "No uri is specified for #{caption}"
         end
         if ImageSuffix =~ ref
-          element.push (caption||tree).join("")
+          element.push (caption||tree).join
         else
-          element.push caption||tree.join("")
+          element.push caption||tree.join
           element.push " (#{tree.join('')})" if @options.verbose_mode and caption
         end
         element
@@ -149,7 +149,7 @@ module PseudoHiki
           push_visited_results(element, tree.shift(dt_sep_index))
           tree.shift
         end
-        dd = tree.map {|token| visited_result(token) }.join("").lstrip
+        dd = tree.map {|token| visited_result(token) }.join.lstrip
         unless dd.empty?
           element.push element.empty? ? "\t" : ":\t"
           element.push dd
@@ -160,7 +160,7 @@ module PseudoHiki
 
     class VerbatimNodeFormatter < self
       def visit(tree)
-        tree.join("")
+        tree.join
       end
     end
 
@@ -193,7 +193,7 @@ ERROR_TEXT
             end
           end
         end
-        table.map {|row| row.join("\t")+$/ }.join("")
+        table.map {|row| row.join("\t")+$/ }.join
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
