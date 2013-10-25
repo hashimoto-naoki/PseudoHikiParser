@@ -12,9 +12,7 @@ module PseudoHiki
     DescSep = [InlineParser::DescSep]
 
     class Node < Array
-      def to_s
-        self.join("")
-      end
+      alias to_s join
     end
 
     def create_self_element(tree=nil)
