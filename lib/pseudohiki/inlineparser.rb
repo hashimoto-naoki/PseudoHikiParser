@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'pseudohiki/treestack'
-require 'htmlelement'
 
 module PseudoHiki
   PROTOCOL = /^((https?|file|ftp):|\.?\/)/

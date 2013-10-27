@@ -2,6 +2,7 @@
 
 require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
+require 'htmlelement'
 
 module PseudoHiki
   class HtmlFormat
