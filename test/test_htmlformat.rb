@@ -146,6 +146,19 @@ HTML
     assert_equal(html,convert_text_to_html(text))
   end
 
+  def test_table_with_link
+    text = <<TEXT
+||[[a link|http://www.example.org/]]||another cell
+TEXT
+
+    html = <<HTML
+<table>
+<tr><td><a href="http://www.example.org/">a link</a></td><td>another cell</td></tr>
+</table>
+HTML
+    assert_equal(html,convert_text_to_html(text))
+  end
+
   def test_hr
     text = <<TEXT
 paragraph
