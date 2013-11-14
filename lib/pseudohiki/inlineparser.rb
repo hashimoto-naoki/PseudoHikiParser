@@ -124,6 +124,7 @@ module PseudoHiki
     class InlineElement::TableCellNode
       def parse_first_token(token)
         @cell_type, @rowspan, @colspan, parsed_token = TD, 1, 1, token.dup
+        return token if token.kind_of? InlineParser::LinkNode
         token_str = parsed_token[0]
         m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
 
