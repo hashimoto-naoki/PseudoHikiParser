@@ -159,6 +159,32 @@ HTML
     assert_equal(html,convert_text_to_html(text))
   end
 
+  def test_table_with_emphasis
+    text = <<TEXT
+||''put'' emphasis on the first word||another cell
+TEXT
+
+    html = <<HTML
+<table>
+<tr><td><em>put</em> emphasis on the first word</td><td>another cell</td></tr>
+</table>
+HTML
+    assert_equal(html,convert_text_to_html(text))
+  end
+
+  def test_table_with_strong
+    text = <<TEXT
+||'''strong''' is used for the first word.||another cell
+TEXT
+
+    html = <<HTML
+<table>
+<tr><td><strong>strong</strong> is used for the first word.</td><td>another cell</td></tr>
+</table>
+HTML
+    assert_equal(html,convert_text_to_html(text))
+  end
+
   def test_hr
     text = <<TEXT
 paragraph
