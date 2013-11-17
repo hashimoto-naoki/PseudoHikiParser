@@ -17,8 +17,8 @@ class HtmlTemplate
     @content_language = create_meta("Content-Language", language)
     @base = set_path_to_base(base_uri)
     @content_type = set_charset_in_meta(charset)
-    @content_style_type = create_meta("Content-Style-Type","text/css")
-    @content_script_type = create_meta("Content-Script-Type","text/javascript")
+    @content_style_type = create_meta("Content-Style-Type", "text/css")
+    @content_script_type = create_meta("Content-Script-Type", "text/javascript")
     @default_css_link = create_css_link(css_link)
     @title = nil
     @title_element = create_element("title")
@@ -105,7 +105,7 @@ class HtmlTemplate
 
   private
 
-  def create_meta(type,content)
+  def create_meta(type, content)
     create_element("meta", nil,
                    "http-equiv" => type,
                    "content" => content)
@@ -119,7 +119,7 @@ class HtmlTemplate
   end
 
   def set_charset_in_meta(charset)
-    create_meta("Content-Type",META_CHARSET%[charset])
+    create_meta("Content-Type", META_CHARSET%[charset])
   end
 
   def set_path_to_base(base_uri)
