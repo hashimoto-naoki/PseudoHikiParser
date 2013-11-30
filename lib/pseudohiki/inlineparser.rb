@@ -9,6 +9,10 @@ module PseudoHiki
   FILE_MARK = "file:///"
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 
+  def self.subclass_of(parent_class, bound_env, subclass_names)
+    subclass_names. each {|name| eval "class #{name} < #{parent_class}; end", bound_env  }
+  end
+
   def self.compile_token_pat(*token_sets)
     tokens = token_sets.flatten.uniq.sort do |x,y|
       [y.length, y] <=> [x.length, x]
