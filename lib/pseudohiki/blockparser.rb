@@ -183,33 +183,19 @@ module PseudoHiki
     end
 
     module BlockElement
-      class DescLeaf < BlockLeaf; end
-      class VerbatimLeaf < BlockLeaf; end
-      class QuoteLeaf < NonNestedBlockLeaf; end
-      class TableLeaf < BlockLeaf; end
-      class CommentOutLeaf < BlockLeaf; end
-      class HeadingLeaf < NestedBlockLeaf; end
-      class ParagraphLeaf < NonNestedBlockLeaf; end
-      class HrLeaf < BlockLeaf; end
-      class BlockNodeEnd < BlockLeaf; end
-
-      class ListLeaf < ListTypeLeaf; end
-      class EnumLeaf < ListTypeLeaf; end
-
-      class DescNode < BlockNode; end
-      class VerbatimNode < BlockNode; end
-      class QuoteNode < NonNestedBlockNode; end
-      class TableNode < BlockNode; end
-      class CommentOutNode < BlockNode; end
-      class HeadingNode < NestedBlockNode; end
-      class ParagraphNode < NonNestedBlockNode; end
-      class HrNode < BlockNode; end
-
-      class ListNode < ListTypeBlockNode; end
-      class EnumNode < ListTypeBlockNode; end
-
-      class ListWrapNode < ListLeafNode; end
-      class EnumWrapNode < ListLeafNode; end
+      {
+        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf),
+        NonNestedBlockLeaf => %w(QuoteLeaf ParagraphLeaf),
+        NestedBlockLeaf => %w(HeadingLeaf),
+        ListTypeLeaf => %w(ListLeaf EnumLeaf),
+        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode),
+        NonNestedBlockNode => %w(QuoteNode ParagraphNode),
+        NestedBlockNode => %w(HeadingNode),
+        ListTypeBlockNode => %w(ListNode EnumNode),
+        ListLeafNode => %w(ListWrapNode EnumWrapNode)
+      }.each do |parent_class, children|
+        PseudoHiki.subclass_of(parent_class, binding, children)
+      end
     end
     include BlockElement
 

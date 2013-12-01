@@ -26,12 +26,8 @@ module PseudoHiki
       class InlineLeaf < InlineParser::Leaf; end
       #  class LinkSepLeaf < InlineLeaf; end
 
-      class LinkNode < InlineNode; end
-      class EmNode < InlineNode; end
-      class StrongNode < InlineNode; end
-      class DelNode < InlineNode; end
-      class PlainNode < InlineNode; end
-      class PluginNode < InlineNode; end
+      PseudoHiki.subclass_of(InlineNode, binding,
+                             %w(LinkNode EmNode StrongNode DelNode PlainNode PluginNode))
 
       LinkSep, TableSep, DescSep = %w(| || :)
     end
