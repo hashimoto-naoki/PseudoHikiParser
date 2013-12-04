@@ -185,6 +185,16 @@ HTML
     assert_equal(html,convert_text_to_html(text))
   end
 
+  def test_table_with_empty_cell_at_the_end
+    row = "||cell 1||cell 2||"
+    html = <<HTML
+<table>
+<tr><td>cell 1</td><td>cell 2</td><td></td></tr>
+</table>
+HTML
+    assert_equal(html,convert_text_to_html(row))
+  end
+
   def test_hr
     text = <<TEXT
 paragraph
