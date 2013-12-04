@@ -111,6 +111,11 @@ module PseudoHiki
     module InlineElement
       class TableCellNode < InlineParser::InlineElement::InlineNode
         attr_accessor :cell_type, :rowspan, :colspan
+
+        def initialize
+          super
+          @cell_type, @rowspan, @colspan = TD, 1, 1
+        end
       end
     end
     include InlineElement
@@ -123,8 +128,8 @@ module PseudoHiki
 
     class InlineElement::TableCellNode
       def parse_first_token(token)
-        @cell_type, @rowspan, @colspan, parsed_token = TD, 1, 1, token.dup
         return token if token.kind_of? InlineParser::InlineNode
+        parsed_token = token.dup
         token_str = parsed_token[0]
         m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
 
