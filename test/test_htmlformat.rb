@@ -192,6 +192,9 @@ HTML
 <tr><td>cell 1</td><td>cell 2</td><td></td></tr>
 </table>
 HTML
+
+# <tr><td>cell 1</td><td>cell 2</td><td>&#160;</td></tr>
+
     assert_equal(html,convert_text_to_html(row))
   end
 

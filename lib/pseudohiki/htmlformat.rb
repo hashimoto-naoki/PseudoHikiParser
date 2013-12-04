@@ -168,6 +168,7 @@ module PseudoHiki
         super(tree).tap do |element|
           element["rowspan"] = tree.rowspan if tree.rowspan > 1
           element["colspan"] = tree.colspan if tree.colspan > 1
+          # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
         end
       end
     end
