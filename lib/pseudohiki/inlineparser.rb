@@ -131,18 +131,18 @@ module PseudoHiki
         return token if token.kind_of? InlineParser::InlineNode
         parsed_token = token.dup
         token_str = parsed_token[0]
-        m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
 
-        if m
-          cell_modifiers = m[0].split(//o)
-          if cell_modifiers.first == TH_PAT
-            cell_modifiers.shift
+        if m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
+          cell_modifiers = m[0]
+          if cell_modifiers[0] == TH_PAT
+            cell_modifiers[0] = ""
             @cell_type = TH
           end
-          parsed_token[0] = token_str.sub(MODIFIED_CELL_PAT,"")
+          parsed_token[0] = token_str.sub(MODIFIED_CELL_PAT, "")
           @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
           @colspan = cell_modifiers.count(COL_EXPANDER) + 1
         end
+
         parsed_token
       end
 
