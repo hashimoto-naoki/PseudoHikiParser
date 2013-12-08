@@ -224,6 +224,8 @@ module PseudoHiki
       attr_writer :in_block_tag
 
       def add_leaf(line, verbatim_leaf, blockparser)
+        return @stack.pop if LINE_PAT::VERBATIM_END =~ line
+
         if @in_block_tag
           line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
           blockparser.stack.push verbatim_leaf.create(line)
@@ -336,12 +338,8 @@ module PseudoHiki
 
     def add_verbatim_block(lines)
       @stack.push VerbatimNode.new.tap {|node| node.in_block_tag = true }
-      until lines.empty? or LINE_PAT::VERBATIM_END =~ lines.first
+      until lines.empty? or not @stack.current_node.kind_of? VerbatimNode
         @stack.current_node.add_leaf(lines.shift, VerbatimLeaf, self)
-      end
-      if LINE_PAT::VERBATIM_END =~ lines.first
-        lines.shift
-        @stack.pop
       end
     end
 
