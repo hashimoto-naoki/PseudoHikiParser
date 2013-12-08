@@ -365,6 +365,52 @@ HTML
     assert_equal(xhtml5, Xhtml5Format.format(tree).to_s)
   end
 
+  def test_string_as_input
+    text = <<TEXT
+!heading1
+
+paragraph1.
+paragraph2.
+""citation1
+paragraph3.
+----
+
+*list1
+*list2
+TEXT
+
+    html = <<HTML
+<div class="section h1">
+<h1>heading1
+</h1>
+<p>
+paragraph1.
+paragraph2.
+</p>
+<blockquote>
+<p>
+citation1
+</p>
+</blockquote>
+<p>
+paragraph3.
+</p>
+<hr />
+<ul>
+<li>list1
+</li>
+<li>list2
+</li>
+</ul>
+<!-- end of section h1 -->
+</div>
+HTML
+
+    formatter = XhtmlFormat.get_plain
+    tree = BlockParser.parse(text)
+    assert_equal(html,tree.accept(formatter).to_s)
+  end
+
   def test_xhtml_list
     text = <<TEXT
 *list1(1)
