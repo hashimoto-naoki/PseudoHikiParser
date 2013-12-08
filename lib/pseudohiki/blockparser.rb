@@ -334,9 +334,8 @@ module PseudoHiki
     end
 
     def read_lines(lines)
-      while line = lines.shift
-        @stack.current_node.add_leaf(line, self)
-      end
+      each_line = lines.respond_to?(:each_line) ? :each_line : :each
+      lines.send(each_line) {|line| @stack.current_node.add_leaf(line, self) }
       @stack.pop
     end
   end
