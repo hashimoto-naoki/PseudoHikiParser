@@ -220,6 +220,19 @@ module PseudoHiki
       def push_self(stack); end
     end
 
+    class BlockElement::VerbatimNode
+      attr_writer :in_block_tag
+
+      def add_leaf(line, verbatim_leaf, blockparser)
+        if @in_block_tag
+          line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
+          blockparser.stack.push verbatim_leaf.create(line)
+        else
+          super(line, verbatim_leaf, blockparser)
+        end
+      end
+    end
+
     class BlockElement::QuoteNode
       def parse_leafs
         self[0] = BlockParser.parse(self[0])
@@ -322,11 +335,14 @@ module PseudoHiki
     end
 
     def add_verbatim_block(lines)
+      @stack.push VerbatimNode.new.tap {|node| node.in_block_tag = true }
       until lines.empty? or LINE_PAT::VERBATIM_END =~ lines.first
-        lines[0] = " " + lines[0] if BlockNodeEnd.head_re =~ lines.first
-        @stack.push(VerbatimLeaf.create(lines.shift))
+        @stack.current_node.add_leaf(lines.shift, VerbatimLeaf, self)
       end
-      lines.shift if LINE_PAT::VERBATIM_END =~ lines.first
+      if LINE_PAT::VERBATIM_END =~ lines.first
+        lines.shift
+        @stack.pop
+      end
     end
 
     def read_lines(lines)
