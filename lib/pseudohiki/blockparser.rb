@@ -161,8 +161,16 @@ module PseudoHiki
 
       def parse_leafs; end
 
+      def in_link_tag?(preceding_str)
+        preceding_str[-2,2] == "[[" or preceding_str[-1,1] == "|"
+      end
+
+      def tagfy_link(line)
+        line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
+      end
+
       def add_leaf(line, verbatim_leaf=VerbatimLeaf, blockparser)
-        line = blockparser.tagfy_link(line) unless verbatim_leaf.head_re =~ line
+        line = tagfy_link(line) unless verbatim_leaf.head_re =~ line
         leaf = blockparser.select_leaf_type(line).create(line)
         while blockparser.breakable?(leaf)
           blockparser.stack.pop
@@ -304,14 +312,6 @@ module PseudoHiki
 
     def breakable?(breaker)
       @stack.current_node.breakable?(breaker)
-    end
-
-    def in_link_tag?(preceding_str)
-      preceding_str[-2,2] == "[[" or preceding_str[-1,1] == "|"
-    end
-
-    def tagfy_link(line)
-      line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
     end
 
     def select_leaf_type(line)
