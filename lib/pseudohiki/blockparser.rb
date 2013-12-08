@@ -339,16 +339,9 @@ module PseudoHiki
       ParagraphLeaf
     end
 
-    def add_verbatim_block(lines)
-      until lines.empty? or not @stack.current_node.kind_of? VerbatimNode
-        @stack.current_node.add_leaf(lines.shift, VerbatimLeaf, self)
-      end
-    end
-
     def read_lines(lines)
       while line = lines.shift
         @stack.current_node.add_leaf(line, VerbatimLeaf, self)
-        add_verbatim_block(lines) if LINE_PAT::VERBATIM_BEGIN =~ line
       end
       @stack.pop
     end
