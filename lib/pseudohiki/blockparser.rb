@@ -169,11 +169,11 @@ module PseudoHiki
         line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
       end
 
-      def add_leaf(line, verbatim_leaf=VerbatimLeaf, blockparser)
+      def add_leaf(line, blockparser)
         if LINE_PAT::VERBATIM_BEGIN =~ line
-          return blockparser.stack.push verbatim_leaf.new.block.new.tap {|node| node.in_block_tag = true }
+          return blockparser.stack.push BlockElement::VerbatimNode.new.tap {|node| node.in_block_tag = true }
         end
-        line = tagfy_link(line) unless verbatim_leaf.head_re =~ line
+        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
         leaf = blockparser.select_leaf_type(line).create(line)
         while blockparser.breakable?(leaf)
           blockparser.stack.pop
@@ -226,14 +226,14 @@ module PseudoHiki
     class BlockElement::VerbatimNode
       attr_writer :in_block_tag
 
-      def add_leaf(line, verbatim_leaf, blockparser)
+      def add_leaf(line, blockparser)
         return @stack.pop if LINE_PAT::VERBATIM_END =~ line
 
         if @in_block_tag
           line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
-          blockparser.stack.push verbatim_leaf.create(line)
+          @stack.push BlockElement::VerbatimLeaf.create(line)
         else
-          super(line, verbatim_leaf, blockparser)
+          super(line, blockparser)
         end
       end
     end
@@ -341,7 +341,7 @@ module PseudoHiki
 
     def read_lines(lines)
       while line = lines.shift
-        @stack.current_node.add_leaf(line, VerbatimLeaf, self)
+        @stack.current_node.add_leaf(line, self)
       end
       @stack.pop
     end
