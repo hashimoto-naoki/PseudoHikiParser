@@ -160,6 +160,15 @@ module PseudoHiki
       end
 
       def parse_leafs; end
+
+      def add_leaf(line, verbatim_leaf=VerbatimLeaf, blockparser)
+        line = blockparser.tagfy_link(line) unless verbatim_leaf.head_re =~ line
+        leaf = blockparser.select_leaf_type(line).create(line)
+        while blockparser.breakable?(leaf)
+          blockparser.stack.pop
+        end
+        blockparser.stack.push leaf
+      end
     end
 
     class NonNestedBlockNode < BlockNode
@@ -320,21 +329,12 @@ module PseudoHiki
       lines.shift if LINE_PAT::VERBATIM_END =~ lines.first
     end
 
-    def add_leaf(line)
-      line = tagfy_link(line) unless VerbatimLeaf.head_re =~ line
-      leaf = select_leaf_type(line).create(line)
-      while breakable?(leaf)
-        @stack.pop
-      end
-      @stack.push leaf
-    end
-
     def read_lines(lines)
       while line = lines.shift
         if LINE_PAT::VERBATIM_BEGIN =~ line
           add_verbatim_block(lines)
         else
-          add_leaf(line)
+          @stack.current_node.add_leaf(line, VerbatimLeaf, self)
         end
       end
       @stack.pop
