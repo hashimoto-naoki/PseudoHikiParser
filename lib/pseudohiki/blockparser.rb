@@ -170,6 +170,9 @@ module PseudoHiki
       end
 
       def add_leaf(line, verbatim_leaf=VerbatimLeaf, blockparser)
+        if LINE_PAT::VERBATIM_BEGIN =~ line
+          return blockparser.stack.push verbatim_leaf.new.block.new.tap {|node| node.in_block_tag = true }
+        end
         line = tagfy_link(line) unless verbatim_leaf.head_re =~ line
         leaf = blockparser.select_leaf_type(line).create(line)
         while blockparser.breakable?(leaf)
@@ -337,7 +340,6 @@ module PseudoHiki
     end
 
     def add_verbatim_block(lines)
-      @stack.push VerbatimNode.new.tap {|node| node.in_block_tag = true }
       until lines.empty? or not @stack.current_node.kind_of? VerbatimNode
         @stack.current_node.add_leaf(lines.shift, VerbatimLeaf, self)
       end
@@ -345,11 +347,8 @@ module PseudoHiki
 
     def read_lines(lines)
       while line = lines.shift
-        if LINE_PAT::VERBATIM_BEGIN =~ line
-          add_verbatim_block(lines)
-        else
-          @stack.current_node.add_leaf(line, VerbatimLeaf, self)
-        end
+        @stack.current_node.add_leaf(line, VerbatimLeaf, self)
+        add_verbatim_block(lines) if LINE_PAT::VERBATIM_BEGIN =~ line
       end
       @stack.pop
     end
