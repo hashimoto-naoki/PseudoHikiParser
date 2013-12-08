@@ -321,6 +321,7 @@ module PseudoHiki
     end
 
     def add_leaf(line)
+      line = tagfy_link(line) unless VerbatimLeaf.head_re =~ line
       leaf = select_leaf_type(line).create(line)
       while breakable?(leaf)
         @stack.pop
@@ -333,7 +334,6 @@ module PseudoHiki
         if LINE_PAT::VERBATIM_BEGIN =~ line
           add_verbatim_block(lines)
         else
-          line = self.tagfy_link(line) unless VerbatimLeaf.head_re =~ line
           add_leaf(line)
         end
       end
