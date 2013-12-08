@@ -228,13 +228,9 @@ module PseudoHiki
 
       def add_leaf(line, blockparser)
         return @stack.pop if LINE_PAT::VERBATIM_END =~ line
-
-        if @in_block_tag
-          line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
-          @stack.push BlockElement::VerbatimLeaf.create(line)
-        else
-          super(line, blockparser)
-        end
+        return super(line, blockparser) unless @in_block_tag
+        line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
+        @stack.push BlockElement::VerbatimLeaf.create(line)
       end
     end
 
