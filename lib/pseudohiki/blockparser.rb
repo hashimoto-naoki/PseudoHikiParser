@@ -24,10 +24,9 @@ module PseudoHiki
 #      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
       head = leaf[0]
       return unless head.kind_of? String
-      m = ID_TAG_PAT.match(head)
-      if m
+      if m = ID_TAG_PAT.match(head)
         node.node_id = m[1]
-        leaf[0] = head.sub(ID_TAG_PAT,"")
+        leaf[0] = head.sub(ID_TAG_PAT, "")
       end
       node
     end
@@ -63,7 +62,7 @@ module PseudoHiki
       end
 
       def self.create(line, inline_parser=InlineParser)
-        line.sub!(self.head_re,"") if self.head_re
+        line.sub!(self.head_re, "") if self.head_re
         leaf = self.new
         leaf.concat(inline_parser.parse(line))
       end
@@ -105,7 +104,7 @@ module PseudoHiki
       include TreeStack::Mergeable
 
       def self.create(line)
-        line.sub!(self.head_re,"") if self.head_re
+        line.sub!(self.head_re, "") if self.head_re
         self.new.tap {|leaf| leaf.push line }
       end
 
@@ -162,7 +161,7 @@ module PseudoHiki
       def parse_leafs; end
 
       def in_link_tag?(preceding_str)
-        preceding_str[-2,2] == "[[" or preceding_str[-1,1] == "|"
+        preceding_str[-2, 2] == "[[" or preceding_str[-1, 1] == "|"
       end
 
       def tagfy_link(line)
@@ -247,7 +246,7 @@ module PseudoHiki
 
     class BlockElement::VerbatimLeaf
       def self.create(line)
-        line.sub!(self.head_re,"") if self.head_re
+        line.sub!(self.head_re, "") if self.head_re
         self.new.tap {|leaf| leaf.push line }
       end
     end
@@ -329,7 +328,7 @@ module PseudoHiki
     def select_leaf_type(line)
       [BlockNodeEnd, HrLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
-      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0,1]] || HeadToLeaf['\s'] if matched
+      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || HeadToLeaf['\s'] if matched
       ParagraphLeaf
     end
 
