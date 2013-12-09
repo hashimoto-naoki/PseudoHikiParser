@@ -127,23 +127,21 @@ module PseudoHiki
     MODIFIED_CELL_PAT = /^!?[>^]*/o
 
     class InlineElement::TableCellNode
-      def parse_first_token(token)
-        return token if token.kind_of? InlineParser::InlineNode
-        parsed_token = token.dup
-        token_str = parsed_token[0]
-
-        if m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
-          cell_modifiers = m[0]
-          if cell_modifiers[0] == TH_PAT
-            cell_modifiers[0] = ""
-            @cell_type = TH
-          end
-          parsed_token[0] = token_str.sub(MODIFIED_CELL_PAT, "")
-          @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
-          @colspan = cell_modifiers.count(COL_EXPANDER) + 1
+      def parse_cellspan(token_str)
+        return token_str if m = MODIFIED_CELL_PAT.match(token_str) and m[0].empty? #if token.kind_of? String
+        cell_modifiers = m[0]
+        if cell_modifiers[0] == TH_PAT
+          cell_modifiers[0] = ""
+          @cell_type = TH
         end
+        @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
+        @colspan = cell_modifiers.count(COL_EXPANDER) + 1
+        token_str.sub(MODIFIED_CELL_PAT, "")
+      end
 
-        parsed_token
+      def parse_first_token(orig_tokens)
+        return orig_tokens if orig_tokens.kind_of? InlineParser::InlineNode
+        orig_tokens.dup.tap {|tokens| tokens[0] = parse_cellspan(tokens[0]) }
       end
 
       def push(token)
