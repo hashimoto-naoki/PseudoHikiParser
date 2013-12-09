@@ -130,7 +130,7 @@ module PseudoHiki
       def parse_cellspan(token_str)
         return token_str if m = MODIFIED_CELL_PAT.match(token_str) and m[0].empty? #if token.kind_of? String
         cell_modifiers = m[0]
-        if cell_modifiers[0] == TH_PAT
+        if cell_modifiers[0].chr == TH_PAT
           cell_modifiers[0] = ""
           @cell_type = TH
         end
