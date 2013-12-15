@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'treestack'
+require 'pseudohiki/treestack'
 require 'pseudohiki/inlineparser'
 
 module PseudoHiki
-
   class BlockParser
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
     ID_TAG_PAT = /^\[([^\[\]]+)\]/o
@@ -17,7 +16,6 @@ module PseudoHiki
     end
 
     ParentNode = {}
-
     HeadToLeaf = {}
 
     attr_reader :stack
@@ -26,12 +24,17 @@ module PseudoHiki
 #      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
       head = leaf[0]
       return unless head.kind_of? String
-      m = ID_TAG_PAT.match(head)
-      if m
+      if m = ID_TAG_PAT.match(head)
         node.node_id = m[1]
-        leaf[0] = head.sub(ID_TAG_PAT,"")
+        leaf[0] = head.sub(ID_TAG_PAT, "")
       end
       node
+    end
+
+    def self.parse(lines)
+      parser = self.new
+      parser.read_lines(lines)
+      parser.stack.tree
     end
 
     class BlockStack < TreeStack
@@ -43,8 +46,7 @@ module PseudoHiki
 
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
-      attr_accessor :nominal_level
-      attr_accessor :node_id
+      attr_accessor :nominal_level, :node_id
 
       def self.head_re=(head_regex)
         @@head_re[self] = head_regex
@@ -59,7 +61,7 @@ module PseudoHiki
       end
 
       def self.create(line, inline_parser=InlineParser)
-        line.sub!(self.head_re,"") if self.head_re
+        line.sub!(self.head_re, "") if self.head_re
         leaf = self.new
         leaf.concat(inline_parser.parse(line))
       end
@@ -91,7 +93,7 @@ module PseudoHiki
       end
 
       def parse_leafs
-        parsed = InlineParser.parse(self.join(""))
+        parsed = InlineParser.parse(self.join)
         self.clear
         self.concat(parsed)
       end
@@ -101,10 +103,8 @@ module PseudoHiki
       include TreeStack::Mergeable
 
       def self.create(line)
-        line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
-        leaf
+        line.sub!(self.head_re, "") if self.head_re
+        self.new.tap {|leaf| leaf.push line }
       end
 
       def push_self(stack)
@@ -124,9 +124,7 @@ module PseudoHiki
 
       def self.create(line)
         m = self.head_re.match(line)
-        leaf = super(line)
-        leaf.nominal_level = m[0].length
-        leaf
+        super(line).tap {|leaf| leaf.nominal_level = m[0].length }
       end
 
       def self.with_depth?
@@ -160,6 +158,24 @@ module PseudoHiki
       end
 
       def parse_leafs; end
+
+      def in_link_tag?(preceding_str)
+        preceding_str[-2, 2] == "[[" or preceding_str[-1, 1] == "|"
+      end
+
+      def tagfy_link(line)
+        line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
+      end
+
+      def add_leaf(line, blockparser)
+        if LINE_PAT::VERBATIM_BEGIN =~ line
+          return blockparser.stack.push BlockElement::VerbatimNode.new.tap {|node| node.in_block_tag = true }
+        end
+        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
+        leaf = blockparser.select_leaf_type(line).create(line)
+        blockparser.stack.pop while blockparser.breakable?(leaf)
+        blockparser.stack.push leaf
+      end
     end
 
     class NonNestedBlockNode < BlockNode
@@ -172,49 +188,46 @@ module PseudoHiki
 
     class ListTypeBlockNode < NestedBlockNode
       def breakable?(breaker)
-        (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level) ? false : true
+        not (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level)
       end
     end
 
     class ListLeafNode < NestedBlockNode
       def breakable?(breaker)
-        (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level) ? false : true
+        not (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level)
       end
     end
 
     module BlockElement
-      class DescLeaf < BlockLeaf; end
-      class VerbatimLeaf < BlockLeaf; end
-      class QuoteLeaf < NonNestedBlockLeaf; end
-      class TableLeaf < BlockLeaf; end
-      class CommentOutLeaf < BlockLeaf; end
-      class HeadingLeaf < NestedBlockLeaf; end
-      class ParagraphLeaf < NonNestedBlockLeaf; end
-      class HrLeaf < BlockLeaf; end
-      class BlockNodeEnd < BlockLeaf; end
-
-      class ListLeaf < ListTypeLeaf; end
-      class EnumLeaf < ListTypeLeaf; end
-
-      class DescNode < BlockNode; end
-      class VerbatimNode < BlockNode; end
-      class QuoteNode < NonNestedBlockNode; end
-      class TableNode < BlockNode; end
-      class CommentOutNode < BlockNode; end
-      class HeadingNode < NestedBlockNode; end
-      class ParagraphNode < NonNestedBlockNode; end
-      class HrNode < BlockNode; end
-
-      class ListNode < ListTypeBlockNode; end
-      class EnumNode < ListTypeBlockNode; end
-
-      class ListWrapNode < ListLeafNode; end
-      class EnumWrapNode < ListLeafNode; end
+      {
+        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf),
+        NonNestedBlockLeaf => %w(QuoteLeaf ParagraphLeaf),
+        NestedBlockLeaf => %w(HeadingLeaf),
+        ListTypeLeaf => %w(ListLeaf EnumLeaf),
+        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode),
+        NonNestedBlockNode => %w(QuoteNode ParagraphNode),
+        NestedBlockNode => %w(HeadingNode),
+        ListTypeBlockNode => %w(ListNode EnumNode),
+        ListLeafNode => %w(ListWrapNode EnumWrapNode)
+      }.each do |parent_class, children|
+        PseudoHiki.subclass_of(parent_class, binding, children)
+      end
     end
     include BlockElement
 
     class BlockElement::BlockNodeEnd
       def push_self(stack); end
+    end
+
+    class BlockElement::VerbatimNode
+      attr_writer :in_block_tag
+
+      def add_leaf(line, blockparser)
+        return @stack.pop if LINE_PAT::VERBATIM_END =~ line
+        return super(line, blockparser) unless @in_block_tag
+        line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
+        @stack.push BlockElement::VerbatimLeaf.create(line)
+      end
     end
 
     class BlockElement::QuoteNode
@@ -232,9 +245,8 @@ module PseudoHiki
 
     class BlockElement::VerbatimLeaf
       def self.create(line)
-        line.sub!(self.head_re,"") if self.head_re
-        leaf = self.new
-        leaf.push line
+        line.sub!(self.head_re, "") if self.head_re
+        self.new.tap {|leaf| leaf.push line }
       end
     end
 
@@ -312,219 +324,17 @@ module PseudoHiki
       @stack.current_node.breakable?(breaker)
     end
 
-    def tagfy_link(line)
-      line.gsub(URI_RE) do |url|
-        unless ($`)[-2,2] == "[[" or ($`)[-1,1] == "|"
-          "[[#{url}]]"
-        else
-          url
-        end
-      end
-    end
-
     def select_leaf_type(line)
       [BlockNodeEnd, HrLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
-      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0,1]] || HeadToLeaf['\s'] if matched
+      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || HeadToLeaf['\s'] if matched
       ParagraphLeaf
     end
 
-    def add_verbatim_block(lines)
-      until lines.empty? or LINE_PAT::VERBATIM_END =~ lines.first
-        lines[0] = " " + lines[0] if BlockNodeEnd.head_re =~ lines.first
-        @stack.push(VerbatimLeaf.create(lines.shift))
-      end
-      lines.shift if LINE_PAT::VERBATIM_END =~ lines.first
-    end
-
-    def add_leaf(line)
-      leaf = select_leaf_type(line).create(line)
-      while breakable?(leaf)
-        @stack.pop
-      end
-      @stack.push leaf
-    end
-
     def read_lines(lines)
-      while line = lines.shift
-        if LINE_PAT::VERBATIM_BEGIN =~ line
-          add_verbatim_block(lines)
-        else
-          line = self.tagfy_link(line) unless VerbatimLeaf.head_re =~ line
-          add_leaf(line)
-        end
-      end
+      each_line = lines.respond_to?(:each_line) ? :each_line : :each
+      lines.send(each_line) {|line| @stack.current_node.add_leaf(line, self) }
       @stack.pop
-    end
-
-    def self.parse(lines)
-      parser = self.new
-      parser.read_lines(lines)
-      parser.stack.tree
-    end
-  end
-end
-
-module PseudoHiki
-  class HtmlFormat
-    include BlockParser::BlockElement
-    include TableRowParser::InlineElement
-
-    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
-    SECTION = "section"
-    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
-    DescSep = [InlineParser::DescSep]
-
-    class VerbatimNodeFormatter < self
-      def visit(tree)
-        create_self_element.configure do |element|
-          contents = HtmlElement.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            create_element("a").configure do |a|
-              a.push url
-              a["href"] = url
-            end.to_s
-          end
-          element.push contents
-        end
-      end
-    end
-
-    class CommentOutNodeFormatter < self
-      def visit(tree); ""; end
-    end
-
-    class HeadingNodeFormatter < self
-      def create_self_element(tree)
-        super(tree).configure do |element|
-          element['class'] ||= ""
-          element['class'] +=  " h#{tree.first.nominal_level}"
-        end
-      end
-    end
-
-    class DescLeafFormatter < self
-      def visit(tree)
-        tree = tree.dup
-        dt = create_self_element(tree)
-        dd = create_element(DD)
-        element = HtmlElement::Children.new
-        element.push dt
-        dt_sep_index = tree.index(DescSep)
-        if dt_sep_index
-          tree.shift(dt_sep_index).each do |token|
-            dt.push visited_result(token)
-          end
-          tree.shift
-          unless tree.empty?
-            tree.each {|token| dd.push visited_result(token) }
-            element.push dd
-          end
-        else
-          tree.each {|token| dt.push visited_result(token) }
-        end
-        element
-      end
-    end
-
-    class TableCellNodeFormatter < self
-      def visit(tree)
-        @element_name = tree.cell_type
-        create_self_element.configure do |element|
-          element["rowspan"] = tree.rowspan if tree.rowspan > 1
-          element["colspan"] = tree.colspan if tree.colspan > 1
-          tree.each {|token| element.push visited_result(token) }
-        end
-      end
-    end
-
-    class HeadingLeafFormatter < self
-      def create_self_element(tree)
-        create_element(@element_name+tree.nominal_level.to_s).configure do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    class ListLeafNodeFormatter < self
-      def create_self_element(tree)
-        super(tree).configure do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    [[DescNode, DESC],
-#     [VerbatimNode, VERB],
-     [QuoteNode, QUOTE],
-     [TableNode, TABLE],
-#     [CommentOutNode, nil],
-#     [HeadingNode, SECTION],
-     [ParagraphNode, PARA],
-     [HrNode, HR],
-     [ListNode, UL],
-     [EnumNode, OL],
-#     [DescLeaf, DT],
-     [TableLeaf, TR],
-#     [HeadingLeaf, HEADING],
-#     [ListLeaf, LI],
-#     [EnumLeaf, LI],
-#     [ListWrapNode, LI],
-#     [EnumWrapNode, LI]
-    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
-
-    Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
-    Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
-    Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
-    Formatter[DescLeaf] = DescLeafFormatter.new(DT)
-    Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
-    Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
-    Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
-    Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
-
-    class << Formatter[DescNode]
-    end
-
-    class << Formatter[QuoteNode]
-    end
-
-    class << Formatter[TableNode]
-    end
-
-    class << Formatter[ParagraphNode]
-    end
-
-    class << Formatter[HrNode]
-    end
-
-    class << Formatter[ListNode]
-    end
-
-    class << Formatter[EnumNode]
-    end
-
-    class << Formatter[ListLeaf]
-    end
-
-    class << Formatter[EnumLeaf]
-    end
-  end
-
-  class XhtmlFormat < HtmlFormat
-    Formatter = HtmlFormat::Formatter.dup
-
-    Formatter.each do |node_class, formatter|
-      Formatter[node_class] = formatter.dup
-
-      class << Formatter[node_class]
-        def create_element(element_name, content=nil)
-          XhtmlElement.create(element_name, content)
-        end
-
-        def visited_result(element)
-          visitor = Formatter[element.class]||Formatter[PlainNode]
-          element.accept(visitor)
-        end
-      end
     end
   end
 end

@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "bundler/gem_tasks"
 #require 'rake/testtask'
 
 task :default => [:test]
@@ -13,6 +14,7 @@ htmltemplate
 inlineparser
 treestack
 blockparser
+htmlformat
 plaintextformat
 )
   failed_tests = []

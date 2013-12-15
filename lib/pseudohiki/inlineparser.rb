@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'treestack'
-require 'htmlelement'
+require 'pseudohiki/treestack'
 
 module PseudoHiki
   PROTOCOL = /^((https?|file|ftp):|\.?\/)/
@@ -9,6 +8,10 @@ module PseudoHiki
   ROOT_PATH = /^(\/|\\\\|[A-Za-z]:\\)/o
   FILE_MARK = "file:///"
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
+
+  def self.subclass_of(parent_class, bound_env, subclass_names)
+    subclass_names. each {|name| eval "class #{name} < #{parent_class}; end", bound_env  }
+  end
 
   def self.compile_token_pat(*token_sets)
     tokens = token_sets.flatten.uniq.sort do |x,y|
@@ -23,12 +26,8 @@ module PseudoHiki
       class InlineLeaf < InlineParser::Leaf; end
       #  class LinkSepLeaf < InlineLeaf; end
 
-      class LinkNode < InlineNode; end
-      class EmNode < InlineNode; end
-      class StrongNode < InlineNode; end
-      class DelNode < InlineNode; end
-      class PlainNode < InlineNode; end
-      class PluginNode < InlineNode; end
+      PseudoHiki.subclass_of(InlineNode, binding,
+                             %w(LinkNode EmNode StrongNode DelNode PlainNode PluginNode))
 
       LinkSep, TableSep, DescSep = %w(| || :)
     end
@@ -112,6 +111,11 @@ module PseudoHiki
     module InlineElement
       class TableCellNode < InlineParser::InlineElement::InlineNode
         attr_accessor :cell_type, :rowspan, :colspan
+
+        def initialize
+          super
+          @cell_type, @rowspan, @colspan = TD, 1, 1
+        end
       end
     end
     include InlineElement
@@ -123,41 +127,33 @@ module PseudoHiki
     MODIFIED_CELL_PAT = /^!?[>^]*/o
 
     class InlineElement::TableCellNode
-
-      def parse_first_token(token)
-        @cell_type, @rowspan, @colspan, parsed_token = TD, 1, 1, token.dup
-        token_str = parsed_token[0]
-        m = MODIFIED_CELL_PAT.match(token_str) #if token.kind_of? String
-
-        if m
-          cell_modifiers = m[0].split(//o)
-          if cell_modifiers.first == TH_PAT
-            cell_modifiers.shift
-            @cell_type = TH
-          end
-          parsed_token[0] = token_str.sub(MODIFIED_CELL_PAT,"")
-          @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
-          @colspan = cell_modifiers.count(COL_EXPANDER) + 1
+      def parse_cellspan(token_str)
+        return token_str if m = MODIFIED_CELL_PAT.match(token_str) and m[0].empty? #if token.kind_of? String
+        cell_modifiers = m[0]
+        if cell_modifiers[0].chr == TH_PAT
+          cell_modifiers[0] = ""
+          @cell_type = TH
         end
-        parsed_token
+        @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
+        @colspan = cell_modifiers.count(COL_EXPANDER) + 1
+        token_str.sub(MODIFIED_CELL_PAT, "")
+      end
+
+      def parse_first_token(orig_tokens)
+        return orig_tokens if orig_tokens.kind_of? InlineParser::InlineNode
+        orig_tokens.dup.tap {|tokens| tokens[0] = parse_cellspan(tokens[0]) }
       end
 
       def push(token)
-        if self.empty?
-          super(parse_first_token(token))
-        else
-          super(token)
-        end
+        return super(token) unless self.empty?
+        super(parse_first_token(token))
       end
     end
 
     def treated_as_node_end(token)
-      if token == TableSep
-        self.pop
-        return (self.push TableCellNode.new)
-      end
-
-      super(token)
+      return super(token) unless token == TableSep
+      self.pop
+      self.push TableCellNode.new
     end
 
     def parse
@@ -167,112 +163,4 @@ module PseudoHiki
   end
 
   include InlineParser::InlineElement
-end
-
-module PseudoHiki
-  class HtmlFormat
-    include InlineParser::InlineElement
-
-    attr_reader :element_name
-
-    LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
-    HREF, SRC, ALT = %w(href src alt)
-    PLAIN, PLUGIN = %w(plain span)
-
-    Formatter = {}
-
-    def initialize(element_name)
-      @element_name = element_name
-    end
-
-    def create_element(element_name, content=nil)
-      HtmlElement.create(element_name, content)
-    end
-
-    def visited_result(element)
-      visitor = Formatter[element.class]||Formatter[PlainNode]
-      element.accept(visitor)
-    end
-
-    def visit(tree)
-      htmlelement = create_self_element(tree)
-      tree.each do |element|
-        htmlelement.push visited_result(element)
-      end
-      htmlelement
-    end
-
-    def create_self_element(tree=nil)
-      create_element(@element_name)
-    end
-
-    class LinkNodeFormatter < self
-      def visit(tree)
-        tree = tree.dup
-        caption = nil
-        link_sep_index = tree.find_index([LinkSep])
-        if link_sep_index
-          caption = get_caption(tree,link_sep_index)
-          tree.shift(link_sep_index+1)
-        end
-        begin
-          ref = tree.last.join("")
-        rescue NoMethodError
-          if tree.empty?
-            STDERR.puts "No uri is specified for #{caption}"
-          else
-            raise NoMethodError
-          end
-        end
-        if ImageSuffix =~ ref
-          htmlelement = ImgFormat.create_self_element
-          htmlelement[SRC] = tree.join("")
-          htmlelement[ALT] = caption.join("") if caption
-        else
-          htmlelement = create_self_element
-          htmlelement[HREF] = tree.join("")
-          htmlelement.push caption||tree.join("")
-        end
-        htmlelement
-      end
-
-      def get_caption(tree,link_sep_index)
-        tree[0,link_sep_index].collect do |element|
-          visited_result(element)
-        end
-      end
-    end
-
-    class InlineLeafFormatter < self
-      def visit(leaf)
-        HtmlElement.escape(leaf.first)
-      end
-    end
-
-    class PlainNodeFormatter < self
-      def create_self_element(tree=nil)
-        HtmlElement::Children.new
-      end
-    end
-
-    [ [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
-      [PluginNode,PLUGIN]
-    ].each {|node_class,element| Formatter[node_class] = self.new(element) }
-
-    ImgFormat = self.new(IMG)
-    Formatter[LinkNode] = LinkNodeFormatter.new(LINK)
-    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
-    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
-
-    def self.get_plain
-      self::Formatter[PlainNode]
-    end
-
-    def self.format(tree)
-      formatter = self.get_plain
-      tree.accept(formatter)
-    end
-  end
 end

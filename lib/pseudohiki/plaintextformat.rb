@@ -12,10 +12,7 @@ module PseudoHiki
     DescSep = [InlineParser::DescSep]
 
     class Node < Array
-
-      def to_s
-        self.join("")
-      end
+      alias to_s join
     end
 
     def create_self_element(tree=nil)
@@ -27,11 +24,13 @@ module PseudoHiki
       node.accept(visitor)
     end
 
+    def push_visited_results(element, tree)
+      tree.each {|token| element.push visited_result(token) }
+    end
+
     def visit(tree)
       element = create_self_element(tree)
-      tree.each do |node|
-        element.push visited_result(node)
-      end
+      push_visited_results(element, tree)
       element
     end
 
@@ -94,14 +93,14 @@ module PseudoHiki
 
     def format(tree)
       formatter = get_plain
-      tree.accept(formatter).join("")
+      tree.accept(formatter).join
     end
 
 ## Definitions of subclasses of PlainTextFormat begins here.
 
     class InlineLeafFormatter < self
       def visit(leaf)
-        leaf.join("")
+        leaf.join
       end
     end
 
@@ -109,34 +108,28 @@ module PseudoHiki
       def visit(tree)
         tree = tree.dup
         element = Node.new
-        caption = nil
-        link_sep_index = tree.find_index([LinkSep])
-        if link_sep_index
-          caption = get_caption(tree,link_sep_index)
-          tree.shift(link_sep_index+1)
-        end
+        caption = get_caption(tree)
         begin
-          ref = tree.last.join("")
+          ref = tree.last.join
         rescue NoMethodError
-          if tree.empty?
-            STDERR.puts "No uri is specified for #{caption}"
-          else
-            raise NoMethodError
-          end
+          raise NoMethodError unless tree.empty?
+          STDERR.puts "No uri is specified for #{caption}"
         end
         if ImageSuffix =~ ref
-          element.push (caption||tree).join("")
+          element.push (caption||tree).join
         else
-          element.push caption||tree.join("")
+          element.push caption||tree.join
           element.push " (#{tree.join('')})" if @options.verbose_mode and caption
         end
         element
       end
 
-      def get_caption(tree,link_sep_index)
-        tree[0,link_sep_index].collect do |element|
-          visited_result(element)
-        end
+      def get_caption(tree)
+        link_sep_index = tree.find_index([LinkSep])
+        return nil unless link_sep_index
+        caption_part = tree.shift(link_sep_index)
+        tree.shift
+        caption_part.map {|element| visited_result(element) }
       end
     end
 
@@ -153,12 +146,10 @@ module PseudoHiki
         element = create_self_element(tree)
         dt_sep_index = tree.index(DescSep)
         if dt_sep_index
-          tree.shift(dt_sep_index).each do |token|
-            element.push visited_result(token)
-          end
+          push_visited_results(element, tree.shift(dt_sep_index))
           tree.shift
         end
-        dd = tree.map {|token| visited_result(token) }.join("").lstrip
+        dd = tree.map {|token| visited_result(token) }.join.lstrip
         unless dd.empty?
           element.push element.empty? ? "\t" : ":\t"
           element.push dd
@@ -169,7 +160,7 @@ module PseudoHiki
 
     class VerbatimNodeFormatter < self
       def visit(tree)
-        tree.join("")
+        tree.join
       end
     end
 
@@ -202,7 +193,7 @@ ERROR_TEXT
             end
           end
         end
-        table.map {|row| row.join("\t")+$/ }.join("")
+        table.map {|row| row.join("\t")+$/ }.join
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)

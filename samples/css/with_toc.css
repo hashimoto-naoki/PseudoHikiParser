@@ -1,0 +1,79 @@
+h1 {
+    background: #662200;
+    color: #ffffff;
+    padding: 1em 0em 1em 1em;
+}
+
+#toc {
+    float: left;
+    width: 20%;
+}
+
+#toc * {
+    margin-left: 0%;
+    padding-left: 0%;
+    border-style: none;
+}
+
+#toc h2 {
+    color: #992200;
+    padding-left: 0.5em;
+}
+
+#toc li {
+    margin-left: 0.5em;
+    padding-left: 0%;
+    list-style-type: none;
+    margin-right: 1em;
+    padding-right: 1em;
+}
+
+#toc a {
+    text-decoration: none;
+    display: block;
+    background: #cccccc;
+    padding: 0.2em 0.2em 0.2em 0.4em;
+    margin-bottom: 1px;
+}
+
+#toc a:hover {
+    background: #ffffaa;
+}
+
+#contents * {
+    margin-right: 0%;
+}
+
+#contents {
+    width: 78%;
+    float: left;
+    padding-left: 1em;
+    border-style: none none none dotted;
+    border-width: 1px;
+}
+
+#contents h2 {
+    color: #992200;
+}
+
+#contents .h3 {
+    border-style: dotted;
+    border-width: 0px;
+    background: #eeeeee;
+    padding: 0em 1em 1em 0.5em;
+    margin-bottom: 1em;
+}
+
+#contents h3 {
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    padding: 0.5em 1em 0em 0em;
+}
+
+#contents pre {
+    background: #000000;
+    color: #ffffff;
+    padding: 0.8em 1em 0.8em 0.6em;
+    margin-left: 1em;
+    font-size: 120%;
+}

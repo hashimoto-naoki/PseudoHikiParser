@@ -64,6 +64,16 @@ TEXT
                  @verbose_formatter.format(tree).to_s)
   end
 
+  def test_link_url2
+    text = <<TEXT
+!![develepment_status] Development status of features from the original [[Hiki notation|http://hikiwiki.org/en/TextFormattingRules.html]]
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(" Development status of features from the original Hiki notation\n", @formatter.format(tree).to_s)
+    assert_equal(" Development status of features from the original Hiki notation (http://hikiwiki.org/en/TextFormattingRules.html)\n",
+                 @verbose_formatter.format(tree).to_s)
+  end
+
   def test_link_image
     text = <<TEXT
 A test string with an [[image|image.jpg]] is here.

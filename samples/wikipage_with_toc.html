@@ -1,17 +1,40 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta content="en" http-equiv="Content-Language">
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-<meta content="text/javascript" http-equiv="Content-Script-Type">
+<meta content="en" http-equiv="Content-Language" />
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+<meta content="text/javascript" http-equiv="Content-Script-Type" />
 <title>A sample of PseudoHikiParser</title>
-<link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/with_toc.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<div class="section" id="main">
 <div class="section h1">
 <h1>Welcome to the PseudoHikiParser wiki!
 </h1>
+<!-- end of section h1 -->
+</div>
+<div class="section" id="toc">
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#ABOUT">About PseudoHikiParser
+</a></li>
+<li><a href="#LICENSE">License
+</a></li>
+<li><a href="#INSTALLATION">Installation
+</a></li>
+<li><a href="#USAGE">Usage
+</a></li>
+<li><a href="#DEVELEPMENT_STATUS">Development status of features from the original Hiki notation
+</a></li>
+<li><a href="#ADDITIONAL_FEATURES">Additional Features
+</a></li>
+</ul>
+<!-- end of toc -->
+</div>
+<div class="section" id="contents">
 <div class="section h2">
 <h2 id="ABOUT"> About PseudoHikiParser
 </h2>
@@ -28,17 +51,17 @@ I am writing this tool with following objectives in mind,
 <li> provide some additional features that do not exist in the original Hiki notation
 <ul>
 <li> make the notation more line oriented
-
+</li>
 <li> allow to assign ids to elements such as headings
-
+</li>
 </ul>
-
+</li>
 <li> support several formats other than HTML
 <ul>
 <li> The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
-
+</li>
 </ul>
-
+</li>
 </ul>
 <p>
 And, it would not be compatible with the original Hiki notation.
@@ -179,43 +202,43 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 </h2>
 <ul>
 <li> Paragraphs - Usable
-
+</li>
 <li> Links
 <ul>
 <li> WikiNames - Not supported (and would never be)
-
+</li>
 <li> Linking to other Wiki pages - Not supported as well
-
+</li>
 <li> Linking to an arbitrary URL - Maybe usable
-
+</li>
 </ul>
-
+</li>
 <li> Preformatted text - Usable
-
+</li>
 <li> Text decoration - Partly supported
 <ul>
 <li> Currently, there is no means to escape tags for inline decorations.
-
+</li>
 <li> The notation with backquote tags(``) for inline literals is not supported.
-
+</li>
 </ul>
-
+</li>
 <li> Headings - Usable
-
+</li>
 <li> Horizontal lines - Usable
-
+</li>
 <li> Lists - Usable
-
+</li>
 <li> Quotations - Usable
-
+</li>
 <li> Definitions - Usable
-
+</li>
 <li> Tables - Usable
-
+</li>
 <li> Comments - Usable
-
+</li>
 <li> Plugins - Not supported (and will not be compatible with the original one)
-
+</li>
 </ul>
 <!-- end of section h2 -->
 </div>
@@ -313,7 +336,9 @@ The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/l
 </div>
 <!-- end of section h2 -->
 </div>
-<!-- end of section h1 -->
+<!-- end of contents -->
+</div>
+<!-- end of main -->
 </div>
 </body>
 </html>

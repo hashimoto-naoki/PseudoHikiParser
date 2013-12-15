@@ -3,7 +3,7 @@
 class HtmlElement
 
   def self.create_start_of_page(label, dest)
-    self.create("div").configure do |to|
+    self.create("div").tap do |to|
       to["class"] = "to_top"
       a = self.create("a", label)
       a["href"] = dest
