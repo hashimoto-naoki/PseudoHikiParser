@@ -9,9 +9,8 @@ require 'pseudohiki/plaintextformat'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 require 'htmlelement/start_of_page'
-require 'iconv' unless /^2\.0/io =~ RUBY_VERSION
 
-if /^1\.8/io =~ RUBY_VERSION
+unless String.new.respond_to? :encode
   require 'iconv'
 
   class String
