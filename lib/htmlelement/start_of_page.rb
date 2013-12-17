@@ -17,7 +17,7 @@ class HtmlElement
 
   self.set_start_of_page
 
-  def add_end_comment_for_div
+  def add_end_comment_for_div_or_section
     if @tagname == "div" and @end_comment_not_added
       id_or_class = self["id"]||self["class"]
       self.push @@start_of_page if id_or_class == "section h2"
