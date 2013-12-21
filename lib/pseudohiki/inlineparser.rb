@@ -108,6 +108,9 @@ module PseudoHiki
   end
 
   class TableRowParser < InlineParser
+    TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
+    MODIFIED_CELL_PAT = /^!?[>^]*/o
+
     module InlineElement
       class TableCellNode < InlineParser::InlineElement::InlineNode
         attr_accessor :cell_type, :rowspan, :colspan
@@ -122,9 +125,6 @@ module PseudoHiki
 
     TAIL[TableSep] = TableCellNode
     TokenPat[self] = InlineParser::TokenPat[InlineParser]
-
-    TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
-    MODIFIED_CELL_PAT = /^!?[>^]*/o
 
     class InlineElement::TableCellNode
       def parse_cellspan(token_str)
