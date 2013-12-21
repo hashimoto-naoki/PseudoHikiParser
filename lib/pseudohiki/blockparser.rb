@@ -236,7 +236,6 @@ module PseudoHiki
       end
     end
 
-#    class HeadingNode
     class BlockElement::HeadingNode
       def breakable?(breaker)
         kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
