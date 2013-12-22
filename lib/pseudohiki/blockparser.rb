@@ -140,7 +140,6 @@ module PseudoHiki
     class ListTypeLeaf < NestedBlockLeaf; end
 
     class BlockNode < BlockStack::Node
-      attr_accessor :base_level, :relative_level_from_base
       attr_accessor :node_id
 
       def nominal_level
