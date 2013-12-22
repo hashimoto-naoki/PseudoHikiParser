@@ -273,11 +273,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   def check_argv
     case ARGV.length
     when 0
-      if OPTIONS.need_output_file and not OPTIONS[:output]
+      if self.need_output_file and not self[:output]
         raise "You must specify a file name for output"
       end
     when 1
-      OPTIONS.read_input_filename(ARGV[0])
+      self.read_input_filename(ARGV[0])
     end
   end
 
