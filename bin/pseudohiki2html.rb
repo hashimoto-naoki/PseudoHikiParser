@@ -237,72 +237,76 @@ class << OPTIONS
   end
 end
 
-OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
+def set_options_from_command_line
+  OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
-  opt.on("-h [html_version]", "--html_version [=html_version]",
-         "HTML version to be used. Choose html4, xhtml1 or html5 (default: #{OPTIONS[:html_version]})") do |version|
-    OPTIONS.set_html_version(version)
-  end
+    opt.on("-h [html_version]", "--html_version [=html_version]",
+           "HTML version to be used. Choose html4, xhtml1 or html5 (default: #{OPTIONS[:html_version]})") do |version|
+      OPTIONS.set_html_version(version)
+    end
 
-  opt.on("-l [lang]", "--lang [=lang]", 
-         "Set the value of charset attributes (default: #{OPTIONS[:lang]})") do |lang|
-    OPTIONS[:lang] = lang if value_given?(lang)
-  end
+    opt.on("-l [lang]", "--lang [=lang]",
+           "Set the value of charset attributes (default: #{OPTIONS[:lang]})") do |lang|
+      OPTIONS[:lang] = lang if value_given?(lang)
+    end
 
-  opt.on("-e [encoding]", "--encoding [=encoding]",
-         "Available options: utf8, euc-jp, sjis, latin1 (default: #{OPTIONS[:encoding]})") do |given_opt|
-    OPTIONS.set_encoding(given_opt)
-  end
+    opt.on("-e [encoding]", "--encoding [=encoding]",
+           "Available options: utf8, euc-jp, sjis, latin1 (default: #{OPTIONS[:encoding]})") do |given_opt|
+      OPTIONS.set_encoding(given_opt)
+    end
 
-#use '-w' to avoid the conflict with the short option for '[-t]emplate'
-  opt.on("-w [(window) title]", "--title [=title]",
+    #use '-w' to avoid the conflict with the short option for '[-t]emplate'
+    opt.on("-w [(window) title]", "--title [=title]",
            "Set the value of the <title> element (default: the basename of the input file)") do |title|
-    OPTIONS[:title] = title if value_given?(title)
-  end
+      OPTIONS[:title] = title if value_given?(title)
+    end
 
-  opt.on("-c [css]", "--css [=css]",
+    opt.on("-c [css]", "--css [=css]",
            "Set the path to a css file to be used (default: #{OPTIONS[:css]})") do |css|
-    OPTIONS[:css] = css
-  end
+      OPTIONS[:css] = css
+    end
 
-  opt.on("-C [path_to_css_file]", "--embed-css [=path_to_css_file]",
+    opt.on("-C [path_to_css_file]", "--embed-css [=path_to_css_file]",
            "Set the path to a css file to embed (default: not to embed)") do |path_to_css_file|
-    OPTIONS[:embed_css] = path_to_css_file
-  end
+      OPTIONS[:embed_css] = path_to_css_file
+    end
 
-  opt.on("-b [base]", "--base [=base]",
-       "Specify the value of href attribute of the <base> element (default: not specified)") do |base_dir|
-    OPTIONS[:base] = base_dir if value_given?(base_dir)
-  end
+    opt.on("-b [base]", "--base [=base]",
+           "Specify the value of href attribute of the <base> element (default: not specified)") do |base_dir|
+      OPTIONS[:base] = base_dir if value_given?(base_dir)
+    end
 
-  opt.on("-t [template]", "--template [=template]",
-         "Specify a template file written in eruby format with \"<%= body %>\" inside (default: not specified)") do |template|
-    OPTIONS[:template] = template if value_given?(template)
-  end
+    opt.on("-t [template]", "--template [=template]",
+           "Specify a template file written in eruby format with \"<%= body %>\" inside (default: not specified)") do |template|
+      OPTIONS[:template] = template if value_given?(template)
+    end
 
-  opt.on("-o [output]", "--output [=output]",
-         "Output to the specified file. If no file is given, \"[input_file_basename].html\" will be used.(default: STDOUT)") do |output|
-    OPTIONS[:output] = File.expand_path(output) if value_given?(output)
-    OPTIONS.need_output_file = true
-  end
+    opt.on("-o [output]", "--output [=output]",
+           "Output to the specified file. If no file is given, \"[input_file_basename].html\" will be used.(default: STDOUT)") do |output|
+      OPTIONS[:output] = File.expand_path(output) if value_given?(output)
+      OPTIONS.need_output_file = true
+    end
 
-  opt.on("-f", "--force",
-         "Force to apply command line options.(default: false)") do |force|
-    OPTIONS[:force] = force
-  end
+    opt.on("-f", "--force",
+           "Force to apply command line options.(default: false)") do |force|
+      OPTIONS[:force] = force
+    end
 
-  opt.on("-m [contents-title]", "--table-of-contents [=contents-title]",
-         "Include the list of h2 and/or h3 headings with ids.(default: nil)") do |toc_title|
-    OPTIONS[:toc] = toc_title
-  end
+    opt.on("-m [contents-title]", "--table-of-contents [=contents-title]",
+           "Include the list of h2 and/or h3 headings with ids.(default: nil)") do |toc_title|
+      OPTIONS[:toc] = toc_title
+    end
 
-  opt.on("-s", "--split-main-heading",
-         "Split the first h1 element") do |should_be_split|
-    OPTIONS[:split_main_heading] = should_be_split
-  end
+    opt.on("-s", "--split-main-heading",
+           "Split the first h1 element") do |should_be_split|
+      OPTIONS[:split_main_heading] = should_be_split
+    end
 
-  opt.parse!
+    opt.parse!
+  end
 end
+
+set_options_from_command_line
 
 if $KCODE
   ENCODING_REGEXP.each do |pat, encoding|
