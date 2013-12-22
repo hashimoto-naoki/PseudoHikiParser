@@ -100,8 +100,7 @@ module PseudoHiki
     end
 
     def self.parse(str)
-      parser = new(str)
-      parser.parse.tree
+      new(str).parse.tree #parser = new(str)
     end
   end
 
