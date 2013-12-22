@@ -270,6 +270,17 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   end
   alias set_options_from_command_line parse_command_line_options
 
+  def check_argv
+    case ARGV.length
+    when 0
+      if OPTIONS.need_output_file and not OPTIONS[:output]
+        raise "You must specify a file name for output"
+      end
+    when 1
+      OPTIONS.read_input_filename(ARGV[0])
+    end
+  end
+
   def set_options_from_input_file(input_lines)
     input_lines.each do |line|
       break if FILE_HEADER_PAT !~ line
@@ -317,18 +328,7 @@ end
 
 input_manager = InputManager.new
 
-def check_argv
-  case ARGV.length
-  when 0
-    if OPTIONS.need_output_file and not OPTIONS[:output]
-      raise "You must specify a file name for output"
-    end
-  when 1
-    OPTIONS.read_input_filename(ARGV[0])
-  end
-end
-
-check_argv
+OPTIONS.check_argv
 
 input_lines = ARGF.readlines
 
