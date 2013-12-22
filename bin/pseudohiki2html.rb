@@ -200,7 +200,7 @@ class << OPTIONS
     end
   end
 
-  def set_options_from_command_line
+  def parse_command_line_options
     OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       opt.on("-h [html_version]", "--html_version [=html_version]",
@@ -268,6 +268,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       opt.parse!
     end
   end
+  alias set_options_from_command_line parse_command_line_options
 
   def set_options_from_input_file(input_lines)
     input_lines.each do |line|
