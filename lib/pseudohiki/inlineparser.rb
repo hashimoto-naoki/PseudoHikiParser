@@ -80,15 +80,14 @@ module PseudoHiki
     end
 
     def split_into_tokens(str)
-      result = []
+      tokens = []
       while m = token_pat.match(str)
-        result.push m.pre_match if m.pre_match
-        result.push m[0]
+        tokens.push m.pre_match unless m.pre_match.empty?
+        tokens.push m[0]
         str = m.post_match
       end
-      result.push str unless str.empty?
-      result.delete_if {|token| token.empty? }
-      result
+      tokens.push str unless str.empty?
+      tokens
     end
 
     def parse
