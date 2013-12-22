@@ -327,10 +327,9 @@ OPTIONS.set_options_from_input_file(input_lines)
 OPTIONS.default_title = OPTIONS.input_file_basename
 
 html = input_manager.compose_html(input_lines)
-output_file_name = OPTIONS.output_file_name
 
-if output_file_name
-  open(output_file_name, "w") {|f| f.puts html }
+if OPTIONS.output_file_name
+  open(OPTIONS.output_file_name, "w") {|f| f.puts html }
 else
   STDOUT.puts html
 end
