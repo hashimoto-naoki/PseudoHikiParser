@@ -72,11 +72,9 @@ module PseudoHiki
 
     def treated_as_node_end(token)
       return self.pop if current_node.class == TAIL[token]
-      if node_in_ancestors?(TAIL[token])
-        convert_last_node_into_leaf until current_node.class == TAIL[token]
-        return self.pop
-      end
-      nil
+      return nil unless node_in_ancestors?(TAIL[token])
+      convert_last_node_into_leaf until current_node.class == TAIL[token]
+      self.pop
     end
 
     def split_into_tokens(str)
