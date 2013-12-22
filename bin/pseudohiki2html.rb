@@ -268,7 +268,6 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       opt.parse!
     end
   end
-  alias set_options_from_command_line parse_command_line_options
 
   def check_argv
     case ARGV.length
@@ -279,6 +278,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     when 1
       self.read_input_filename(ARGV[0])
     end
+  end
+
+  def set_options_from_command_line
+    parse_command_line_options
+    check_argv
   end
 
   def set_options_from_input_file(input_lines)
@@ -327,8 +331,6 @@ if $KCODE
 end
 
 input_manager = InputManager.new
-
-OPTIONS.check_argv
 
 input_lines = ARGF.readlines
 
