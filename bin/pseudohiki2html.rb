@@ -168,7 +168,7 @@ class << OPTIONS
   end
 
   def title
-    OPTIONS[:title]||@default_title||"-"
+    self[:title]||@default_title||"-"
   end
 
   def read_template_file
