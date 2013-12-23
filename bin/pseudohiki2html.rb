@@ -42,7 +42,7 @@ HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]\s*/o
 
 PlainFormat = PlainTextFormat.create
 
-class InputManager
+class PageComposer
   def formatter
     @formatter ||= OPTIONS.html_template.new
   end
@@ -343,6 +343,6 @@ input_lines = ARGF.readlines
 
 OPTIONS.set_options_from_input_file(input_lines)
 
-html = InputManager.new.compose_html(input_lines)
+html = PageComposer.new.compose_html(input_lines)
 
 OPTIONS.open_output {|out| out.puts html }
