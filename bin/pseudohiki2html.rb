@@ -331,13 +331,11 @@ if $KCODE
   end
 end
 
-input_manager = InputManager.new
-
 input_lines = ARGF.readlines
 
 OPTIONS.set_options_from_input_file(input_lines)
 
-html = input_manager.compose_html(input_lines)
+html = InputManager.new.compose_html(input_lines)
 
 if OPTIONS.output_file_name
   open(OPTIONS.output_file_name, "w") {|f| f.puts html }
