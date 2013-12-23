@@ -321,6 +321,14 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       File.join(@input_file_dir, @input_file_basename+".html")
     end
   end
+
+  def open_output
+    if self.output_file_name
+      open(self.output_file_name, "w") {|f| yield f }
+    else
+      yield STDOUT
+    end
+  end
 end
 
 OPTIONS.set_options_from_command_line
@@ -337,8 +345,4 @@ OPTIONS.set_options_from_input_file(input_lines)
 
 html = InputManager.new.compose_html(input_lines)
 
-if OPTIONS.output_file_name
-  open(OPTIONS.output_file_name, "w") {|f| f.puts html }
-else
-  STDOUT.puts html
-end
+OPTIONS.open_output {|out| out.puts html }
