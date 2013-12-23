@@ -283,6 +283,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   def set_options_from_command_line
     parse_command_line_options
     check_argv
+    @default_title = @input_file_basename
   end
 
   def set_options_from_input_file(input_lines)
@@ -335,7 +336,6 @@ input_manager = InputManager.new
 input_lines = ARGF.readlines
 
 OPTIONS.set_options_from_input_file(input_lines)
-OPTIONS.default_title = OPTIONS.input_file_basename
 
 html = input_manager.compose_html(input_lines)
 
