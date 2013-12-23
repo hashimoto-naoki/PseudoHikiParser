@@ -36,8 +36,6 @@ ENCODING_REGEXP = {
 HTML_VERSIONS = %w(html4 xhtml1 html5)
 
 FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
-WRITTEN_OPTION_PAT = {}
-OPTIONS.keys.each {|opt| WRITTEN_OPTION_PAT[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
 HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]\s*/o
 
 PlainFormat = PlainTextFormat.create
@@ -131,7 +129,7 @@ def value_given?(value)
   value and not value.empty?
 end
 
-class << OPTIONS
+class OptionManager
   include HtmlElement::CHARSET
   attr_accessor :need_output_file, :default_title
   attr_reader :input_file_basename
@@ -145,6 +143,34 @@ class << OPTIONS
 
   HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template]).flatten]
   FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format]).flatten]
+
+  def initialize(options=nil)
+    @options = options||{
+      :html_version => "html4",
+      :lang => 'en',
+      :encoding => 'utf8',
+      :title => nil,
+      :css => "default.css",
+      :embed_css => nil,
+      :base => nil,
+      :template => nil,
+      :output => nil,
+      :force => false,
+      :toc => nil,
+      :split_main_heading => false
+    }
+    @written_option_pat = {}
+    @options.keys.each {|opt| @written_option_pat[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
+
+  end
+
+  def [](key)
+    @options[key]
+  end
+
+  def[]=(key, value)
+    @options[key] = value
+  end
 
   def html_template
     HTML_TEMPLATES[self[:html_version]]
@@ -291,7 +317,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       break if FILE_HEADER_PAT !~ line
       line = line.chomp
       self.keys.each do |opt|
-        if WRITTEN_OPTION_PAT[opt] =~ line and not self[:force]
+        if @written_option_pat[opt] =~ line and not self[:force]
           self[opt] = $2
         end
       end
@@ -330,6 +356,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     end
   end
 end
+
+OPTIONS = OptionManager.new
 
 OPTIONS.set_options_from_command_line
 
