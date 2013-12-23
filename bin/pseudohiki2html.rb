@@ -120,9 +120,6 @@ class OptionManager
   HTML_VERSIONS = %w(html4 xhtml1 html5)
   FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
 
-  attr_accessor :need_output_file, :default_title
-  attr_reader :input_file_basename
-
   ENCODING_TO_CHARSET = {
     'utf8' => UTF8,
     'euc-jp' => EUC_JP,
@@ -131,6 +128,9 @@ class OptionManager
   }
   HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template]).flatten]
   FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format]).flatten]
+
+  attr_accessor :need_output_file, :default_title
+  attr_reader :input_file_basename
 
   def initialize(options=nil)
     @options = options||{
@@ -149,7 +149,6 @@ class OptionManager
     }
     @written_option_pat = {}
     @options.keys.each {|opt| @written_option_pat[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
-
   end
 
   def [](key)
@@ -346,7 +345,6 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
 end
 
 OPTIONS = OptionManager.new
-
 OPTIONS.set_options_from_command_line
 
 if $KCODE
@@ -356,9 +354,7 @@ if $KCODE
 end
 
 input_lines = ARGF.readlines
-
 OPTIONS.set_options_from_input_file(input_lines)
-
 html = PageComposer.new(OPTIONS).compose_html(input_lines)
 
 OPTIONS.open_output {|out| out.puts html }
