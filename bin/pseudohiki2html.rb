@@ -11,21 +11,11 @@ require 'htmlelement'
 
 include PseudoHiki
 
-ENCODING_REGEXP = {
-  /^u/io => 'utf8',
-  /^e/io => 'euc-jp',
-  /^s/io => 'sjis',
-  /^l[a-zA-Z]*1/io => 'latin1'
-}
-
-HTML_VERSIONS = %w(html4 xhtml1 html5)
-
-FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
-HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]\s*/o
-
-PlainFormat = PlainTextFormat.create
-
 class PageComposer
+  HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]\s*/o
+
+  PlainFormat = PlainTextFormat.create
+
   def initialize(options)
     @options = options
   end
@@ -120,6 +110,16 @@ end
 
 class OptionManager
   include HtmlElement::CHARSET
+
+  ENCODING_REGEXP = {
+    /^u/io => 'utf8',
+    /^e/io => 'euc-jp',
+    /^s/io => 'sjis',
+    /^l[a-zA-Z]*1/io => 'latin1'
+  }
+  HTML_VERSIONS = %w(html4 xhtml1 html5)
+  FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
+
   attr_accessor :need_output_file, :default_title
   attr_reader :input_file_basename
 
@@ -129,7 +129,6 @@ class OptionManager
     'sjis' => SJIS,
     'latin1' => LATIN1
   }
-
   HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template]).flatten]
   FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format]).flatten]
 
@@ -351,7 +350,7 @@ OPTIONS = OptionManager.new
 OPTIONS.set_options_from_command_line
 
 if $KCODE
-  ENCODING_REGEXP.each do |pat, encoding|
+  OptionManager::ENCODING_REGEXP.each do |pat, encoding|
     OPTIONS[:encoding] = encoding if pat =~ $KCODE and not OPTIONS[:force]
   end
 end
