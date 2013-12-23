@@ -11,21 +11,6 @@ require 'htmlelement'
 
 include PseudoHiki
 
-OPTIONS = {
-  :html_version => "html4",
-  :lang => 'en',
-  :encoding => 'utf8',
-  :title => nil,
-  :css => "default.css",
-  :embed_css => nil,
-  :base => nil,
-  :template => nil,
-  :output => nil,
-  :force => false,
-  :toc => nil,
-  :split_main_heading => false
-}
-
 ENCODING_REGEXP = {
   /^u/io => 'utf8',
   /^e/io => 'euc-jp',
@@ -41,8 +26,12 @@ HEADING_WITH_ID_PAT = /^(!{2,3})\[([A-Za-z][0-9A-Za-z_\-.:]*)\]\s*/o
 PlainFormat = PlainTextFormat.create
 
 class PageComposer
+  def initialize(options)
+    @options = options
+  end
+
   def formatter
-    @formatter ||= OPTIONS.html_template.new
+    @formatter ||= @options.html_template.new
   end
 
   def to_plain(line)
@@ -50,28 +39,28 @@ class PageComposer
   end
 
   def create_table_of_contents(lines)
-    return "" unless OPTIONS[:toc]
+    return "" unless @options[:toc]
     toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
       m = HEADING_WITH_ID_PAT.match(line)
       heading_depth, id = m[1].length, m[2].upcase
       "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
     end
-    OPTIONS.formatter.format(BlockParser.parse(toc_lines))
+    @options.formatter.format(BlockParser.parse(toc_lines))
   end
 
   def split_main_heading(input_lines)
-    return "" unless OPTIONS[:split_main_heading]
+    return "" unless @options[:split_main_heading]
     h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
     return "" unless h1_pos
     tree = BlockParser.parse([input_lines.delete_at(h1_pos)])
-    OPTIONS.formatter.format(tree)
+    @options.formatter.format(tree)
   end
 
   def create_main(toc, body, h1)
-    return nil unless OPTIONS[:toc]
+    return nil unless @options[:toc]
     toc_container = formatter.create_element("section").tap do |element|
       element["id"] = "toc"
-      element.push formatter.create_element("h2", OPTIONS[:toc]) unless OPTIONS[:toc].empty?
+      element.push formatter.create_element("h2", @options[:toc]) unless @options[:toc].empty?
       element.push toc
     end
     contents_container = formatter.create_element("section").tap do |element|
@@ -97,23 +86,23 @@ class PageComposer
 
   def compose_body(input_lines)
     tree = BlockParser.parse(input_lines)
-    OPTIONS.formatter.format(tree)
+    @options.formatter.format(tree)
   end
 
   def compose_html(input_lines)
     h1 = split_main_heading(input_lines)
-    css = OPTIONS[:css]
+    css = @options[:css]
     toc = create_table_of_contents(input_lines)
     body = compose_body(input_lines)
-    title = OPTIONS.title
+    title = @options.title
     main = create_main(toc,body, h1)
 
-    if OPTIONS[:template]
-      erb = ERB.new(OPTIONS.read_template_file)
+    if @options[:template]
+      erb = ERB.new(@options.read_template_file)
       html = erb.result(binding)
     else
-      html = OPTIONS.create_html_with_current_options
-      html.head.push create_style(OPTIONS[:embed_css]) if OPTIONS[:embed_css]
+      html = @options.create_html_with_current_options
+      html.head.push create_style(@options[:embed_css]) if @options[:embed_css]
       html.push main||body
     end
 
@@ -371,6 +360,6 @@ input_lines = ARGF.readlines
 
 OPTIONS.set_options_from_input_file(input_lines)
 
-html = PageComposer.new.compose_html(input_lines)
+html = PageComposer.new(OPTIONS).compose_html(input_lines)
 
 OPTIONS.open_output {|out| out.puts html }
