@@ -344,17 +344,17 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   end
 end
 
-OPTIONS = PseudoHiki::OptionManager.new
-OPTIONS.set_options_from_command_line
+options = PseudoHiki::OptionManager.new
+options.set_options_from_command_line
 
 if $KCODE
   PseudoHiki::OptionManager::ENCODING_REGEXP.each do |pat, encoding|
-    OPTIONS[:encoding] = encoding if pat =~ $KCODE and not OPTIONS[:force]
+    options[:encoding] = encoding if pat =~ $KCODE and not options[:force]
   end
 end
 
 input_lines = ARGF.readlines
-OPTIONS.set_options_from_input_file(input_lines)
-html = PseudoHiki::PageComposer.new(OPTIONS).compose_html(input_lines)
+options.set_options_from_input_file(input_lines)
+html = PseudoHiki::PageComposer.new(options).compose_html(input_lines)
 
-OPTIONS.open_output {|out| out.puts html }
+options.open_output {|out| out.puts html }
