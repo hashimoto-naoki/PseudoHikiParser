@@ -100,14 +100,6 @@ class PageComposer
   end
 end
 
-def win32? 
-  true if RUBY_PLATFORM =~ /win/i
-end
-
-def value_given?(value)
-  value and not value.empty?
-end
-
 class OptionManager
   include HtmlElement::CHARSET
 
@@ -157,6 +149,14 @@ class OptionManager
 
   def[]=(key, value)
     @options[key] = value
+  end
+
+  def win32?
+    true if RUBY_PLATFORM =~ /win/i
+  end
+
+  def value_given?(value)
+    value and not value.empty?
   end
 
   def html_template
