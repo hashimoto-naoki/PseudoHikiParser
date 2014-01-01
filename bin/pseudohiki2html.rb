@@ -109,7 +109,9 @@ module PseudoHiki
       /^l[a-zA-Z]*1/io => 'latin1'
     }
     HTML_VERSIONS = %w(html4 xhtml1 html5)
-    FILE_HEADER_PAT = /^(\xef\xbb\xbf)?\/\//
+    BOM = "\xef\xbb\xbf"
+    BOM.force_encoding("ASCII-8BIT") if BOM.respond_to? :encoding
+    FILE_HEADER_PAT = /^\/\//
 
     ENCODING_TO_CHARSET = {
       'utf8' => UTF8,
@@ -122,6 +124,11 @@ module PseudoHiki
 
     attr_accessor :need_output_file, :default_title
     attr_reader :input_file_basename
+
+    def self.remove_bom(input=ARGF)
+      bom = input.read(3)
+      input.rewind unless BOM == bom
+    end
 
     def initialize(options=nil)
       @options = options||{
@@ -139,7 +146,7 @@ module PseudoHiki
         :split_main_heading => false
       }
       @written_option_pat = {}
-      @options.keys.each {|opt| @written_option_pat[opt] = /^(\xef\xbb\xbf)?\/\/#{opt}:\s*(.*)$/ }
+      @options.keys.each {|opt| @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/ }
     end
 
     def [](key)
@@ -353,6 +360,7 @@ if $KCODE
   end
 end
 
+PseudoHiki::OptionManager.remove_bom
 input_lines = ARGF.readlines
 options.set_options_from_input_file(input_lines)
 html = PseudoHiki::PageComposer.new(options).compose_html(input_lines)
