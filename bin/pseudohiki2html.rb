@@ -302,7 +302,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       input_lines.each do |line|
         break if FILE_HEADER_PAT !~ line
         line = line.chomp
-        self.keys.each do |opt|
+        @options.keys.each do |opt|
           if @written_option_pat[opt] =~ line and not self[:force]
             self[opt] = $2
           end
