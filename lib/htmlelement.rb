@@ -64,7 +64,7 @@ class HtmlElement
   end
 
   def HtmlElement.urlencode(str)
-    str.toutf8.gsub(/[^\w\.\-]/n) {|ch| format('%%%02X', ch[0]) }
+    str.toutf8.gsub(/[^\w\.\-]/o) {|utf8_char| utf8_char.unpack("C*").map {|b| '%%%02X'%[b] }.join }
   end
 
   def HtmlElement.urldecode(str)
