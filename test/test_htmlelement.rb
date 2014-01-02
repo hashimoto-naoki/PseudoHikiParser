@@ -34,6 +34,11 @@ class TC_HtmlElement < Test::Unit::TestCase
     assert_equal("%E3%83%86%E3%82%B9%E3%83%88", HtmlElement.urlencode(euc_jp_str))
   end
 
+  def test_urldecode
+    urlencoded_str = "%E3%83%86%E3%82%B9%E3%83%88"
+    assert_equal("\xe3\x83\x86\xe3\x82\xb9\xe3\x83\x88", HtmlElement.urldecode(urlencoded_str))
+  end
+
   def test_doc_type
     html_doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
