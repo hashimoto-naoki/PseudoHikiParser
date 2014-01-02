@@ -84,7 +84,7 @@ class HtmlElement
   end
 
   def HtmlElement.escape(str)
-    str.gsub(/[&"<>]/on) {|pat| ESC[pat] }
+    str.gsub(/[&"<>]/o) {|pat| ESC[pat] }
   end
 
   def HtmlElement.decode(str)
