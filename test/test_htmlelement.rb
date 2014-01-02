@@ -25,6 +25,11 @@ class TC_HtmlElement < Test::Unit::TestCase
     assert_equal('<img>'+$/, img.to_s)
   end
 
+  def test_urlencode
+    utf_str = "\xe3\x83\x86\xe3\x82\xb9\xe3\x83\x88" # test in utf8 katakata
+    assert_equal("%E3%83%86%E3%82%B9%E3%83%88", HtmlElement.urlencode(utf_str))
+  end
+
   def test_doc_type
     html_doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
