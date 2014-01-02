@@ -68,7 +68,7 @@ class HtmlElement
   end
 
   def HtmlElement.urldecode(str)
-    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }
+    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }.toutf8
     return utf.tosjis if $KCODE =~ /^s/io
     return utf.toeuc if $KCODE =~ /^e/io
     utf
