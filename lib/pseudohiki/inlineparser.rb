@@ -62,8 +62,7 @@ module PseudoHiki
     def convert_last_node_into_leaf
       last_node = remove_current_node
       tag_head = NodeTypeToHead[last_node.class]
-      tag_head_leaf = InlineLeaf.create(tag_head)
-      self.push tag_head_leaf
+      self.push InlineLeaf.create(tag_head)
       last_node.each {|leaf| self.push_as_leaf leaf }
     end
 
@@ -73,23 +72,20 @@ module PseudoHiki
 
     def treated_as_node_end(token)
       return self.pop if current_node.class == TAIL[token]
-      if node_in_ancestors?(TAIL[token])
-        convert_last_node_into_leaf until current_node.class == TAIL[token]
-        return self.pop
-      end
-      nil
+      return nil unless node_in_ancestors?(TAIL[token])
+      convert_last_node_into_leaf until current_node.class == TAIL[token]
+      self.pop
     end
 
     def split_into_tokens(str)
-      result = []
+      tokens = []
       while m = token_pat.match(str)
-        result.push m.pre_match if m.pre_match
-        result.push m[0]
+        tokens.push m.pre_match unless m.pre_match.empty?
+        tokens.push m[0]
         str = m.post_match
       end
-      result.push str unless str.empty?
-      result.delete_if {|token| token.empty? }
-      result
+      tokens.push str unless str.empty?
+      tokens
     end
 
     def parse
@@ -102,12 +98,14 @@ module PseudoHiki
     end
 
     def self.parse(str)
-      parser = new(str)
-      parser.parse.tree
+      new(str).parse.tree #parser = new(str)
     end
   end
 
   class TableRowParser < InlineParser
+    TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
+    MODIFIED_CELL_PAT = /^!?[>^]*/o
+
     module InlineElement
       class TableCellNode < InlineParser::InlineElement::InlineNode
         attr_accessor :cell_type, :rowspan, :colspan
@@ -122,9 +120,6 @@ module PseudoHiki
 
     TAIL[TableSep] = TableCellNode
     TokenPat[self] = InlineParser::TokenPat[InlineParser]
-
-    TD, TH, ROW_EXPANDER, COL_EXPANDER, TH_PAT = %w(td th ^ > !)
-    MODIFIED_CELL_PAT = /^!?[>^]*/o
 
     class InlineElement::TableCellNode
       def parse_cellspan(token_str)

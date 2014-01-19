@@ -64,11 +64,11 @@ class HtmlElement
   end
 
   def HtmlElement.urlencode(str)
-    str.toutf8.gsub(/[^\w\.\-]/n) {|ch| format('%%%02X', ch[0]) }
+    str.toutf8.gsub(/[^\w\.\-]/o) {|utf8_char| utf8_char.unpack("C*").map {|b| '%%%02X'%[b] }.join }
   end
 
   def HtmlElement.urldecode(str)
-    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }
+    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }.toutf8
     return utf.tosjis if $KCODE =~ /^s/io
     return utf.toeuc if $KCODE =~ /^e/io
     utf
@@ -84,7 +84,7 @@ class HtmlElement
   end
 
   def HtmlElement.escape(str)
-    str.gsub(/[&"<>]/on) {|pat| ESC[pat] }
+    str.gsub(/[&"<>]/o) {|pat| ESC[pat] }
   end
 
   def HtmlElement.decode(str)

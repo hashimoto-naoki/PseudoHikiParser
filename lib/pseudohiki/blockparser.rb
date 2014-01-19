@@ -62,8 +62,7 @@ module PseudoHiki
 
       def self.create(line, inline_parser=InlineParser)
         line.sub!(self.head_re, "") if self.head_re
-        leaf = self.new
-        leaf.concat(inline_parser.parse(line))
+        new.concat(inline_parser.parse(line)) #leaf = self.new
       end
 
       def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
@@ -140,7 +139,6 @@ module PseudoHiki
     class ListTypeLeaf < NestedBlockLeaf; end
 
     class BlockNode < BlockStack::Node
-      attr_accessor :base_level, :relative_level_from_base
       attr_accessor :node_id
 
       def nominal_level
@@ -236,7 +234,6 @@ module PseudoHiki
       end
     end
 
-#    class HeadingNode
     class BlockElement::HeadingNode
       def breakable?(breaker)
         kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
