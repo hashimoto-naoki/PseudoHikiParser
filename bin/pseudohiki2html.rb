@@ -56,8 +56,7 @@ module PseudoHiki
       return "" unless @options[:split_main_heading]
       h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
       return "" unless h1_pos
-      tree = BlockParser.parse([input_lines.delete_at(h1_pos)])
-      @options.formatter.format(tree)
+      to_plain(input_lines.delete_at(h1_pos))
     end
 
     def create_main(toc, body, h1)
