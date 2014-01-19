@@ -191,7 +191,7 @@ module PseudoHiki
     end
 
     def read_template_file
-      File.read(File.expand_path(self[:template]))
+      File.read(File.expand_path(self[:template]), :encoding => self.charset)
     end
 
     def set_html_version(version)
@@ -361,7 +361,7 @@ if $KCODE
 end
 
 PseudoHiki::OptionManager.remove_bom
-input_lines = ARGF.readlines
+input_lines = ARGF.readlines.map {|line| line.encode(options.charset) }
 options.set_options_from_input_file(input_lines)
 html = PseudoHiki::PageComposer.new(options).compose_html(input_lines)
 
