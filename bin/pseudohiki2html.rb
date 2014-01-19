@@ -330,7 +330,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         line = line.chomp
         @options.keys.each do |opt|
           if @written_option_pat[opt] =~ line and not self[:force]
-            self[opt] = $2
+            self[opt] = $1
           end
         end
       end
