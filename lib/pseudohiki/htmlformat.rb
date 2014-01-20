@@ -95,6 +95,7 @@ module PseudoHiki
         else
           htmlelement = create_self_element
           htmlelement[HREF] = tree.join
+          htmlelement["class"] = "pdf" if /\.pdf$/o =~ htmlelement[HREF]
           htmlelement.push caption||tree.join
         end
         htmlelement
