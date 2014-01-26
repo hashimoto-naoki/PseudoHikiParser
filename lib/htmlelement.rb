@@ -5,6 +5,16 @@ require 'kconv'
 class HtmlElement
   class Children < Array
     alias to_s join
+
+    def traverse(&block)
+      each do |child|
+        if child.kind_of? HtmlElement or child.kind_of? Children
+          child.traverse(&block)
+        else
+          yield child
+        end
+      end      
+    end
   end
 
   module CHARSET
@@ -147,13 +157,7 @@ class HtmlElement
 
   def traverse(&block)
     yield self
-    @children.each do |child|
-      if child.kind_of? HtmlElement
-        child.traverse(&block)
-      else
-        yield child
-      end
-    end
+    @children.traverse(&block)
   end
 end
   
