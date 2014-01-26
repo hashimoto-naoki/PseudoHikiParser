@@ -49,7 +49,13 @@ module PseudoHiki
         heading_depth, id = m[1].length, m[2].upcase
         "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
       end
-      @options.formatter.format(BlockParser.parse(toc_lines))
+      @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
+        toc.traverse do |element|
+          if element.kind_of? HtmlElement and element.tagname == "a"
+            element["title"] = "toc_item: " + element.children.join.chomp
+          end
+        end
+      end
     end
 
     def split_main_heading(input_lines)
