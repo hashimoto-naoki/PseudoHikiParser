@@ -25,6 +25,20 @@ class TC_HtmlElement < Test::Unit::TestCase
     assert_equal('<img>'+$/, img.to_s)
   end
 
+  def test_urlencode
+    utf_str = "\xe3\x83\x86\xe3\x82\xb9\xe3\x83\x88" # test in utf8 katakata
+    sjis_str = "\x83\x65\x83\x58\x83\x67" # test in sjis katakana
+    euc_jp_str = "\xa5\xc6\xa5\xb9\xa5\xc8" # test in euc-jp katakana
+    assert_equal("%E3%83%86%E3%82%B9%E3%83%88", HtmlElement.urlencode(utf_str))
+    assert_equal("%E3%83%86%E3%82%B9%E3%83%88", HtmlElement.urlencode(sjis_str))
+    assert_equal("%E3%83%86%E3%82%B9%E3%83%88", HtmlElement.urlencode(euc_jp_str))
+  end
+
+  def test_urldecode
+    urlencoded_str = "%E3%83%86%E3%82%B9%E3%83%88"
+    assert_equal("\xe3\x83\x86\xe3\x82\xb9\xe3\x83\x88", HtmlElement.urldecode(urlencoded_str))
+  end
+
   def test_doc_type
     html_doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
@@ -69,5 +83,21 @@ SECTION
     html5_section = html5_section.split(/\r?\n/o).join($/)+"#{$/}"
 
     assert_equal(html5_section, Xhtml5Element.create("section").to_s)
+  end
+
+  def test_traverse
+    html, head, meta, body, h1 = %w(html head meta body h1).map {|tagname| HtmlElement.create(tagname) }
+    h1_content = "heading 1"
+
+    html.push head
+    head.push meta
+    html.push body
+    body.push h1
+    h1.push h1_content
+
+    elements = []
+    html.traverse {|elm| elements.push elm }
+
+    assert_equal([html, head, meta, body, h1, h1_content], elements)
   end
 end
