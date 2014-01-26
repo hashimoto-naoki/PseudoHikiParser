@@ -35,10 +35,9 @@ module PseudoHiki
         "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
       end
       @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
-        toc[0].traverse do |element|
-          if element.kind_of? HtmlElement and element.tagname == "li"
-            a = element.children[0][0]
-            a["title"] = a.children.join.chomp + "_toc"
+        toc.traverse do |element|
+          if element.kind_of? HtmlElement and element.tagname == "a"
+            element["title"] = "toc_item: " + element.children.join.chomp
           end
         end
       end
