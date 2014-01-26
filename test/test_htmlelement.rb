@@ -84,4 +84,20 @@ SECTION
 
     assert_equal(html5_section, Xhtml5Element.create("section").to_s)
   end
+
+  def test_traverse
+    html, head, meta, body, h1 = %w(html head meta body h1).map {|tagname| HtmlElement.create(tagname) }
+    h1_content = "heading 1"
+
+    html.push head
+    head.push meta
+    html.push body
+    body.push h1
+    h1.push h1_content
+
+    elements = []
+    html.traverse {|elm| elements.push elm }
+
+    assert_equal([html, head, meta, body, h1, h1_content], elements)
+  end
 end

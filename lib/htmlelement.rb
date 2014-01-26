@@ -144,6 +144,17 @@ class HtmlElement
     self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
   end
   alias to_str to_s
+
+  def traverse(&block)
+    yield self
+    @children.each do |child|
+      if child.kind_of? HtmlElement
+        child.traverse(&block)
+      else
+        yield child
+      end
+    end
+  end
 end
   
 class XhtmlElement < HtmlElement
