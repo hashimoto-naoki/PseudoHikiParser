@@ -77,7 +77,7 @@ The first paragraph
 </html>
 >>>
 
-And if you specify a file name with `--output` option:
+And if you specify a file name with '''--output''' option:
 
 <<<
 pseudohiki2html.rb --output first_example.html <<TEXT
@@ -88,7 +88,7 @@ TEXT
 
 the result will be saved in first_example.html.
 
-For more options, please try `pseudohiki2html.rb --help`
+For more options, please try '''pseudohiki2html.rb --help'''
 
 !!! module PseudoHiki
 
@@ -124,7 +124,7 @@ The first paragraph
 
 Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
 
-!![develepment_status] Development status of features from the original [[Hiki notation|http://hikiwiki.org/en/TextFormattingRules.html]]
+!![develepment_status] Development status of features from the original [[Hiki notation|http://rabbit-shocker.org/en/hiki.html]]
 
 * Paragraphs - Usable
 * Links
@@ -208,7 +208,7 @@ cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 >>>
 
 !!!! A visitor for HTML5
-The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L225]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]].
+The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]].
 
 !!! Not Implemented Yet
 
