@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<title>A sample of PseudoHikiParser</title>
+<link href="css/with_toc2.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section id="main">
+<section class="h1">
+<h1>Welcome to the PseudoHikiParser wiki!
+</h1>
+<!-- end of h1 -->
+</section>
+<section id="toc">
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#ABOUT">About PseudoHikiParser
+</a></li>
+<li><a href="#LICENSE">License
+</a></li>
+<li><a href="#INSTALLATION">Installation
+</a></li>
+<li><a href="#USAGE">Usage
+</a></li>
+<li><a href="#DEVELEPMENT_STATUS">Development status of features from the original Hiki notation
+</a></li>
+<li><a href="#ADDITIONAL_FEATURES">Additional Features
+</a></li>
+</ul>
+<!-- end of toc -->
+</section>
+<section id="contents">
+<section class="h2">
+<h2 id="ABOUT"> About PseudoHikiParser
+</h2>
+<p>
+PseudoHikiParser is a converter of texts written in a <a href="http://hikiwiki.org/en/">Hiki</a> like notation, into html or other formats. 
+</p>
+<p>
+Currently, only a limited range of notations can be converted into HTML4 or XHTML1.0.
+</p>
+<p>
+I am writing this tool with following objectives in mind,
+</p>
+<ul>
+<li> provide some additional features that do not exist in the original Hiki notation
+<ul>
+<li> make the notation more line oriented
+</li>
+<li> allow to assign ids to elements such as headings
+</li>
+</ul>
+</li>
+<li> support several formats other than HTML
+<ul>
+<li> The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
+</li>
+</ul>
+</li>
+</ul>
+<p>
+And, it would not be compatible with the original Hiki notation.
+</p>
+<!-- end of h2 -->
+</section>
+<section class="h2">
+<h2 id="LICENSE"> License
+</h2>
+<p>
+BSD 2-Clause license
+</p>
+<p>
+<del>I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. </del>
+</p>
+<p>
+<del>And one of them will be BSD 2-clause license or MIT license.</del>
+</p>
+<p>
+(It seems bothersome for me to manage a dual-licensed script.)
+</p>
+<!-- end of h2 -->
+</section>
+<section class="h2">
+<h2 id="INSTALLATION"> Installation
+</h2>
+<pre>
+gem install pseudohikiparser --pre
+</pre>
+<!-- end of h2 -->
+</section>
+<section class="h2">
+<h2 id="USAGE"> Usage
+</h2>
+<section class="h3">
+<h3> pseudohiki2html.rb
+</h3>
+<p>
+After the installation of PseudoHikiParser, you could use a command, <strong>pseudohiki2html.rb</strong>.
+</p>
+<p>
+<em>Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.</em>
+</p>
+<p>
+Typing the following lines at the command prompt:
+</p>
+<pre>
+pseudohiki2html.rb &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+</pre>
+<p>
+will return the following result to stdout:
+</p>
+<pre>
+&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
+ &quot;<a href="http://www.w3.org/TR/html4/loose.dtd&amp;quot;&amp;gt;">http://www.w3.org/TR/html4/loose.dtd&quot;&gt;</a>
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta content=&quot;en&quot; http-equiv=&quot;Content-Language&quot;&gt;
+&lt;meta content=&quot;text/html; charset=UTF-8&quot; http-equiv=&quot;Content-Type&quot;&gt;
+&lt;meta content=&quot;text/javascript&quot; http-equiv=&quot;Content-Script-Type&quot;&gt;
+&lt;title&gt;-&lt;/title&gt;
+&lt;link href=&quot;default.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2&gt; The first heading
+&lt;/h2&gt;
+&lt;p&gt;
+The first paragraph
+&lt;/p&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>
+And if you specify a file name with `--output` option:
+</p>
+<pre>
+pseudohiki2html.rb --output first_example.html &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+</pre>
+<p>
+the result will be saved in first_example.html.
+</p>
+<p>
+For more options, please try `pseudohiki2html.rb --help`
+</p>
+<!-- end of h3 -->
+</section>
+<section class="h3">
+<h3> module PseudoHiki
+</h3>
+<p>
+If you save the lines below as a ruby script and execute it:
+</p>
+<pre>
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+plain = &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
+html = PseudoHiki::HtmlFormat.format(tree)
+puts html
+</pre>
+<p>
+you will get the following output:
+</p>
+<pre>
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2&gt; The first heading
+&lt;/h2&gt;
+&lt;p&gt;
+The first paragraph
+&lt;/p&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+</pre>
+<p>
+Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
+</p>
+<!-- end of h3 -->
+</section>
+<!-- end of h2 -->
+</section>
+<section class="h2">
+<h2 id="DEVELEPMENT_STATUS"> Development status of features from the original <a href="http://hikiwiki.org/en/TextFormattingRules.html">Hiki notation</a>
+</h2>
+<ul>
+<li> Paragraphs - Usable
+</li>
+<li> Links
+<ul>
+<li> WikiNames - Not supported (and would never be)
+</li>
+<li> Linking to other Wiki pages - Not supported as well
+</li>
+<li> Linking to an arbitrary URL - Maybe usable
+</li>
+</ul>
+</li>
+<li> Preformatted text - Usable
+</li>
+<li> Text decoration - Partly supported
+<ul>
+<li> Currently, there is no means to escape tags for inline decorations.
+</li>
+<li> The notation with backquote tags(``) for inline literals is not supported.
+</li>
+</ul>
+</li>
+<li> Headings - Usable
+</li>
+<li> Horizontal lines - Usable
+</li>
+<li> Lists - Usable
+</li>
+<li> Quotations - Usable
+</li>
+<li> Definitions - Usable
+</li>
+<li> Tables - Usable
+</li>
+<li> Comments - Usable
+</li>
+<li> Plugins - Not supported (and will not be compatible with the original one)
+</li>
+</ul>
+<!-- end of h2 -->
+</section>
+<section class="h2">
+<h2 id="ADDITIONAL_FEATURES"> Additional Features
+</h2>
+<section class="h3">
+<h3> Already Implemented
+</h3>
+<section class="h4">
+<h4> Assigning ids
+</h4>
+<p>
+If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
+</p>
+<pre>
+!![heading_id]heading
+
+*[list_id]list
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2 id=&quot;HEADING_ID&quot;&gt;heading
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li id=&quot;LIST_ID&quot;&gt;list
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+</pre>
+<!-- end of h4 -->
+</section>
+<!-- end of h3 -->
+</section>
+<section class="h3">
+<h3> Partly Implemented
+</h3>
+<section class="h4">
+<h4> A visitor that removes markups and returns plain texts
+</h4>
+<p>
+The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb">PlainTextFormat</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>. Below are examples
+</p>
+<pre>
+:tel:03-xxxx-xxxx
+::03-yyyy-yyyy
+:fax:03-xxxx-xxxx
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+tel:	03-xxxx-xxxx
+03-yyyy-yyyy
+fax:	03-xxxx-xxxx
+</pre>
+<p>
+And
+</p>
+<pre>
+||cell 1-1||&gt;&gt;cell 1-2,3,4||cell 1-5
+||cell 2-1||^&gt;cell 2-2,3 3-2,3||cell 2-4||cell 2-5
+||cell 3-1||cell 3-4||cell 3-5
+||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+cell 1-1	cell 1-2,3,4	==	==	cell 1-5
+cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
+cell 3-1	||	||	cell 3-4	cell 3-5
+cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
+</pre>
+<!-- end of h4 -->
+</section>
+<section class="h4">
+<h4> A visitor for HTML5
+</h4>
+<p>
+The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L225">Xhtml5Format</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>.
+</p>
+<!-- end of h4 -->
+</section>
+<!-- end of h3 -->
+</section>
+<section class="h3">
+<h3> Not Implemented Yet
+</h3>
+<!-- end of h3 -->
+</section>
+<!-- end of h2 -->
+</section>
+<!-- end of contents -->
+</section>
+<!-- end of main -->
+</section>
+</body>
+</html>
