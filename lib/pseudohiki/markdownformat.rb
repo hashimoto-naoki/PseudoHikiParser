@@ -214,9 +214,7 @@ module PseudoHiki
     class ListWrapNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          list_mark = " " * (tree.nominal_level - 1) * 2 + "*"
-          list_mark << " " if /^ /o !~ tree.join
-          element.unshift list_mark
+          element.unshift list_mark(tree, "*")
         end
       end
     end
