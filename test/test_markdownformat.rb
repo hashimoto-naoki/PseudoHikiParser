@@ -66,10 +66,12 @@ IMAGE
 TEXT
 
     md_text =<<TEXT
+
 ```
 verbatim ''line'' 1
 verbatim line 2
 ```
+
 TEXT
 
     tree = BlockParser.parse(text.lines.to_a)
