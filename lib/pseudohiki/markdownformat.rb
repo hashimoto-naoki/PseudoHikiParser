@@ -224,7 +224,7 @@ module PseudoHiki
     class VerbatimNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          element.unshift "#{$/}```#{$/}"
+          element.unshift "```#{$/}"
           element.push "```#{$/ * 2}"
         end
       end

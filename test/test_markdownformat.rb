@@ -66,7 +66,6 @@ IMAGE
 TEXT
 
     md_text =<<TEXT
-
 ```
 verbatim ''line'' 1
 verbatim line 2
