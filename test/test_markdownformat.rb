@@ -67,6 +67,27 @@ TEXT
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
+  def test_enum_list
+    text = <<TEXT
+# item 1
+# item 2
+## item 2-1
+## item 2-2
+### item 2-2-1
+TEXT
+
+    md_text = <<TEXT
+1. item 1
+1. item 2
+  2. item 2-1
+  2. item 2-2
+    3. item 2-2-1
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_heading
     text = <<TEXT
 !!heading

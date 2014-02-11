@@ -41,6 +41,12 @@ module PseudoHiki
       tree.accept(formatter)
     end
 
+    def list_mark(tree, mark)
+      mark = mark.dup
+      mark << " " if /^ /o !~ tree.join
+      " " * (tree.nominal_level - 1) * 2 + mark
+    end
+
     def self.create(options=nil)
       formatter = {}
 
@@ -78,7 +84,7 @@ module PseudoHiki
        ListNode,
        EnumNode,
 #       ListWrapNode,
-       EnumWrapNode
+#       EnumWrapNode
       ].each do |node_class|
         formatter[node_class] = self.new(formatter, options)
       end
@@ -114,7 +120,7 @@ module PseudoHiki
 #      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
 #      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
       formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
-#      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
+      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
 
       main_formatter
     end
@@ -209,11 +215,19 @@ module PseudoHiki
       def visit(tree)
         super(tree).tap do |element|
           list_mark = " " * (tree.nominal_level - 1) * 2 + "*"
+          list_mark << " " if /^ /o !~ tree.join
           element.unshift list_mark
         end
       end
     end
-#    class EnumWrapNodeFormatter < self; end
+
+    class EnumWrapNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          element.unshift list_mark(tree, "#{tree.nominal_level}.")
+        end
+      end
+    end
 
   end
 end
