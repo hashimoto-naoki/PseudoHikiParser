@@ -99,10 +99,10 @@ TEXT
 TEXT
 
     md_text = <<TEXT
-|header 1|header 2|
+|header 1              |header 2|
 |----------------------|--------|
-|cell 1-1|cell 1-2|
-|cell 2-1|cell 2-2|
+|cell 1-1              |cell 1-2|
+|cell 2-1              |cell 2-2|
 |cell 3-1 (a bit wider)|cell 3-2|
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
