@@ -71,7 +71,7 @@ module PseudoHiki
 #       VerbatimLeaf,
        QuoteLeaf,
        TableLeaf,
-       CommentOutLeaf,
+#       CommentOutLeaf,
 #       HeadingLeaf,
        ParagraphLeaf,
 #       HrLeaf,
@@ -107,7 +107,7 @@ module PseudoHiki
       formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
 #      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, options)
 #      formatter[TableLeaf] = TableLeafFormatter.new(formatter, options)
-#      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
+      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
       formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, options)
 #      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, options)
       formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
@@ -198,7 +198,11 @@ module PseudoHiki
 
 #    class QuoteLeafFormatter < self; end
 #    class TableLeafFormatter < self; end
-#    class CommentOutLeafFormatter < self; end
+
+    class CommentOutLeafFormatter < self
+      def visit(tree); ""; end
+    end
+
     class HeadingLeafFormatter < self
       def visit(tree)
         super(tree).tap {|element| element.push $/ }

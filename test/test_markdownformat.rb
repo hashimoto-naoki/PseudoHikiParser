@@ -76,6 +76,20 @@ TEXT
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
+  def test_comment_out
+    text = <<TEXT
+a line
+//a comment
+TEXT
+
+    md_text = <<TEXT
+a line
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_quote
     text = <<TEXT
 ""quoted text: line 1
