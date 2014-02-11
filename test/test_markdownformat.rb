@@ -46,6 +46,12 @@ IMAGE
     assert_equal("string with **emphasis** ", @formatter.format(tree).to_s)
   end
 
+  def test_del
+    text = "a ==striked out string=="
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal("a ~~striked out string~~", @formatter.format(tree).to_s)
+  end
+
   def test_verbatim
     text = <<TEXT
  verbatim ''line'' 1

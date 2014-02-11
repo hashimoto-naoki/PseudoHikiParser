@@ -47,6 +47,11 @@ module PseudoHiki
       " " * (tree.nominal_level - 1) * 2 + mark
     end
 
+    def enclose_in(element, mark)
+      element.push mark
+      element.unshift mark
+    end
+
     def self.create(options=nil)
       formatter = {}
 
@@ -59,7 +64,7 @@ module PseudoHiki
 #       LinkNode,
 #       EmNode,
 #       StrongNode,
-       DelNode,
+#       DelNode,
        PluginNode,
        DescLeaf,
        TableCellNode,
@@ -95,7 +100,7 @@ module PseudoHiki
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
       formatter[EmNode] = EmNodeFormatter.new(formatter, options)
       formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
-#      formatter[DelNode] = DelNodeFormatter.new(formatter, options)
+      formatter[DelNode] = DelNodeFormatter.new(formatter, options)
 #      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
 #      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
 #      formatter[TableCellNode] = TableCellNodeFormatter.new(formatter, options)
@@ -177,7 +182,14 @@ module PseudoHiki
         end
       end
     end
-#    class DelNodeFormatter < self; end
+
+    class DelNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          enclose_in(element, "~~")
+        end
+      end
+    end
 #    class PluginNodeFormatter < self; end
 #    class DescLeafFormatter < self; end
 #    class TableCellNodeFormatter < self; end
