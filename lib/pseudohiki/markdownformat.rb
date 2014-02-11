@@ -81,7 +81,7 @@ module PseudoHiki
        DescNode,
 #       VerbatimNode,
 #       QuoteNode,
-       TableNode,
+#       TableNode,
        CommentOutNode,
 #       HeadingNode,
        ParagraphNode,
@@ -117,7 +117,7 @@ module PseudoHiki
 #      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
       formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
       formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
-#      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
+      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
 #      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
 #      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
@@ -221,7 +221,71 @@ module PseudoHiki
         element.join.gsub(/^/o, "> ")
       end
     end
-#    class TableNodeFormatter < self; end
+
+    class TableNodeFormatter < self
+      class MalFormedTableError < StandardError; end
+      ERROR_MESSAGE = <<ERROR_TEXT
+!! A malformed row is found: %s.
+!! Please recheck if it is really what you want.
+ERROR_TEXT
+
+      def visit(tree)
+        table = create_self_element(tree)
+        rows = tree.dup
+        header_height = 0
+        rows.each {|row| header_height += 1 if row.first.cell_type == "th" }
+        rows.length.times { table.push create_self_element(tree) }
+        max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
+        max_row = rows.length - 1
+        cur_row = nil
+        each_cell_with_index(table, max_row, max_col) do |cell, r, c|
+          cur_row = rows.shift if c == 0
+          next if table[r][c]
+          unless cell
+            begin
+              raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
+              table[r][c] = cur_row.shift
+              fill_expand(table, r, c, table[r][c])
+            rescue
+              STDERR.puts ERROR_MESSAGE%[table[r].inspect]
+              next
+            end
+          end
+        end
+
+        STDERR.puts "The header row is missing. The first row will be treated as a header." if header_height == 0
+        format_table(table)
+      end
+
+      def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
+        initial_row.upto(max_row) do |r|
+          initial_col.upto(max_col) do |c|
+            yield table[r][c], r, c
+          end
+        end
+      end
+
+      def fill_expand(table, initial_row, initial_col, cur_cell)
+        row_expand, col_expand = "", ""
+        max_row = initial_row + cur_cell.rowspan - 1
+        max_col = initial_col + cur_cell.colspan - 1
+        each_cell_with_index(table, max_row, max_col,
+                             initial_row, initial_col) do |cell, r, c|
+          if initial_row == r and initial_col == c
+            table[r][c] = visited_result(cur_cell).join.lstrip.chomp
+            next
+          end
+          table[r][c] = initial_row == r ? col_expand : row_expand
+        end
+      end
+
+      def format_table(table)
+        header_delimiter = table.first.map {|cell| "-" * cell.length }
+        table[1,0] = [header_delimiter]
+        table.map {|row| "|#{row.join("|") }|#{$/}" }.join
+      end
+    end
+
 #    class CommentOutNodeFormatter < self; end
     class HeadingNodeFormatter < self
       def visit(tree)

@@ -90,6 +90,23 @@ TEXT
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
+  def test_table
+    text = <<TEXT
+||!header 1||!header 2
+||cell 1-1||cell 1-2
+||cell 2-1||cell 2-2
+TEXT
+
+    md_text = <<TEXT
+|header 1|header 2|
+|--------|--------|
+|cell 1-1|cell 1-2|
+|cell 2-1|cell 2-2|
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_list
     text = <<TEXT
 * item 1
