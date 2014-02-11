@@ -15,7 +15,7 @@ class TC_MarkDownFormat < Test::Unit::TestCase
 test string
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("test string\n", @formatter.format(tree).to_s)
+    assert_equal("test string\n#{$/}", @formatter.format(tree).to_s)
   end
 
   def test_link_url
@@ -23,7 +23,7 @@ TEXT
 A test string with a [[link|http://www.example.org/]] is here.
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("A test string with a [link](http://www.example.org/) is here.\n", @formatter.format(tree).to_s)
+    assert_equal("A test string with a [link](http://www.example.org/) is here.\n#{$/}", @formatter.format(tree).to_s)
   end
 
   def test_link_image
@@ -31,25 +31,25 @@ TEXT
 A test for a link to [[an image|image.png]]
 IMAGE
     tree = BlockParser.parse(image.lines.to_a)
-    assert_equal("A test for a link to ![an image](image.png)\n", @formatter.format(tree).to_s)
+    assert_equal("A test for a link to ![an image](image.png)\n#{$/}", @formatter.format(tree).to_s)
   end
 
   def test_em
     text = "string with ''emphasis'' "
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("string with _emphasis_ ", @formatter.format(tree).to_s)
+    assert_equal("string with _emphasis_ #{$/}", @formatter.format(tree).to_s)
   end
 
   def test_strong
     text = "string with '''emphasis''' "
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("string with **emphasis** ", @formatter.format(tree).to_s)
+    assert_equal("string with **emphasis** #{$/}", @formatter.format(tree).to_s)
   end
 
   def test_del
     text = "a ==striked out string=="
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("a ~~striked out string~~", @formatter.format(tree).to_s)
+    assert_equal("a ~~striked out string~~#{$/}", @formatter.format(tree).to_s)
   end
 
   def test_hr
@@ -86,6 +86,7 @@ TEXT
 
     md_text = <<TEXT
 a line
+
 TEXT
 
     tree = BlockParser.parse(text.lines.to_a)
@@ -101,6 +102,7 @@ TEXT
     md_text = <<TEXT
 > quoted text: line 1
 > quoted text: line 2
+
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
@@ -175,9 +177,27 @@ TEXT
     assert_equal("## heading#{$/ * 2}", @formatter.format(tree).to_s)
   end
 
+  def test_paragraph
+    text = <<TEXT
+the first paragraph
+
+the second paragraph
+TEXT
+
+    md_text = <<TEXT
+the first paragraph
+
+the second paragraph
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_escape
     text = "test string with *asterisk and _underscore"
-    md_text = 'test string with \*asterisk and \_underscore'
+    md_text = "test string with \\*asterisk and \\_underscore#{$/}"
 
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)

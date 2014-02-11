@@ -84,7 +84,7 @@ module PseudoHiki
 #       TableNode,
        CommentOutNode,
 #       HeadingNode,
-       ParagraphNode,
+#       ParagraphNode,
        HrNode,
        ListNode,
        EnumNode,
@@ -120,7 +120,7 @@ module PseudoHiki
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
 #      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
-#      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
+      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
 #      formatter[HrNode] = HrNodeFormatter.new(formatter, options)
 #      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
 #      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
@@ -233,7 +233,7 @@ module PseudoHiki
     class QuoteNodeFormatter < self
       def visit(tree)
         element = super(tree)
-        element.join.gsub(/^/o, "> ")
+        element.join.gsub(/^/o, "> ").sub(/> \Z/o, "")
       end
     end
 
@@ -330,7 +330,12 @@ ERROR_TEXT
       end
     end
 
-#    class ParagraphNodeFormatter < self; end
+    class ParagraphNodeFormatter < self
+      def visit(tree)
+        super(tree).tap {|element| element.push $/ }
+      end
+    end
+
 #    class HrNodeFormatter < self; end
 #    class ListNodeFormatter < self; end
 #    class EnumNodeFormatter < self; end
