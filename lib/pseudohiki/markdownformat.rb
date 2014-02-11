@@ -35,7 +35,7 @@ module PseudoHiki
     def get_plain
       @formatter[PlainNode]
     end
-    
+
     def format(tree)
       formatter = self.get_plain
       tree.accept(formatter)
@@ -94,8 +94,8 @@ module PseudoHiki
         formatter[node_class] = self.new(formatter, options)
       end
 
-#      @formatter[PlainNode] = PlainNodeFormatter.new(formatter, options)
-#      @formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)
+#      formatter[PlainNode] = PlainNodeFormatter.new(formatter, options)
+#      formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)
       formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
       formatter[EmNode] = EmNodeFormatter.new(formatter, options)
@@ -134,6 +134,7 @@ module PseudoHiki
 
 #    class PlainNodeFormatter < self; end
 #    class InlineNodeFormatter < self; end
+
     class InlineLeafFormatter < self
       def visit(leaf)
         leaf.map {|str| str.gsub(/([_*])/o, "\\\\\\1") }
@@ -188,24 +189,30 @@ module PseudoHiki
         end
       end
     end
+
 #    class PluginNodeFormatter < self; end
 #    class DescLeafFormatter < self; end
 #    class TableCellNodeFormatter < self; end
+
     class VerbatimLeafFormatter < InlineLeafFormatter; end
+
 #    class QuoteLeafFormatter < self; end
 #    class TableLeafFormatter < self; end
 #    class CommentOutLeafFormatter < self; end
 #    class HeadingLeafFormatter < self; end
 #    class ParagraphLeafFormatter < self; end
+
     class HrLeafFormatter < self
       def visit(tree)
         "----#{$/}"
       end
     end
+
 #    class BlockNodeEndFormatter < self; end
 #    class ListLeafFormatter < self; end
 #    class EnumLeafFormatter < self; end
 #    class DescNodeFormatter < self; end
+
     class VerbatimNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
@@ -304,6 +311,7 @@ ERROR_TEXT
     end
 
 #    class CommentOutNodeFormatter < self; end
+
     class HeadingNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
@@ -313,10 +321,12 @@ ERROR_TEXT
         end
       end
     end
+
 #    class ParagraphNodeFormatter < self; end
 #    class HrNodeFormatter < self; end
 #    class ListNodeFormatter < self; end
 #    class EnumNodeFormatter < self; end
+
     class ListWrapNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
@@ -332,6 +342,5 @@ ERROR_TEXT
         end
       end
     end
-
   end
 end
