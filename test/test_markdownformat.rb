@@ -34,6 +34,18 @@ IMAGE
     assert_equal("A test for a link to ![an image](image.png)\n", @formatter.format(tree).to_s)
   end
 
+  def test_em
+    text = "string with ''emphasis'' "
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal("string with _emphasis_ ", @formatter.format(tree).to_s)
+  end
+
+  def test_strong
+    text = "string with '''emphasis''' "
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal("string with **emphasis** ", @formatter.format(tree).to_s)
+  end
+
   def test_heading
     text = <<TEXT
 !!heading

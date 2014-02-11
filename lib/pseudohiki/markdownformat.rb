@@ -51,8 +51,8 @@ module PseudoHiki
        InlineNode,
 #       InlineLeaf,
 #       LinkNode,
-       EmNode,
-       StrongNode,
+#       EmNode,
+#       StrongNode,
        DelNode,
        PluginNode,
        DescLeaf,
@@ -87,8 +87,8 @@ module PseudoHiki
 #      @formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)
       formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
-#      formatter[EmNode] = EmNodeFormatter.new(formatter, options)
-#      formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
+      formatter[EmNode] = EmNodeFormatter.new(formatter, options)
+      formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
 #      formatter[DelNode] = DelNodeFormatter.new(formatter, options)
 #      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
 #      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
@@ -153,8 +153,24 @@ module PseudoHiki
         caption_part.map {|element| visited_result(element) }
       end
     end
-#    class EmNodeFormatter < self; end
-#    class StrongNodeFormatter < self; end
+
+    class EmNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          element.unshift "_"
+          element.push "_"
+        end
+      end
+    end
+
+    class StrongNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          element.unshift "**"
+          element.push "**"
+        end
+      end
+    end
 #    class DelNodeFormatter < self; end
 #    class PluginNodeFormatter < self; end
 #    class DescLeafFormatter < self; end
