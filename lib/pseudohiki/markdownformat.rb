@@ -74,7 +74,7 @@ module PseudoHiki
        CommentOutLeaf,
        HeadingLeaf,
        ParagraphLeaf,
-       HrLeaf,
+#       HrLeaf,
        BlockNodeEnd,
        ListLeaf,
        EnumLeaf,
@@ -110,7 +110,7 @@ module PseudoHiki
 #      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
 #      formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, options)
 #      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, options)
-#      formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
+      formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
 #      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, options)
 #      formatter[ListLeaf] = ListLeafFormatter.new(formatter, options)
 #      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
@@ -199,7 +199,11 @@ module PseudoHiki
 #    class CommentOutLeafFormatter < self; end
 #    class HeadingLeafFormatter < self; end
 #    class ParagraphLeafFormatter < self; end
-#    class HrLeafFormatter < self; end
+    class HrLeafFormatter < self
+      def visit(tree)
+        "----#{$/}"
+      end
+    end
 #    class BlockNodeEndFormatter < self; end
 #    class ListLeafFormatter < self; end
 #    class EnumLeafFormatter < self; end

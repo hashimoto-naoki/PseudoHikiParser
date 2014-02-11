@@ -52,6 +52,13 @@ IMAGE
     assert_equal("a ~~striked out string~~", @formatter.format(tree).to_s)
   end
 
+  def test_hr
+    text = "----#{$/}"
+    md_text = "----#{$/}"
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_verbatim
     text = <<TEXT
  verbatim ''line'' 1
