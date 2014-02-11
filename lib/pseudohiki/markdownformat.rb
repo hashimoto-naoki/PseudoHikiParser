@@ -194,7 +194,11 @@ module PseudoHiki
 #    class DescLeafFormatter < self; end
 #    class TableCellNodeFormatter < self; end
 
-    class VerbatimLeafFormatter < InlineLeafFormatter; end
+    class VerbatimLeafFormatter < InlineLeafFormatter
+      def visit(leaf)
+        leaf.join
+      end
+    end
 
 #    class QuoteLeafFormatter < self; end
 #    class TableLeafFormatter < self; end

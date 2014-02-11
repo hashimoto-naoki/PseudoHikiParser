@@ -203,5 +203,25 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
+
+  def test_not_escaped
+    text = <<TEXT
+<<<
+a verbatim asterisk *
+a verbatim _underscore_
+>>>
+TEXT
+
+    md_text = <<TEXT
+```
+a verbatim asterisk *
+a verbatim _underscore_
+```
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
 end
 
