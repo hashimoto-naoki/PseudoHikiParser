@@ -168,8 +168,7 @@ module PseudoHiki
     class EmNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          element.unshift "_"
-          element.push "_"
+          enclose_in(element, "_")
         end
       end
     end
@@ -177,8 +176,7 @@ module PseudoHiki
     class StrongNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          element.unshift "**"
-          element.push "**"
+          enclose_in(element, "**")
         end
       end
     end
