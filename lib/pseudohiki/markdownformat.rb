@@ -86,8 +86,8 @@ module PseudoHiki
 #       HeadingNode,
 #       ParagraphNode,
        HrNode,
-       ListNode,
-       EnumNode,
+#       ListNode,
+#       EnumNode,
 #       ListWrapNode,
 #       EnumWrapNode
       ].each do |node_class|
@@ -122,8 +122,8 @@ module PseudoHiki
       formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
 #      formatter[HrNode] = HrNodeFormatter.new(formatter, options)
-#      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
-#      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
+      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
+      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
       formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
       formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
 
@@ -337,8 +337,26 @@ ERROR_TEXT
     end
 
 #    class HrNodeFormatter < self; end
-#    class ListNodeFormatter < self; end
-#    class EnumNodeFormatter < self; end
+
+    class ListNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          if /\A\*/o =~ element.first.join
+            element.push $/
+          end
+        end
+      end
+    end
+
+    class EnumNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          if /\A\d/o =~ element.first.join
+            element.push $/
+          end
+        end
+      end
+    end
 
     class ListWrapNodeFormatter < self
       def visit(tree)
