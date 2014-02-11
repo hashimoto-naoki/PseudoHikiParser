@@ -63,7 +63,7 @@ module PseudoHiki
        PluginNode,
        DescLeaf,
        TableCellNode,
-       VerbatimLeaf,
+#       VerbatimLeaf,
        QuoteLeaf,
        TableLeaf,
        CommentOutLeaf,
@@ -74,7 +74,7 @@ module PseudoHiki
        ListLeaf,
        EnumLeaf,
        DescNode,
-       VerbatimNode,
+#       VerbatimNode,
 #       QuoteNode,
        TableNode,
        CommentOutNode,
@@ -99,7 +99,7 @@ module PseudoHiki
 #      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
 #      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
 #      formatter[TableCellNode] = TableCellNodeFormatter.new(formatter, options)
-#      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
+      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
 #      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, options)
 #      formatter[TableLeaf] = TableLeafFormatter.new(formatter, options)
 #      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
@@ -110,7 +110,7 @@ module PseudoHiki
 #      formatter[ListLeaf] = ListLeafFormatter.new(formatter, options)
 #      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
 #      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
-#      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
+      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
       formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
 #      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
 #      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
@@ -181,7 +181,7 @@ module PseudoHiki
 #    class PluginNodeFormatter < self; end
 #    class DescLeafFormatter < self; end
 #    class TableCellNodeFormatter < self; end
-#    class VerbatimLeafFormatter < self; end
+    class VerbatimLeafFormatter < InlineLeafFormatter; end
 #    class QuoteLeafFormatter < self; end
 #    class TableLeafFormatter < self; end
 #    class CommentOutLeafFormatter < self; end
@@ -192,7 +192,14 @@ module PseudoHiki
 #    class ListLeafFormatter < self; end
 #    class EnumLeafFormatter < self; end
 #    class DescNodeFormatter < self; end
-#    class VerbatimNodeFormatter < self; end
+    class VerbatimNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          element.unshift "```#{$/}"
+          element.push "```#{$/}"
+        end
+      end
+    end
 
     class QuoteNodeFormatter < self
       def visit(tree)

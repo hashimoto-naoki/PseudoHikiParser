@@ -46,6 +46,23 @@ IMAGE
     assert_equal("string with **emphasis** ", @formatter.format(tree).to_s)
   end
 
+  def test_verbatim
+    text = <<TEXT
+ verbatim ''line'' 1
+ verbatim line 2
+TEXT
+
+    md_text =<<TEXT
+```
+verbatim ''line'' 1
+verbatim line 2
+```
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_quote
     text = <<TEXT
 ""quoted text: line 1
