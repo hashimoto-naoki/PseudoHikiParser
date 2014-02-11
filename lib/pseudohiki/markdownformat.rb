@@ -136,7 +136,7 @@ module PseudoHiki
 #    class InlineNodeFormatter < self; end
     class InlineLeafFormatter < self
       def visit(leaf)
-        leaf.join
+        leaf.map {|str| str.gsub(/([_*])/o, "\\\\\\1") }
       end
     end
 

@@ -158,5 +158,13 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal("## heading\n", @formatter.format(tree).to_s)
   end
+
+  def test_escape
+    text = "test string with *asterisk and _underscore"
+    md_text = 'test string with \*asterisk and \_underscore'
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
 end
 
