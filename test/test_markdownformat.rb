@@ -156,7 +156,7 @@ TEXT
 !!heading
 TEXT
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal("## heading\n", @formatter.format(tree).to_s)
+    assert_equal("## heading#{$/ * 2}", @formatter.format(tree).to_s)
   end
 
   def test_escape
