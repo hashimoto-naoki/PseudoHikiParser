@@ -77,7 +77,7 @@ module PseudoHiki
        HrNode,
        ListNode,
        EnumNode,
-       ListWrapNode,
+#       ListWrapNode,
        EnumWrapNode
       ].each do |node_class|
         formatter[node_class] = self.new(formatter, options)
@@ -113,7 +113,7 @@ module PseudoHiki
 #      formatter[HrNode] = HrNodeFormatter.new(formatter, options)
 #      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
 #      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
-#      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
+      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
 #      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
 
       main_formatter
@@ -205,7 +205,14 @@ module PseudoHiki
 #    class HrNodeFormatter < self; end
 #    class ListNodeFormatter < self; end
 #    class EnumNodeFormatter < self; end
-#    class ListWrapNodeFormatter < self; end
+    class ListWrapNodeFormatter < self
+      def visit(tree)
+        super(tree).tap do |element|
+          list_mark = " " * (tree.nominal_level - 1) * 2 + "*"
+          element.unshift list_mark
+        end
+      end
+    end
 #    class EnumWrapNodeFormatter < self; end
 
   end

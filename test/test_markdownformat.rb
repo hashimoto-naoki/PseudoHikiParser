@@ -46,6 +46,27 @@ IMAGE
     assert_equal("string with **emphasis** ", @formatter.format(tree).to_s)
   end
 
+  def test_list
+    text = <<TEXT
+* item 1
+* item 2
+** item 2-1
+** item 2-2
+*** item 2-2-1
+TEXT
+
+    md_text = <<TEXT
+* item 1
+* item 2
+  * item 2-1
+  * item 2-2
+    * item 2-2-1
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
   def test_heading
     text = <<TEXT
 !!heading
