@@ -75,7 +75,7 @@ module PseudoHiki
        EnumLeaf,
        DescNode,
        VerbatimNode,
-       QuoteNode,
+#       QuoteNode,
        TableNode,
        CommentOutNode,
 #       HeadingNode,
@@ -111,7 +111,7 @@ module PseudoHiki
 #      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
 #      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
 #      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
-#      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
+      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
 #      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
 #      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
@@ -193,7 +193,13 @@ module PseudoHiki
 #    class EnumLeafFormatter < self; end
 #    class DescNodeFormatter < self; end
 #    class VerbatimNodeFormatter < self; end
-#    class QuoteNodeFormatter < self; end
+
+    class QuoteNodeFormatter < self
+      def visit(tree)
+        element = super(tree)
+        element.join.gsub(/^/o, "> ")
+      end
+    end
 #    class TableNodeFormatter < self; end
 #    class CommentOutNodeFormatter < self; end
     class HeadingNodeFormatter < self
