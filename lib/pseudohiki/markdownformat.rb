@@ -280,9 +280,20 @@ ERROR_TEXT
       end
 
       def format_table(table)
-        header_delimiter = table.first.map {|cell| "-" * cell.length }
+        cell_width = calculate_cell_width(table)
+        header_delimiter = cell_width.map {|width| "-" * width }
         table[1,0] = [header_delimiter]
         table.map {|row| "|#{row.join("|") }|#{$/}" }.join
+      end
+
+      def calculate_cell_width(table)
+        cell_width = Array.new(table.first.length, 0)
+        table.each do |row|
+          row.each_with_index do |cell, i|
+            cell_width[i] = cell.length if cell_width[i] < cell.length
+          end
+        end
+        cell_width
       end
     end
 
