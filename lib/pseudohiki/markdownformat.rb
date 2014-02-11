@@ -198,13 +198,11 @@ module PseudoHiki
 #    class CommentOutNodeFormatter < self; end
     class HeadingNodeFormatter < self
       def visit(tree)
-        heading_level = tree.first.nominal_level
-        element = create_self_element(tree)
-        element.push "#"*heading_level + " "
-        tree.each do |node|
-          element.push visited_result(node)
+        super(tree).tap do |element|
+          heading_mark = "#" * tree.first.nominal_level
+          heading_mark << " " if /^ /o !~ tree.join
+          element.unshift heading_mark
         end
-        element
       end
     end
 #    class ParagraphNodeFormatter < self; end
