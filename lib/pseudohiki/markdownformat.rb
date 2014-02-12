@@ -184,9 +184,10 @@ module PseudoHiki
 
     class DelNodeFormatter < self
       def visit(tree)
-        super(tree).tap do |element|
-          enclose_in(element, "~~")
-        end
+        element = "~~"
+        element.concat super(tree).join.strip
+        element.concat "~~"
+        element
       end
     end
 
