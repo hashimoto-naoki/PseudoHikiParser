@@ -223,5 +223,29 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
+
+  def test_document
+    text = <<TEXT
+!! heading
+
+# item 1
+## item 1-1
+
+a paragraph for testing a striked through ==string with an ''emphasis'' in it.==
+TEXT
+
+    md_text = <<TEXT
+## heading
+
+1. item 1
+  2. item 1-1
+
+a paragraph for testing a striked through ~~string with an _emphasis_ in it.~~
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
 end
 
