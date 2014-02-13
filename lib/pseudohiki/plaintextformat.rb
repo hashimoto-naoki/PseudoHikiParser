@@ -46,35 +46,8 @@ module PseudoHiki
 
     def self.create(options = { :verbose_mode => false })
       formatter = {}
-      main = self.new(formatter, options)
-
-      [
-       PlainNode,
-       InlineNode,
-       EmNode,
-       StrongNode,
-       PluginNode,
-       VerbatimLeaf,
-       QuoteLeaf,
-       TableLeaf,
-       CommentOutLeaf,
-       HeadingLeaf,
-       ParagraphLeaf,
-       HrLeaf,
-       BlockNodeEnd,
-       ListLeaf,
-       EnumLeaf,
-       DescNode,
-       QuoteNode,
-       HeadingNode,
-       HrNode,
-       ListNode,
-       EnumNode,
-       ListWrapNode,
-       EnumWrapNode
-      ].each do |node_class|
-        formatter[node_class] = self.new(formatter, options)
-      end
+      main_formatter = self.new(formatter, options)
+      formatter.default = main_formatter
 
       formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
@@ -84,7 +57,7 @@ module PseudoHiki
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
       formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
-      main
+      main_formatter
     end
 
     def get_plain
