@@ -184,10 +184,7 @@ module PseudoHiki
 
     class DelNodeFormatter < self
       def visit(tree)
-        element = "~~"
-        element.concat super(tree).join.strip
-        element.concat "~~"
-        element
+        "~~#{super(tree).join.strip}~~"
       end
     end
 
