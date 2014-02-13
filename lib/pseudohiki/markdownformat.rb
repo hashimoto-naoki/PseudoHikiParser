@@ -249,8 +249,7 @@ ERROR_TEXT
       def visit(tree)
         table = create_self_element(tree)
         rows = tree.dup
-        header_height = 0
-        rows.each {|row| header_height += 1 if row.first.cell_type == "th" }
+        gfm_conformant = check_conformance_with_gfm_style(rows)
         rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
@@ -270,7 +269,7 @@ ERROR_TEXT
           end
         end
 
-        STDERR.puts "The header row is missing. The first row will be treated as a header." if header_height == 0
+        STDERR.puts "The header row is missing. The first row will be treated as a header." unless gfm_conformant
         format_table(table)
       end
 
@@ -317,6 +316,12 @@ ERROR_TEXT
           end
         end
         cell_width
+      end
+
+      def check_conformance_with_gfm_style(rows)
+        header_height = 0
+        rows.each {|row| header_height += 1 if row.first.cell_type == "th" }
+        header_height != 0
       end
     end
 
