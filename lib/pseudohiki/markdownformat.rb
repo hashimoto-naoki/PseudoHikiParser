@@ -232,8 +232,7 @@ ERROR_TEXT
           end
         end
 
-        STDERR.puts "The header row is missing. The first row will be treated as a header." unless gfm_conformant
-        format_table(table)
+        format_table(table, gfm_conformant)
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
@@ -258,7 +257,7 @@ ERROR_TEXT
         end
       end
 
-      def format_table(table)
+      def format_gfm_table(table)
         cell_width = calculate_cell_width(table)
         header_delimiter = cell_width.map {|width| "-" * width }
         cell_formats = cell_width.map {|width| "%-#{width}s" }
@@ -269,6 +268,11 @@ ERROR_TEXT
           end
           "|#{formatted_row.join("|") }|#{$/}"
         end.join
+      end
+
+      def format_table(table, gfm_conformant)
+        STDERR.puts "The header row is missing. The first row will be treated as a header." unless gfm_conformant
+        format_gfm_table(table)
       end
 
       def calculate_cell_width(table)
