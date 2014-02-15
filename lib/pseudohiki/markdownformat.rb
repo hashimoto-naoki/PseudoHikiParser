@@ -295,9 +295,17 @@ ERROR_TEXT
       end
 
       def check_conformance_with_gfm_style(rows)
-        header_height = 0
-        rows.each {|row| header_height += 1 if row.first.cell_type == "th" }
-        header_height != 0
+        rows.each_with_index do |row, i|
+          row.each do |cell|
+            return false if cell.rowspan > 1 or cell.colspan > 1
+            if i == 0
+              return false unless cell.cell_type == "th"
+            else
+              return false if cell.cell_type == "th"
+            end
+          end
+        end
+        true
       end
     end
 
