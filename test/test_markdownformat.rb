@@ -194,6 +194,28 @@ TEXT
 #    end
   end
 
+  def test_non_gfm_conformant_table_with_multirow_cells
+    text = <<TEXT
+||!header 1-1||!header 1-2||!header 1-3||!header 1-4
+||cell 1-1||cell 1-2||^cell 1-3||cell 1-4
+||cell 2-1||>cell 2-2||cell 2-4
+||cell 3-1 (a bit wider)||cell 3-2||cell 3-3||cell 3-4
+TEXT
+
+    md_text = <<TEXT
+|header 1-1            |header 1-2|header 1-3|header 1-4|
+|----------------------|----------|----------|----------|
+|cell 1-1              |cell 1-2  |cell 1-3  |cell 1-4  |
+|cell 2-1              |cell 2-2  |          |cell 2-4  |
+|cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
+TEXT
+
+#    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
+      tree = BlockParser.parse(text.lines.to_a)
+      assert_equal(md_text, @formatter.format(tree).to_s)
+#    end
+  end
+
   def test_list
     text = <<TEXT
 * item 1
