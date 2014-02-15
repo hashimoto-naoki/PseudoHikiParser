@@ -44,8 +44,8 @@ module PseudoHiki
     end
 
     def format(tree)
-      formatter = self.get_plain
-      tree.accept(formatter)
+      formatter = get_plain
+      tree.accept(formatter).join
     end
 
     def list_mark(tree, mark)
