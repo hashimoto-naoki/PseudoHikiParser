@@ -233,7 +233,7 @@ ERROR_TEXT
           end
         end
 
-        format_table(table, gfm_conformant)
+        format_table(table, tree, gfm_conformant)
       end
 
       def deep_copy_tree(tree)
@@ -277,7 +277,7 @@ ERROR_TEXT
         end.join
       end
 
-      def format_table(table, gfm_conformant)
+      def format_table(table, tree, gfm_conformant)
         unless gfm_conformant
           begin
             raise NotConformantStyleError.new("The header row is missing. The first row will be treated as a header.")
