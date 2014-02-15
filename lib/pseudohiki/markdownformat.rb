@@ -214,17 +214,17 @@ module PseudoHiki
     end
 
     class TableNodeFormatter < self
-      class MalFormedTableError < StandardError; end
       class NotConformantStyleError < StandardError; end
+      class MalFormedTableError < StandardError; end
       ERROR_MESSAGE = <<ERROR_TEXT
 !! A malformed row is found: %s.
 !! Please recheck if it is really what you want.
 ERROR_TEXT
 
       def visit(tree)
+        @options.gfm_conformant = check_conformance_with_gfm_style(tree)
         table = create_self_element(tree)
         rows = deep_copy_tree(tree)
-        @options.gfm_conformant = check_conformance_with_gfm_style(rows)
         rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
