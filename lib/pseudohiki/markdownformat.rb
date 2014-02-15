@@ -224,7 +224,7 @@ ERROR_TEXT
       def visit(tree)
         table = create_self_element(tree)
         rows = deep_copy_tree(tree)
-        gfm_conformant = check_conformance_with_gfm_style(rows)
+        @options.gfm_conformant = check_conformance_with_gfm_style(rows)
         rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
@@ -245,7 +245,7 @@ ERROR_TEXT
           end
         end
 
-        format_table(table, tree, gfm_conformant)
+        format_table(table, tree)
       end
 
       def deep_copy_tree(tree)
@@ -293,8 +293,8 @@ ERROR_TEXT
         html_table = HtmlFormat.format(tree)
       end
 
-      def format_table(table, tree, gfm_conformant)
-        unless gfm_conformant
+      def format_table(table, tree)
+        unless @options.gfm_conformant
           begin
             raise NotConformantStyleError.new("The header row is missing. The first row will be treated as a header.")
           rescue
