@@ -204,6 +204,7 @@ module PseudoHiki
 
     class TableNodeFormatter < self
       class MalFormedTableError < StandardError; end
+      class NotConformantStyleError < StandardError; end
       ERROR_MESSAGE = <<ERROR_TEXT
 !! A malformed row is found: %s.
 !! Please recheck if it is really what you want.
@@ -271,8 +272,16 @@ ERROR_TEXT
       end
 
       def format_table(table, gfm_conformant)
-        STDERR.puts "The header row is missing. The first row will be treated as a header." unless gfm_conformant
-        format_gfm_table(table)
+        unless gfm_conformant
+          begin
+            raise NotConformantStyleError.new("The header row is missing. The first row will be treated as a header.")
+          rescue
+            STDERR.puts "The header row is missing. The first row will be treated as a header."
+            format_gfm_table(table)
+          end
+        else
+          format_gfm_table(table)
+        end
       end
 
       def calculate_cell_width(table)
