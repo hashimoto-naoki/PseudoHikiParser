@@ -59,6 +59,25 @@ IMAGE
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
+  def test_desc
+    text = <<TEXT
+:word 1:description of word 1
+:word 2:description of word 2
+TEXT
+
+    html = <<HTML
+<dt>word 1</dt>
+<dd>description of word 1
+</dd>\n<dt>word 2</dt>
+<dd>description of word 2
+</dd>
+
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(html, @formatter.format(tree).to_s)
+  end
+
   def test_verbatim
     text = <<TEXT
  verbatim ''line'' 1

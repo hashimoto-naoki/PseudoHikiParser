@@ -78,7 +78,7 @@ module PseudoHiki
 #      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, options)
 #      formatter[ListLeaf] = ListLeafFormatter.new(formatter, options)
 #      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
-#      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
+      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
       formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
       formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
@@ -185,7 +185,11 @@ module PseudoHiki
 #    class BlockNodeEndFormatter < self; end
 #    class ListLeafFormatter < self; end
 #    class EnumLeafFormatter < self; end
-#    class DescNodeFormatter < self; end
+    class DescNodeFormatter < self
+      def visit(tree)
+        HtmlFormat.format(tree).push $/
+      end
+    end
 
     class VerbatimNodeFormatter < self
       def visit(tree)
