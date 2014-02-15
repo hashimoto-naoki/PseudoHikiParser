@@ -59,7 +59,7 @@ module PseudoHiki
       element.unshift mark
     end
 
-    def self.create(options=nil)
+    def self.create(options={ :strict_mode => false })
       formatter = {}
       main_formatter = self.new(formatter, options)
       formatter.default = main_formatter
