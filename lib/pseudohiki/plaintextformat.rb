@@ -15,6 +15,16 @@ module PseudoHiki
       alias to_s join
     end
 
+    def initialize(formatter={}, options = { :verbose_mode=> false })
+      @formatter = formatter
+      options_given_via_block = nil
+      if block_given?
+        options_given_via_block = yield
+        options.merge!(options_given_via_block)
+      end
+      @options = OpenStruct.new(options)
+    end
+
     def create_self_element(tree=nil)
       Node.new
     end
@@ -34,14 +44,13 @@ module PseudoHiki
       element
     end
 
-    def initialize(formatter={}, options = { :verbose_mode=> false })
-      @formatter = formatter
-      options_given_via_block = nil
-      if block_given?
-        options_given_via_block = yield
-        options.merge!(options_given_via_block)
-      end
-      @options = OpenStruct.new(options)
+    def get_plain
+      @formatter[PlainNode]
+    end
+
+    def format(tree)
+      formatter = get_plain
+      tree.accept(formatter).join
     end
 
     def self.create(options = { :verbose_mode => false })
@@ -58,15 +67,6 @@ module PseudoHiki
       formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
       main_formatter
-    end
-
-    def get_plain
-      @formatter[PlainNode]
-    end
-
-    def format(tree)
-      formatter = get_plain
-      tree.accept(formatter).join
     end
 
 ## Definitions of subclasses of PlainTextFormat begins here.
