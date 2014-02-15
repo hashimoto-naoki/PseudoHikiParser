@@ -4,6 +4,7 @@ require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
 require 'htmlelement'
+require 'ostruct'
 
 module PseudoHiki
   class MarkDownFormat
@@ -11,9 +12,14 @@ module PseudoHiki
     include TableRowParser::InlineElement
     include BlockParser::BlockElement
 
-    def initialize(formatter={}, options=nil)
+    def initialize(formatter={}, options={ :strict_mode=> false })
       @formatter = formatter
-      @options = options
+      options_given_via_block = nil
+      if block_given?
+        options_given_via_block = yield
+        options.merge!(options_given_via_block)
+      end
+      @options = OpenStruct.new(options)
     end
 
     def create_self_element(tree=nil)
@@ -232,6 +238,7 @@ ERROR_TEXT
               table[r][c] = cur_row.shift
               fill_expand(table, r, c, table[r][c])
             rescue
+              raise if @options.strict_mode
               STDERR.puts ERROR_MESSAGE%[table[r].inspect]
               next
             end
