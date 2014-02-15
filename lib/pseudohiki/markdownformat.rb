@@ -212,7 +212,7 @@ ERROR_TEXT
 
       def visit(tree)
         table = create_self_element(tree)
-        rows = tree.dup
+        rows = deep_copy_tree(tree)
         gfm_conformant = check_conformance_with_gfm_style(rows)
         rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
@@ -234,6 +234,12 @@ ERROR_TEXT
         end
 
         format_table(table, gfm_conformant)
+      end
+
+      def deep_copy_tree(tree)
+        tree.dup.clear.tap do |new_tree|
+          new_tree.concat tree.map {|node| node.dup }
+        end
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
