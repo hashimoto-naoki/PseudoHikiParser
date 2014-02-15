@@ -2,6 +2,7 @@
 
 require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
+require 'pseudohiki/htmlformat'
 require 'htmlelement'
 
 module PseudoHiki
@@ -277,13 +278,18 @@ ERROR_TEXT
         end.join
       end
 
+      def format_html_table(tree)
+        html_table = HtmlFormat.format(tree)
+      end
+
       def format_table(table, tree, gfm_conformant)
         unless gfm_conformant
           begin
             raise NotConformantStyleError.new("The header row is missing. The first row will be treated as a header.")
           rescue
             STDERR.puts "The header row is missing. The first row will be treated as a header."
-            format_gfm_table(table)
+#            format_gfm_table(table)
+            format_html_table(tree)
           end
         else
           format_gfm_table(table)

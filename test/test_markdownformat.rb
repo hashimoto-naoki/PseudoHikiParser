@@ -142,9 +142,21 @@ TEXT
 |cell 3-1 (a bit wider)|cell 3-2|
 TEXT
 
+    html =<<HTML
+<tr><td>header 1</td><th>header 2
+</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2
+</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2
+</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
+</td></tr>
+HTML
+
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-      assert_equal(md_text, @formatter.format(tree).to_s)
+#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
 
@@ -166,9 +178,23 @@ TEXT
 |cell 3-1 (a bit wider)|cell 3-2  |
 TEXT
 
+    html = <<HTML
+<tr><th>header 1-1</th><th>header 1-2
+</th></tr>
+<tr><th>header 2-1</th><th>header 2-2
+</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2
+</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2
+</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
+</td></tr>
+HTML
+
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-      assert_equal(md_text, @formatter.format(tree).to_s)
+#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
 
@@ -188,9 +214,21 @@ TEXT
 |cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
 TEXT
 
+    html = <<HTML
+<tr><th>header 1-1</th><th>header 1-2</th><th>header 1-3</th><th>header 1-4
+</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td><td>cell 1-3</td><td>cell 1-4
+</td></tr>
+<tr><td>cell 2-1</td><td colspan="2">cell 2-2</td><td>cell 2-4
+</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4
+</td></tr>
+HTML
+
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-      assert_equal(md_text, @formatter.format(tree).to_s)
+#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
 
@@ -210,9 +248,21 @@ TEXT
 |cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
 TEXT
 
+    html = <<HTML
+<tr><th>header 1-1</th><th>header 1-2</th><th>header 1-3</th><th>header 1-4
+</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td><td rowspan=\"2\">cell 1-3</td><td>cell 1-4
+</td></tr>
+<tr><td>cell 2-1</td><td colspan="2">cell 2-2</td><td>cell 2-4
+</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4
+</td></tr>
+HTML
+
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-      assert_equal(md_text, @formatter.format(tree).to_s)
+#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
 
