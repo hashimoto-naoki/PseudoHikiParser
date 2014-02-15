@@ -147,7 +147,7 @@ ERROR_TEXT
       def visit(tree)
         table = create_self_element(tree)
         rows = deep_copy_tree(tree)
-        rows.length.times { table.push Node.new }
+        rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
         cur_row = nil
