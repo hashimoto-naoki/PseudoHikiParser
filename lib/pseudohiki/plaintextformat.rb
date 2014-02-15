@@ -166,7 +166,7 @@ ERROR_TEXT
             end
           end
         end
-        table.map {|row| row.join("\t")+$/ }.join
+        format_table(table, tree)
       end
 
       def deep_copy_tree(tree)
@@ -197,6 +197,10 @@ ERROR_TEXT
           table[r][c] = initial_row == r ? col_expand : row_expand
         end
       end
+    end
+
+    def format_table(table, tree)
+      table.map {|row| row.join("\t")+$/ }.join
     end
 
     class CommentOutNodeFormatter < self
