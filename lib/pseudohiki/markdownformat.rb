@@ -258,7 +258,9 @@ module PseudoHiki
       end
 
       def format_html_table(tree)
-        html_table = HtmlFormat.format(tree)
+        HtmlElement.create("table").tap do |element|
+          element.push HtmlFormat.format(tree)
+        end
       end
 
       def format_table(table, tree)

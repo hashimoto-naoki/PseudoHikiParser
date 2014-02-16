@@ -151,6 +151,7 @@ TEXT
 TEXT
 
     html =<<HTML
+<table>
 <tr><th>header 1</th><th>header 2
 </th></tr>
 <tr><td>cell 1-1</td><td>cell 1-2
@@ -159,6 +160,7 @@ TEXT
 </td></tr>
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
 </td></tr>
+</table>
 HTML
 
     tree = BlockParser.parse(text.lines.to_a)
@@ -183,6 +185,7 @@ TEXT
 TEXT
 
     html =<<HTML
+<table>
 <tr><td>header 1</td><th>header 2
 </th></tr>
 <tr><td>cell 1-1</td><td>cell 1-2
@@ -191,6 +194,7 @@ TEXT
 </td></tr>
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
 </td></tr>
+</table>
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
@@ -219,6 +223,7 @@ TEXT
 TEXT
 
     html = <<HTML
+<table>
 <tr><th>header 1-1</th><th>header 1-2
 </th></tr>
 <tr><th>header 2-1</th><th>header 2-2
@@ -229,6 +234,7 @@ TEXT
 </td></tr>
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
 </td></tr>
+</table>
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
@@ -255,6 +261,7 @@ TEXT
 TEXT
 
     html = <<HTML
+<table>
 <tr><th>header 1-1</th><th>header 1-2</th><th>header 1-3</th><th>header 1-4
 </th></tr>
 <tr><td>cell 1-1</td><td>cell 1-2</td><td>cell 1-3</td><td>cell 1-4
@@ -263,6 +270,7 @@ TEXT
 </td></tr>
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4
 </td></tr>
+</table>
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
@@ -289,6 +297,7 @@ TEXT
 TEXT
 
     html = <<HTML
+<table>
 <tr><th>header 1-1</th><th>header 1-2</th><th>header 1-3</th><th>header 1-4
 </th></tr>
 <tr><td>cell 1-1</td><td>cell 1-2</td><td rowspan=\"2\">cell 1-3</td><td>cell 1-4
@@ -297,6 +306,7 @@ TEXT
 </td></tr>
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4
 </td></tr>
+</table>
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
