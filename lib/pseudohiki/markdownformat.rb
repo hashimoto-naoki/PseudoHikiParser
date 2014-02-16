@@ -260,7 +260,7 @@ module PseudoHiki
       def format_html_table(tree)
         HtmlElement.create("table").tap do |element|
           element.push HtmlFormat.format(tree)
-        end
+        end.to_s << $/
       end
 
       def format_table(table, tree)

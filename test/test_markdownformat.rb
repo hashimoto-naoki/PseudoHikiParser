@@ -162,6 +162,7 @@ TEXT
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
 </td></tr>
 </table>
+
 HTML
 
     tree = BlockParser.parse(text.lines.to_a)
@@ -196,6 +197,7 @@ TEXT
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
 </td></tr>
 </table>
+
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
@@ -237,6 +239,7 @@ TEXT
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
 </td></tr>
 </table>
+
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
@@ -274,6 +277,7 @@ TEXT
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4
 </td></tr>
 </table>
+
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
@@ -311,6 +315,7 @@ TEXT
 <tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4
 </td></tr>
 </table>
+
 HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
