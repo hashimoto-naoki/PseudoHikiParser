@@ -62,6 +62,10 @@ module PseudoHiki
       element.unshift mark
     end
 
+    def remove_trailing_newlines_in_html_element(element)
+      element.to_s.gsub(/([^>])\r?\n/, "\\1") << $/
+    end
+
     def self.create(options={ :strict_mode => false })
       formatter = {}
       main_formatter = self.new(formatter, options)
@@ -196,7 +200,8 @@ module PseudoHiki
 #    class EnumLeafFormatter < self; end
     class DescNodeFormatter < self
       def visit(tree)
-        HtmlFormat.format(tree).push $/
+        desc_list = HtmlFormat.format(tree)
+        remove_trailing_newlines_in_html_element(desc_list)
       end
     end
 
@@ -258,9 +263,10 @@ module PseudoHiki
       end
 
       def format_html_table(tree)
-        HtmlElement.create("table").tap do |element|
+        table = HtmlElement.create("table").tap do |element|
           element.push HtmlFormat.format(tree)
-        end.to_s << $/
+        end.to_s
+        @formatter[PlainNode].remove_trailing_newlines_in_html_element(table)
       end
 
       def format_table(table, tree)
