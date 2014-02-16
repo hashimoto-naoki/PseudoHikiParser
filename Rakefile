@@ -16,6 +16,7 @@ treestack
 blockparser
 htmlformat
 plaintextformat
+markdownformat
 )
   failed_tests = []
 
