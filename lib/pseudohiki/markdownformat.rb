@@ -3,6 +3,7 @@
 require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
+require 'pseudohiki/plaintextformat'
 require 'htmlelement'
 require 'ostruct'
 
@@ -215,66 +216,17 @@ module PseudoHiki
       end
     end
 
-    class TableNodeFormatter < self
+    class TableNodeFormatter < PlainTextFormat::TableNodeFormatter
       class NotConformantStyleError < StandardError; end
-      class MalFormedTableError < StandardError; end
-      ERROR_MESSAGE = <<ERROR_TEXT
-!! A malformed row is found: %s.
-!! Please recheck if it is really what you want.
-ERROR_TEXT
 
       def visit(tree)
         @options.gfm_conformant = check_conformance_with_gfm_style(tree)
-        table = create_self_element(tree)
-        rows = deep_copy_tree(tree)
-        rows.length.times { table.push create_self_element(tree) }
-        max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
-        max_row = rows.length - 1
-        cur_row = nil
-        each_cell_with_index(table, max_row, max_col) do |cell, r, c|
-          cur_row = rows.shift if c == 0
-          next if table[r][c]
-          unless cell
-            begin
-              raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
-              table[r][c] = cur_row.shift
-              fill_expand(table, r, c, table[r][c])
-            rescue
-              raise if @options.strict_mode
-              STDERR.puts ERROR_MESSAGE%[table[r].inspect]
-              next
-            end
-          end
-        end
-
-        format_table(table, tree)
+        super(tree)
       end
 
       def deep_copy_tree(tree)
         tree.dup.clear.tap do |new_tree|
           new_tree.concat tree.map {|node| node.dup }
-        end
-      end
-
-      def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
-        initial_row.upto(max_row) do |r|
-          initial_col.upto(max_col) do |c|
-            yield table[r][c], r, c
-          end
-        end
-      end
-
-      def fill_expand(table, initial_row, initial_col, cur_cell)
-        row_expand, col_expand = choose_expander_of_col_and_row
-        max_row = initial_row + cur_cell.rowspan - 1
-        max_col = initial_col + cur_cell.colspan - 1
-        each_cell_with_index(table, max_row, max_col,
-                             initial_row, initial_col) do |cell, r, c|
-          if initial_row == r and initial_col == c
-            table[r][c] = visited_result(cur_cell).join.lstrip.chomp
-            next
-          end
-          table[r][c] = initial_row == r ? col_expand : row_expand
         end
       end
 
