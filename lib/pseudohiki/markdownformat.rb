@@ -264,18 +264,19 @@ module PseudoHiki
       end
 
       def format_table(table, tree)
-        unless @options.gfm_conformant
+        return format_html_table(tree) unless @options.gfm_style
+        return format_gfm_table(table) if @options.gfm_conformant
+
+        if @options.gfm_style == :force
           begin
-            raise NotConformantStyleError.new("The header row is missing. The first row will be treated as a header.")
+            raise NotConformantStyleError.new("The table is not conformant to GFM style. The first row will be treated as a header row.")
           rescue
-            STDERR.puts "The header row is missing. The first row will be treated as a header."
-#            format_gfm_table(table)
-            format_html_table(tree)
+            STDERR.puts "The table is not conformant to GFM style. The first row will be treated as a header row."
           end
-        else
-          return format_gfm_table(table) if @options.gfm_style
-          format_html_table(tree)
+          return format_gfm_table(table)
         end
+
+        format_html_table(tree)
       end
 
       def calculate_cell_width(table)

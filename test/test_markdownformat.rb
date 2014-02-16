@@ -9,6 +9,7 @@ class TC_MarkDownFormat < Test::Unit::TestCase
   def setup
     @formatter = MarkDownFormat.create
     @gfm_formatter = MarkDownFormat.create({ :gfm_style => true })
+    @forced_gfm_formatter = MarkDownFormat.create({ :gfm_style => :force })
   end
 
   def test_plain
@@ -201,6 +202,7 @@ HTML
       tree = BlockParser.parse(text.lines.to_a)
       assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
 #    end
   end
 
@@ -241,6 +243,7 @@ HTML
       tree = BlockParser.parse(text.lines.to_a)
       assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
 #    end
   end
 
@@ -277,6 +280,7 @@ HTML
       tree = BlockParser.parse(text.lines.to_a)
       assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
 #    end
   end
 
@@ -313,6 +317,7 @@ HTML
       tree = BlockParser.parse(text.lines.to_a)
       assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
 #    end
   end
 
