@@ -217,7 +217,7 @@ cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]].
 
 
-!!!! A vistor for (Git Flavored) Markdown
+!!!! A visitor for (Git Flavored) Markdown
 The visitor, [[MarkDownFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb]] too, is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/blob/develop/]].
 
 It's just in experimental stage. For example, it cannot properly convert html elements appeared in hiki notation text yet.
