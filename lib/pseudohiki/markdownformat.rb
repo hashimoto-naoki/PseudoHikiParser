@@ -212,6 +212,10 @@ module PseudoHiki
           lines.push "```#{$/ * 2}"
         end
       end
+
+      def md_verbatim(element)
+        element.join.gsub(/^/o, "    ").sub(/    \Z/o, "").concat $/
+      end
     end
 
     class QuoteNodeFormatter < self
