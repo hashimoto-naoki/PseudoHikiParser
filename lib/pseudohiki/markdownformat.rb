@@ -265,7 +265,7 @@ ERROR_TEXT
       end
 
       def fill_expand(table, initial_row, initial_col, cur_cell)
-        row_expand, col_expand = "", ""
+        row_expand, col_expand = choose_expander_of_col_and_row
         max_row = initial_row + cur_cell.rowspan - 1
         max_col = initial_col + cur_cell.colspan - 1
         each_cell_with_index(table, max_row, max_col,
@@ -276,6 +276,10 @@ ERROR_TEXT
           end
           table[r][c] = initial_row == r ? col_expand : row_expand
         end
+      end
+
+      def choose_expander_of_col_and_row
+        ["", ""]
       end
 
       def format_gfm_table(table)
