@@ -561,6 +561,8 @@ a verbatim line with [[a link]]
 
 another verbatim line
 
+ a verbatim line that begins with a space.
+
 the last verbatim line
 >>>
 TEXT
@@ -569,6 +571,9 @@ TEXT
  a verbatim line with [[a link]]
  
  another verbatim line
+
+  a verbatim line that begins with a space.
+
  
  the last verbatim line
 TEXT
@@ -579,6 +584,8 @@ TEXT
 a verbatim line with [[a link]]
 
 another verbatim line
+
+ a verbatim line that begins with a space.
 
 the last verbatim line
 </pre>
