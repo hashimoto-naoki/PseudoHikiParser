@@ -13,7 +13,7 @@ module PseudoHiki
     include TableRowParser::InlineElement
     include BlockParser::BlockElement
 
-    def initialize(formatter={}, options={ :strict_mode=> false })
+    def initialize(formatter={}, options={ :strict_mode=> false, :gfm_style => false })
       @formatter = formatter
       options_given_via_block = nil
       if block_given?
@@ -203,7 +203,8 @@ module PseudoHiki
     class VerbatimNodeFormatter < self
       def visit(tree)
         element = super(tree)
-        gfm_verbatim(element)
+        return gfm_verbatim(element) if @options.gfm_style
+        md_verbatim(element)
       end
 
       def gfm_verbatim(element)
@@ -270,7 +271,8 @@ module PseudoHiki
             format_html_table(tree)
           end
         else
-          format_gfm_table(table)
+          return format_gfm_table(table) if @options.gfm_style
+          format_html_table(tree)
         end
       end
 

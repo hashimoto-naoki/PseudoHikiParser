@@ -8,6 +8,7 @@ class TC_MarkDownFormat < Test::Unit::TestCase
 
   def setup
     @formatter = MarkDownFormat.create
+    @gfm_formatter = MarkDownFormat.create({ :gfm_style => true })
   end
 
   def test_plain
@@ -84,7 +85,7 @@ HTML
  verbatim line 2
 TEXT
 
-    md_text =<<TEXT
+    gfm_text =<<TEXT
 ```
 verbatim ''line'' 1
 verbatim line 2
@@ -92,7 +93,14 @@ verbatim line 2
 
 TEXT
 
+    md_text = <<TEXT
+    verbatim ''line'' 1
+    verbatim line 2
+
+TEXT
+
     tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
@@ -141,8 +149,21 @@ TEXT
 |cell 2-1              |cell 2-2|
 |cell 3-1 (a bit wider)|cell 3-2|
 TEXT
+
+    html =<<HTML
+<tr><th>header 1</th><th>header 2
+</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2
+</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2
+</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2
+</td></tr>
+HTML
+
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal(md_text, @formatter.format(tree).to_s)
+    assert_equal(md_text, @gfm_formatter.format(tree).to_s)
+    assert_equal(html, @formatter.format(tree).to_s)
   end
 
   def test_non_gfm_conformant_table
@@ -174,7 +195,7 @@ HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
@@ -212,7 +233,7 @@ HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
@@ -246,7 +267,7 @@ HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
@@ -280,7 +301,7 @@ HTML
 
 #    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
       tree = BlockParser.parse(text.lines.to_a)
-#      assert_equal(md_text, @formatter.format(tree).to_s)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
       assert_equal(html, @formatter.format(tree).to_s)
 #    end
   end
@@ -371,7 +392,7 @@ a verbatim _underscore_
 >>>
 TEXT
 
-    md_text = <<TEXT
+    gfm_text = <<TEXT
 ```
 a verbatim asterisk *
 a verbatim _underscore_
@@ -379,7 +400,14 @@ a verbatim _underscore_
 
 TEXT
 
+    md_text = <<TEXT
+    a verbatim asterisk *
+    a verbatim _underscore_
+
+TEXT
+
     tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
