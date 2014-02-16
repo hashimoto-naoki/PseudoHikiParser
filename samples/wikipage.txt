@@ -20,7 +20,7 @@ And, it would not be compatible with the original Hiki notation.
 
 !![license] License
 
-BSD 2-Clause license
+BSD 2-Clause License
 
 ==I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. ==
 
@@ -36,9 +36,15 @@ gem install pseudohikiparser --pre
 
 !![usage] Usage
 
+!!! Samples
+
+[[A sample text|https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt]] in Hiki notation and [[a result of conversion|http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html]], [[another result of conversion|http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html]] and [[yet another result|http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html]].
+
+You will find those samples in [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples]].
+
 !!! pseudohiki2html.rb
 
-After the installation of PseudoHikiParser, you could use a command, '''pseudohiki2html.rb'''.
+After the installation of PseudoHikiParser, you could use a command: '''pseudohiki2html.rb'''.
 
 ''Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.''
 
@@ -133,7 +139,7 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 ** Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
-** Currently, there is no means to escape tags for inline decorations.
+** Currently, there is no means of escaping tags for inline decorations.
 ** The notation with backquote tags(``) for inline literals is not supported.
 * Headings - Usable
 * Horizontal lines - Usable
@@ -209,6 +215,62 @@ cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 
 !!!! A visitor for HTML5
 The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]].
+
+
+!!!! A vistor for (Git Flavored) Markdown
+The visitor, [[MarkDownFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb]] too, is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/blob/develop/]].
+
+It's just in experimental stage. For example, it cannot properly convert html elements appeared in hiki notation text yet.
+
+The following are a sample script and its output:
+
+<<<
+#!/usr/bin/env ruby
+
+require 'pseudohiki/markdownformat'
+
+md = PseudoHiki::MarkDownFormat.create
+gfm = PseudoHiki::MarkDownFormat.create(gfm_style: true)
+
+hiki = <<TEXT
+!! The first heading
+
+The first paragraph
+
+||!header 1||!header 2
+||''cell 1''||cell2
+
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(hiki)
+md_text = md.format(tree).to_s
+gfm_text = gfm.format(tree).to_s
+puts md_text
+puts "===================="
+puts gfm_text
+>>>
+
+(You will get the following output.)
+
+<<<
+## The first heading
+
+The first paragraph
+
+<table>
+<tr><th>header 1</th><th>header 2</th></tr>
+<tr><td><em>cell 1</em></td><td>cell2</td></tr>
+</table>
+
+====================
+## The first heading
+
+The first paragraph
+
+|header 1|header 2|
+|--------|--------|
+|_cell 1_|cell2   |
+>>>
 
 !!! Not Implemented Yet
 

@@ -1,5 +1,6 @@
-PseudoHikiParser
-================
+#Welcome to the PseudoHikiParser wiki!
+
+## About PseudoHikiParser
 
 PseudoHikiParser is a converter of texts written in a [Hiki](http://hikiwiki.org/en/) like notation, into html or other formats. 
 
@@ -19,12 +20,17 @@ And, it would not be compatible with the original Hiki notation.
 
 BSD 2-Clause License
 
+~~I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style.~~
+
+~~And one of them will be BSD 2-clause license or MIT license.~~
+
+(It seems bothersome for me to manage a dual-licensed script.)
+
 ## Installation
 
 ```
 gem install pseudohikiparser --pre
 ```
-
 
 ## Usage
 
@@ -33,7 +39,6 @@ gem install pseudohikiparser --pre
 [A sample text](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt) in Hiki notation and [a result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html), [another result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html) and [yet another result](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html).
 
 You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
-
 
 ### pseudohiki2html.rb
 
@@ -49,9 +54,10 @@ pseudohiki2html.rb <<TEXT
 The first paragraph
 TEXT
 ```
+
 will return the following result to stdout:
 
-```html
+```
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -74,7 +80,8 @@ The first paragraph
 </body>
 </html>
 ```
-And if you specify a file name with `--output` option:
+
+And if you specify a file name with **--output** option:
 
 ```
 pseudohiki2html.rb --output first_example.html <<TEXT
@@ -82,15 +89,16 @@ pseudohiki2html.rb --output first_example.html <<TEXT
 The first paragraph
 TEXT
 ```
-the result will be saved in first_example.html.
 
-For more options, please try `pseudohiki2html.rb --help`
+the result will be saved in first\_example.html.
+
+For more options, please try **pseudohiki2html.rb --help**
 
 ### module PseudoHiki
 
 If you save the lines below as a ruby script and execute it:
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -104,9 +112,10 @@ tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
 html = PseudoHiki::HtmlFormat.format(tree)
 puts html
 ```
+
 you will get the following output:
 
-```html
+```
 <div class="section h2">
 <h2> The first heading
 </h2>
@@ -140,18 +149,22 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 * Plugins - Not supported (and will not be compatible with the original one)
 
 ## Additional Features
+
 ### Already Implemented
+
 #### Assigning ids
-If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
+
+If you add [name\_of\_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 
 ```
 !![heading_id]heading
 
 *[list_id]list
 ```
+
 will be rendered as
 
-```html
+```
 <div class="section h2">
 <h2 id="HEADING_ID">heading
 </h2>
@@ -164,7 +177,9 @@ will be rendered as
 ```
 
 ### Partly Implemented
+
 #### A visitor that removes markups and returns plain texts
+
 The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop). Below are examples
 
 ```
@@ -172,6 +187,7 @@ The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/
 ::03-yyyy-yyyy
 :fax:03-xxxx-xxxx
 ```
+
 will be rendered as
 
 ```
@@ -188,6 +204,7 @@ And
 ||cell 3-1||cell 3-4||cell 3-5
 ||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
 ```
+
 will be rendered as
 
 ```
@@ -196,7 +213,9 @@ cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
 cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 ```
+
 #### A visitor for HTML5
+
 The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
 #### A vistor for (Git Flavored) Markdown
@@ -207,7 +226,7 @@ It's just in experimental stage. For example, it cannot properly convert html el
 
 The following are a sample script and its output:
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohiki/markdownformat'
@@ -256,3 +275,4 @@ The first paragraph
 ```
 
 ### Not Implemented Yet
+

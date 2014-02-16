@@ -69,7 +69,7 @@ And, it would not be compatible with the original Hiki notation.
 <h2 id="LICENSE"> License
 </h2>
 <p>
-BSD 2-Clause license
+BSD 2-Clause License
 </p>
 <p>
 <del>I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. </del>
@@ -94,10 +94,21 @@ gem install pseudohikiparser --pre
 <h2 id="USAGE"> Usage
 </h2>
 <section class="h3">
+<h3> Samples
+</h3>
+<p>
+<a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt">A sample text</a> in Hiki notation and <a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html">a result of conversion</a>, <a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html">another result of conversion</a> and <a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html">yet another result</a>.
+</p>
+<p>
+You will find those samples in <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples">develop branch</a>.
+</p>
+<!-- end of h3 -->
+</section>
+<section class="h3">
 <h3> pseudohiki2html.rb
 </h3>
 <p>
-After the installation of PseudoHikiParser, you could use a command, <strong>pseudohiki2html.rb</strong>.
+After the installation of PseudoHikiParser, you could use a command: <strong>pseudohiki2html.rb</strong>.
 </p>
 <p>
 <em>Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.</em>
@@ -116,7 +127,7 @@ will return the following result to stdout:
 </p>
 <pre>
 &lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
- &quot;<a href="http://www.w3.org/TR/html4/loose.dtd&amp;quot;&amp;gt;">http://www.w3.org/TR/html4/loose.dtd&quot;&gt;</a>
+  &quot;<a href="http://www.w3.org/TR/html4/loose.dtd&amp;quot;&amp;gt;">http://www.w3.org/TR/html4/loose.dtd&quot;&gt;</a>
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
 &lt;meta content=&quot;en&quot; http-equiv=&quot;Content-Language&quot;&gt;
@@ -214,7 +225,7 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 </li>
 <li> Text decoration - Partly supported
 <ul>
-<li> Currently, there is no means to escape tags for inline decorations.
+<li> Currently, there is no means of escaping tags for inline decorations.
 </li>
 <li> The notation with backquote tags(``) for inline literals is not supported.
 </li>
@@ -293,7 +304,7 @@ will be rendered as
 </p>
 <pre>
 tel:	03-xxxx-xxxx
-03-yyyy-yyyy
+	03-yyyy-yyyy
 fax:	03-xxxx-xxxx
 </pre>
 <p>
@@ -322,6 +333,67 @@ cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 <p>
 The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222">Xhtml5Format</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>.
 </p>
+<!-- end of h4 -->
+</section>
+<section class="h4">
+<h4> A vistor for (Git Flavored) Markdown
+</h4>
+<p>
+The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb">MarkDownFormat</a> too, is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/">develop branch</a>.
+</p>
+<p>
+It's just in experimental stage. For example, it cannot properly convert html elements appeared in hiki notation text yet.
+</p>
+<p>
+The following are a sample script and its output:
+</p>
+<pre>
+#!/usr/bin/env ruby
+
+require 'pseudohiki/markdownformat'
+
+md = PseudoHiki::MarkDownFormat.create
+gfm = PseudoHiki::MarkDownFormat.create(gfm_style: true)
+
+hiki = &lt;&lt;TEXT
+!! The first heading
+
+The first paragraph
+
+||!header 1||!header 2
+||''cell 1''||cell2
+
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(hiki)
+md_text = md.format(tree).to_s
+gfm_text = gfm.format(tree).to_s
+puts md_text
+puts &quot;====================&quot;
+puts gfm_text
+</pre>
+<p>
+(You will get the following output.)
+</p>
+<pre>
+## The first heading
+
+The first paragraph
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;header 1&lt;/th&gt;&lt;th&gt;header 2&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;em&gt;cell 1&lt;/em&gt;&lt;/td&gt;&lt;td&gt;cell2&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+====================
+## The first heading
+
+The first paragraph
+
+|header 1|header 2|
+|--------|--------|
+|_cell 1_|cell2   |
+</pre>
 <!-- end of h4 -->
 </section>
 <!-- end of h3 -->
