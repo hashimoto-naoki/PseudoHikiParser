@@ -202,9 +202,14 @@ module PseudoHiki
 
     class VerbatimNodeFormatter < self
       def visit(tree)
-        super(tree).tap do |element|
-          element.unshift "```#{$/}"
-          element.push "```#{$/ * 2}"
+        element = super(tree)
+        gfm_verbatim(element)
+      end
+
+      def gfm_verbatim(element)
+        element.tap do |lines|
+          lines.unshift "```#{$/}"
+          lines.push "```#{$/ * 2}"
         end
       end
     end
