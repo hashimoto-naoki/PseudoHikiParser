@@ -218,7 +218,7 @@ The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/dev
 
 
 !!!! A visitor for (Git Flavored) Markdown
-The visitor, [[MarkDownFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb]] too, is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/blob/develop/]].
+The visitor, [[MarkDownFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb]] too, is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop/]].
 
 It's just in experimental stage.
 
