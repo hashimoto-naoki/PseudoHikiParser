@@ -203,7 +203,7 @@ The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/dev
 
 The visitor, [MarkDownFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb) too, is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/blob/develop/).
 
-It's just in experimental stage. For example, it cannot properly convert html elements appeared in hiki notation text yet.
+It's just in experimental stage.
 
 The following are a sample script and its output:
 
