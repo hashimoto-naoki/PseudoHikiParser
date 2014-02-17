@@ -114,7 +114,14 @@ module PseudoHiki
 
     class InlineLeafFormatter < self
       def visit(leaf)
-        leaf.map {|str| str.gsub(/([_*])/o, "\\\\\\1") }
+        leaf.map do |str|
+          escaped_str = str.gsub(/([_*])/o, "\\\\\\1")
+          if @options.gfm_style
+            escaped_str.gsub(/([&<>])/o, "\\\\\\1")
+          else
+            HtmlElement.escape(escaped_str)
+          end
+        end
       end
     end
 

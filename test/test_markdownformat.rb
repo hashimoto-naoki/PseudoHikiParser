@@ -375,11 +375,13 @@ TEXT
   end
 
   def test_escape
-    text = "test string with *asterisk and _underscore"
-    md_text = "test string with \\*asterisk and \\_underscore#{$/}"
+    text = "test string with *asterisk, _underscore and a html tag <h1>"
+    md_text = "test string with \\*asterisk, \\_underscore and a html tag &lt;h1&gt;#{$/}"
+    gfm_text = "test string with \\*asterisk, \\_underscore and a html tag \\<h1\\>#{$/}"
 
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
   end
 
   def test_not_escaped
