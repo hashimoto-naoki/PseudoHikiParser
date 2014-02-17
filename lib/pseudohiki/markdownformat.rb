@@ -207,7 +207,9 @@ module PseudoHiki
 #    class EnumLeafFormatter < self; end
     class DescNodeFormatter < self
       def visit(tree)
-        desc_list = HtmlFormat.format(tree)
+        desc_list = HtmlElement.create("dl").tap do |element|
+          element.push HtmlFormat.format(tree)
+        end
         remove_trailing_newlines_in_html_element(desc_list)
       end
     end

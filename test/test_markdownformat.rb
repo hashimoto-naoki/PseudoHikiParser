@@ -68,10 +68,12 @@ IMAGE
 TEXT
 
     html = <<HTML
+<dl>
 <dt>word 1</dt>
 <dd>description of word 1</dd>
 <dt>word 2</dt>
 <dd>description of word 2</dd>
+</dl>
 
 HTML
 
