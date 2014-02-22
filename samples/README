@@ -12,3 +12,10 @@ pseudohiki2html.rb -hx -s -m 'Table of Contents' -c css/with_toc.css wikipage.tx
 
 pseudohiki2html.rb -hh5 -s -m 'Table of Contents' -c css/with_toc2.css wikipage.txt -o wikipage_html5_with_toc.html
 
+#wikipage.md
+
+ruby -I./lib -r'pseudohiki/markdownformat' -e '
+tree = PseudoHiki::BlockParser.parse(File.read(ARGV[0]))
+formatter = PseudoHiki::MarkDownFormat.create(gfm_style: true)
+puts formatter.format(tree)
+' wikipage.txt > wikipage.md
