@@ -91,7 +91,7 @@ module PseudoHiki
       formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
       formatter[DelNode] = DelNodeFormatter.new(formatter, options)
       formatter[LiteralNode] = LiteralNodeFormatter.new(formatter, options)
-#      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
+      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
 #      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
 #      formatter[TableCellNode] = TableCellNodeFormatter.new(formatter, options)
       formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
@@ -191,7 +191,14 @@ module PseudoHiki
       end
     end
 
-#    class PluginNodeFormatter < self; end
+    class PluginNodeFormatter < self
+      def visit(tree)
+        str =tree.join
+        return str.strip * 2 if str == " {" or str == "} "
+        super(tree)
+      end
+    end
+
 #    class DescLeafFormatter < self; end
 #    class TableCellNodeFormatter < self; end
 

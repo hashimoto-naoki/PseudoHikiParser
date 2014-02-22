@@ -66,6 +66,7 @@ module PseudoHiki
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
       formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
+      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
       main_formatter
     end
 
@@ -213,6 +214,14 @@ ERROR_TEXT
     class ParagraphNodeFormatter < self
       def visit(tree)
         super(tree).join+$/
+      end
+    end
+
+    class PluginNodeFormatter < self
+      def visit(tree)
+        str =tree.join
+        return str.strip * 2 if str == " {" or str == "} "
+        super(tree)
       end
     end
   end

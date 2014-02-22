@@ -91,6 +91,27 @@ IMAGE
     assert_equal("a `literal` word#{$/}", @formatter.format(tree).to_s)
   end
 
+  def test_plugin
+    text = <<TEXT
+A paragraph with several plugin tags.
+{{''}} should be presented as two quotation marks.
+{{ {}} should be presented as two left curly braces.
+{{} }} should be presented as two right curly braces.
+{{in span}} should be presented as 'in span'.
+TEXT
+    expected_text = <<TEXT
+A paragraph with several plugin tags.
+'' should be presented as two quotation marks.
+{{ should be presented as two left curly braces.
+}} should be presented as two right curly braces.
+in span should be presented as 'in span'.
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, @formatter.format(tree).to_s)
+  end
+
   def test_hr
     text = "----#{$/}"
     md_text = "----#{$/}"
