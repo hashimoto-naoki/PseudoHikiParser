@@ -11,7 +11,7 @@ module PseudoHiki
     include TableRowParser::InlineElement
 
     #for InlineParser
-    LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
+    LINK, IMG, EM, STRONG, DEL, LITERAL = %w(a img em strong del code)
     HREF, SRC, ALT = %w(href src alt)
     PLAIN, PLUGIN = %w(plain span)
     #for BlockParser
@@ -192,6 +192,7 @@ module PseudoHiki
     [ [EmNode,EM],
       [StrongNode,STRONG],
       [DelNode,DEL],
+      [LiteralNode, LITERAL],
       [PluginNode,PLUGIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],

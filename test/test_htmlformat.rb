@@ -98,6 +98,8 @@ HTML
 
 a paragraph with an ''emphasised'' word.
 a paragraph with a [[link|http://www.example.org/]].
+
+a paragraph with a ``literal`` word.
 TEXT
 
     html = <<HTML
@@ -105,6 +107,8 @@ TEXT
 <h2>heading2</h2>
 <p>
 a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://www.example.org/">link</a>.</p>
+<p>
+a paragraph with a <code>literal</code> word.</p>
 <!-- end of section h2 -->
 </div>
 HTML
