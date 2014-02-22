@@ -81,7 +81,7 @@ The first paragraph
 </html>
 ```
 
-And if you specify a file name with **--output** option:
+And if you specify a file name with `--output` option:
 
 ```
 pseudohiki2html.rb --output first_example.html <<TEXT
@@ -92,7 +92,7 @@ TEXT
 
 the result will be saved in first\_example.html.
 
-For more options, please try **pseudohiki2html.rb --help**
+For more options, please try `pseudohiki2html.rb --help`
 
 ### module PseudoHiki
 
@@ -137,8 +137,8 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
   * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
-  * Currently, there is no means of escaping tags for inline decorations.
-  * The notation with backquote tags(``) for inline literals is not supported.
+  * Means of escaping tags for inline decorations is only experimetal.
+  * The notation for inline literals by backquote tags(``) is converted into not \<tt\> element but \<code\> element.
 * Headings - Usable
 * Horizontal lines - Usable
 * Lists - Usable
@@ -273,6 +273,22 @@ The first paragraph
 |--------|--------|
 |_cell 1_|cell2   |
 ```
+
+### Experimental
+
+Tags for inline decorations are escaped when they are enclosed in plugin tags:
+
+```
+For example, {{''}} and {{==}} can be escaped.
+And to {{ {}} and {{} }} should be rendered as two left curly braces and two right curly braces respectively.
+```
+
+will be rendered as
+```
+For example, '' or == can be escaped.
+And to {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+```
+
 
 ### Not Implemented Yet
 
