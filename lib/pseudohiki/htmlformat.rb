@@ -27,7 +27,7 @@ module PseudoHiki
 
     def self.setup_new_formatter(new_formatter, generator)
       new_formatter.each do |node_class, formatter|
-        new_formatter[node_class] = formatter.dup
+        new_formatter[node_class] = formatter.clone
         new_formatter[node_class].generator = generator
         new_formatter[node_class].formatter = new_formatter
       end
@@ -218,6 +218,15 @@ module PseudoHiki
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
+
+    class << Formatter[PluginNode]
+      def visit(tree)
+        str = tree.join
+        return str if InlineParser::HEAD[str] or InlineParser::TAIL[str]
+        return str.strip * 2 if str == ' {' or str == '} '
+        super(tree)
+      end
+    end
   end
 
   class XhtmlFormat < HtmlFormat

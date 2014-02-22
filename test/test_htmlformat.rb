@@ -116,6 +116,30 @@ HTML
     assert_equal(html,convert_text_to_html(text))
   end
 
+  def test_plugin
+    text = <<TEXT
+a paragraph with several plugin tags.
+{{''}} should be presented as two quotation marks.
+{{ {}} should be presented as two left curly braces.
+{{} }} should be presented as two right curly braces.
+{{in span}} should be presented as <span>in span</span>.
+TEXT
+
+    html = <<HTML
+<p>
+a paragraph with several plugin tags.
+'' should be presented as two quotation marks.
+{{ should be presented as two left curly braces.
+}} should be presented as two right curly braces.
+<span>in span</span> should be presented as &lt;span&gt;in span&lt;/span&gt;.
+</p>
+HTML
+
+    tree = BlockParser.parse(text)
+    assert_equal(html, HtmlFormat.format(tree).to_s)
+    assert_equal(html, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_table
     text = <<TEXT
 ||!col||!^[[col|link]]||>col
