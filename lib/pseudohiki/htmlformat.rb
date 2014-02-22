@@ -119,6 +119,14 @@ module PseudoHiki
       end
     end
 
+    class ListLeafNodeFormatter < self
+      def create_self_element(tree)
+        super(tree).tap do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
+      end
+    end
+
     #for BlockParser
 
     class VerbatimNodeFormatter < self
@@ -181,19 +189,11 @@ module PseudoHiki
       end
     end
 
-    class ListLeafNodeFormatter < self
-      def create_self_element(tree)
-        super(tree).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    [ [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
+    [ [EmNode, EM],
+      [StrongNode, STRONG],
+      [DelNode, DEL],
       [LiteralNode, LITERAL],
-      [PluginNode,PLUGIN], #Until here is for InlineParser
+      [PluginNode, PLUGIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],
       [TableNode, TABLE],
