@@ -85,6 +85,12 @@ IMAGE
     assert_equal("a ~~striked out string~~#{$/}", @formatter.format(tree).to_s)
   end
 
+  def test_literal
+    text = "a ``literal`` word"
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal("a `literal` word#{$/}", @formatter.format(tree).to_s)
+  end
+
   def test_hr
     text = "----#{$/}"
     md_text = "----#{$/}"
