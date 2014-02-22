@@ -13,6 +13,18 @@ module PseudoHiki
     include TableRowParser::InlineElement
     include BlockParser::BlockElement
 
+    Formatters = {}
+
+    def self.format(tree, options={ :strict_mode=> false, :gfm_style => false })
+      if Formatters.empty?
+        default_options = { :strict_mode=> false, :gfm_style => false }
+        Formatters[default_options] = create(default_options)
+      end
+
+      Formatters[options] ||= create(options)
+      Formatters[options].format(tree)
+    end
+
     def initialize(formatter={}, options={ :strict_mode=> false, :gfm_style => false })
       @formatter = formatter
       options_given_via_block = nil

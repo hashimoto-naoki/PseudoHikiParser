@@ -12,6 +12,37 @@ class TC_MarkDownFormat < Test::Unit::TestCase
     @forced_gfm_formatter = MarkDownFormat.create({ :gfm_style => :force })
   end
 
+  def test_self_format
+    text = <<TEXT
+||!header 1||!header 2
+||cell 1-1||cell 1-2
+||cell 2-1||cell 2-2
+||cell 3-1 (a bit wider)||cell 3-2
+TEXT
+
+    md_text = <<TEXT
+<table>
+<tr><th>header 1</th><th>header 2</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td></tr>
+</table>
+
+TEXT
+
+    gfm_text = <<TEXT
+|header 1              |header 2|
+|----------------------|--------|
+|cell 1-1              |cell 1-2|
+|cell 2-1              |cell 2-2|
+|cell 3-1 (a bit wider)|cell 3-2|
+TEXT
+
+    tree = BlockParser.parse(text)
+    assert_equal(md_text, MarkDownFormat.format(tree))
+    assert_equal(gfm_text, MarkDownFormat.format(tree, :gfm_style => true))
+  end
+
   def test_plain
     text = <<TEXT
 test string
