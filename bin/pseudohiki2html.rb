@@ -113,6 +113,19 @@ module PseudoHiki
     MDFormat = MarkDownFormat.create
     GFMFormat = MarkDownFormat.create(:gfm_style => true)
 
+    class Formatter < Struct.new(:version, :formatter, :template, :ext, :opt_pat)
+    end
+
+    VERSIONS = [
+                ["html4", HtmlFormat, HtmlTemplate, ".html", /^h/io],
+                ["xhtml1", XhtmlFormat, XhtmlTemplate, ".html", /^x/io],
+                ["html5", Xhtml5Format, Xhtml5Template, ".html", /^h5/io],
+                ["plain", PageComposer::PlainFormat, nil, ".plain", /^p/io],
+                ["plain_verbose", PlainVerboseFormat, nil, ".plain", /^pv/io],
+                ["markdown", MDFormat, nil, ".md", /^m/io],
+                ["gfm", GFMFormat, nil, ".md", /^g/io]
+               ].map {|args| Formatter.new(*args) }
+
     ENCODING_REGEXP = {
       /^u/io => 'utf8',
       /^e/io => 'euc-jp',
@@ -209,19 +222,8 @@ module PseudoHiki
       if HTML_VERSIONS.include? version
         self[:html_version] = version
       else
-        case version
-        when /^x/io
-          self[:html_version] = HTML_VERSIONS[1] #xhtml1
-        when /^h5/io
-          self[:html_version] = HTML_VERSIONS[2] #html5
-        when /^pv/o
-          self[:html_version] = HTML_VERSIONS[4] #plain_verbose
-        when /^p/o
-          self[:html_version] = HTML_VERSIONS[3] #plain
-        when /^m/o
-          self[:html_version] = HTML_VERSIONS[5] #markdown
-        when /^g/o
-          self[:html_version] = HTML_VERSIONS[6] #gfm
+        VERSIONS.each do |v|
+          self[:html_version] = v.version if v.opt_pat =~ version
         end
         STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
       end
