@@ -280,13 +280,13 @@ Tags for inline decorations are escaped when they are enclosed in plugin tags:
 
 ```
 For example, {{''}} and {{==}} can be escaped.
-And to {{ {}} and {{} }} should be rendered as two left curly braces and two right curly braces respectively.
+And {{ {}} and {{} }} should be rendered as two left curly braces and two right curly braces respectively.
 ```
 
 will be rendered as
 ```
 For example, '' or == can be escaped.
-And to {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
 ```
 
 
