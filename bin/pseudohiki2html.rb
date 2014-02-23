@@ -219,14 +219,14 @@ module PseudoHiki
     end
 
     def set_html_version(version)
-      if HTML_VERSIONS.include? version
-        self[:html_version] = version
-      else
-        VERSIONS.each do |v|
+      VERSIONS.each do |v|
+        if v.version == version
+          return self[:html_version] = v.version
+        else
           self[:html_version] = v.version if v.opt_pat =~ version
         end
-        STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
       end
+      STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
     end
 
     def set_encoding(given_opt)
