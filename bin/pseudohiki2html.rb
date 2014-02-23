@@ -132,7 +132,7 @@ module PseudoHiki
       /^s/io => 'sjis',
       /^l[a-zA-Z]*1/io => 'latin1'
     }
-    HTML_VERSIONS = %w(html4 xhtml1 html5 plain plain_verbose markdown gfm)
+
     BOM = "\xef\xbb\xbf"
     BOM.force_encoding("ASCII-8BIT") if BOM.respond_to? :encoding
     FILE_HEADER_PAT = /^\/\//
@@ -143,8 +143,6 @@ module PseudoHiki
       'sjis' => SJIS,
       'latin1' => LATIN1
     }
-    HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template, nil, nil, nil, nil]).flatten]
-    FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format, PageComposer::PlainFormat, PlainVerboseFormat, MDFormat, GFMFormat]).flatten]
 
     attr_accessor :need_output_file, :default_title
     attr_reader :input_file_basename
@@ -156,7 +154,7 @@ module PseudoHiki
 
     def initialize(options=nil)
       @options = options||{
-        :html_version => "html4",
+        :html_version => VERSIONS[0],
         :lang => 'en',
         :encoding => 'utf8',
         :title => nil,
@@ -190,11 +188,11 @@ module PseudoHiki
     end
 
     def html_template
-      HTML_TEMPLATES[self[:html_version]]
+      self[:html_version].template
     end
 
     def formatter
-      FORMATTERS[self[:html_version]]
+      self[:html_version].formatter
     end
 
     def charset
@@ -221,12 +219,12 @@ module PseudoHiki
     def set_html_version(version)
       VERSIONS.each do |v|
         if v.version == version
-          return self[:html_version] = v.version
+          return self[:html_version] = v
         else
-          self[:html_version] = v.version if v.opt_pat =~ version
+          self[:html_version] = v if v.opt_pat =~ version
         end
       end
-      STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
+      STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version].version}\" is chosen instead."
     end
 
     def set_encoding(given_opt)
@@ -244,7 +242,7 @@ module PseudoHiki
       OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         opt.on("-h [html_version]", "--html_version [=html_version]",
-               "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version]})") do |version|
+               "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version].version})") do |version|
           self.set_html_version(version)
         end
 
@@ -359,7 +357,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       if self[:output]
         File.expand_path(self[:output])
       else
-        case self[:html_version]
+        case self[:html_version].version
         when "markdown", "gfm"
           ext = ".md"
         when "plain" "plain_verbose"
