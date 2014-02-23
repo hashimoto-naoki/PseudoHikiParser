@@ -9,7 +9,7 @@ SUB_VISITOR_TEMPLATE = <<TEMPLATE
 TEMPLATE
 
 SUB_VISITOR_INSTANCE_GENERATION_TEMPLATE =<<TEMPLATE
-#      @formatter[%1$s] = %1$sFormatter.new(formatter, options)
+#      formatter[%1$s] = %1$sFormatter.new(formatter, options)
 TEMPLATE
 
 MAIN_VISTOR_TEMPLATE =<<TEMPLATE
@@ -56,22 +56,17 @@ module PseudoHiki
 
     def self.create(options)
       formatter = {}
+      main_formatter = self.new(formatter, options)
+      formatter.default = main_formatter
 
-      main = self.new(formatter, options)
 
-      [
 %2$s
-      ].each do |node_class|
-        formatter[node_class] = self.new(formatter, options)
-      end
-
-%3$s
-      main
+      main_formatter
     end
 
 ## Definitions of subclasses of %1$sFormat begins here.
 
-%4$s
+%3$s
   end
 end
 TEMPLATE
@@ -86,7 +81,6 @@ def generate_template(visitor_class_name)
     sub_visitors.concat(SUB_VISITOR_TEMPLATE%[node_name])
   end
   MAIN_VISTOR_TEMPLATE%[visitor_class_name,
-                        generic_instances.join(",#{$/}"),
                         sub_visitor_instances,
                         sub_visitors]
 end

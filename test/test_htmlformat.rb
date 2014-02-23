@@ -98,6 +98,8 @@ HTML
 
 a paragraph with an ''emphasised'' word.
 a paragraph with a [[link|http://www.example.org/]].
+
+a paragraph with a ``literal`` word.
 TEXT
 
     html = <<HTML
@@ -105,11 +107,37 @@ TEXT
 <h2>heading2</h2>
 <p>
 a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://www.example.org/">link</a>.</p>
+<p>
+a paragraph with a <code>literal</code> word.</p>
 <!-- end of section h2 -->
 </div>
 HTML
 
     assert_equal(html,convert_text_to_html(text))
+  end
+
+  def test_plugin
+    text = <<TEXT
+a paragraph with several plugin tags.
+{{''}} should be presented as two quotation marks.
+{{ {}} should be presented as two left curly braces.
+{{} }} should be presented as two right curly braces.
+{{in span}} should be presented as <span>in span</span>.
+TEXT
+
+    html = <<HTML
+<p>
+a paragraph with several plugin tags.
+'' should be presented as two quotation marks.
+{{ should be presented as two left curly braces.
+}} should be presented as two right curly braces.
+<span>in span</span> should be presented as &lt;span&gt;in span&lt;/span&gt;.
+</p>
+HTML
+
+    tree = BlockParser.parse(text)
+    assert_equal(html, HtmlFormat.format(tree).to_s)
+    assert_equal(html, XhtmlFormat.format(tree).to_s)
   end
 
   def test_table
@@ -561,6 +589,8 @@ a verbatim line with [[a link]]
 
 another verbatim line
 
+ a verbatim line that begins with a space.
+
 the last verbatim line
 >>>
 TEXT
@@ -569,6 +599,9 @@ TEXT
  a verbatim line with [[a link]]
  
  another verbatim line
+
+  a verbatim line that begins with a space.
+
  
  the last verbatim line
 TEXT
@@ -579,6 +612,8 @@ TEXT
 a verbatim line with [[a link]]
 
 another verbatim line
+
+ a verbatim line that begins with a space.
 
 the last verbatim line
 </pre>

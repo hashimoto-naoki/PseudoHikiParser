@@ -8,6 +8,39 @@ class TC_MarkDownFormat < Test::Unit::TestCase
 
   def setup
     @formatter = MarkDownFormat.create
+    @gfm_formatter = MarkDownFormat.create({ :gfm_style => true })
+    @forced_gfm_formatter = MarkDownFormat.create({ :gfm_style => :force })
+  end
+
+  def test_self_format
+    text = <<TEXT
+||!header 1||!header 2
+||cell 1-1||cell 1-2
+||cell 2-1||cell 2-2
+||cell 3-1 (a bit wider)||cell 3-2
+TEXT
+
+    md_text = <<TEXT
+<table>
+<tr><th>header 1</th><th>header 2</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td></tr>
+</table>
+
+TEXT
+
+    gfm_text = <<TEXT
+|header 1              |header 2|
+|----------------------|--------|
+|cell 1-1              |cell 1-2|
+|cell 2-1              |cell 2-2|
+|cell 3-1 (a bit wider)|cell 3-2|
+TEXT
+
+    tree = BlockParser.parse(text)
+    assert_equal(md_text, MarkDownFormat.format(tree))
+    assert_equal(gfm_text, MarkDownFormat.format(tree, :gfm_style => true))
   end
 
   def test_plain
@@ -52,11 +85,58 @@ IMAGE
     assert_equal("a ~~striked out string~~#{$/}", @formatter.format(tree).to_s)
   end
 
+  def test_literal
+    text = "a ``literal`` word"
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal("a `literal` word#{$/}", @formatter.format(tree).to_s)
+  end
+
+  def test_plugin
+    text = <<TEXT
+A paragraph with several plugin tags.
+{{''}} should be presented as two quotation marks.
+{{ {}} should be presented as two left curly braces.
+{{} }} should be presented as two right curly braces.
+{{in span}} should be presented as 'in span'.
+TEXT
+    expected_text = <<TEXT
+A paragraph with several plugin tags.
+'' should be presented as two quotation marks.
+{{ should be presented as two left curly braces.
+}} should be presented as two right curly braces.
+in span should be presented as 'in span'.
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, @formatter.format(tree).to_s)
+  end
+
   def test_hr
     text = "----#{$/}"
     md_text = "----#{$/}"
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
+  def test_desc
+    text = <<TEXT
+:word 1:description of word 1
+:word 2:description of word 2
+TEXT
+
+    html = <<HTML
+<dl>
+<dt>word 1</dt>
+<dd>description of word 1</dd>
+<dt>word 2</dt>
+<dd>description of word 2</dd>
+</dl>
+
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(html, @formatter.format(tree).to_s)
   end
 
   def test_verbatim
@@ -65,7 +145,7 @@ IMAGE
  verbatim line 2
 TEXT
 
-    md_text =<<TEXT
+    gfm_text =<<TEXT
 ```
 verbatim ''line'' 1
 verbatim line 2
@@ -73,7 +153,14 @@ verbatim line 2
 
 TEXT
 
+    md_text = <<TEXT
+    verbatim ''line'' 1
+    verbatim line 2
+
+TEXT
+
     tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
@@ -122,8 +209,159 @@ TEXT
 |cell 2-1              |cell 2-2|
 |cell 3-1 (a bit wider)|cell 3-2|
 TEXT
+
+    html =<<HTML
+<table>
+<tr><th>header 1</th><th>header 2</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td></tr>
+</table>
+
+HTML
+
     tree = BlockParser.parse(text.lines.to_a)
-    assert_equal(md_text, @formatter.format(tree).to_s)
+    assert_equal(md_text, @gfm_formatter.format(tree).to_s)
+    assert_equal(html, @formatter.format(tree).to_s)
+  end
+
+  def test_non_gfm_conformant_table
+    text = <<TEXT
+||header 1||!header 2
+||cell 1-1||cell 1-2
+||cell 2-1||cell 2-2
+||cell 3-1 (a bit wider)||cell 3-2
+TEXT
+
+    md_text = <<TEXT
+|header 1              |header 2|
+|----------------------|--------|
+|cell 1-1              |cell 1-2|
+|cell 2-1              |cell 2-2|
+|cell 3-1 (a bit wider)|cell 3-2|
+TEXT
+
+    html =<<HTML
+<table>
+<tr><td>header 1</td><th>header 2</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td></tr>
+</table>
+
+HTML
+
+#    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
+      tree = BlockParser.parse(text.lines.to_a)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
+#    end
+  end
+
+  def test_non_gfm_conformant_table_with_multi_headers
+    text = <<TEXT
+||!header 1-1||!header 1-2
+||!header 2-1||!header 2-2
+||cell 1-1||cell 1-2
+||cell 2-1||cell 2-2
+||cell 3-1 (a bit wider)||cell 3-2
+TEXT
+
+    md_text = <<TEXT
+|header 1-1            |header 1-2|
+|----------------------|----------|
+|header 2-1            |header 2-2|
+|cell 1-1              |cell 1-2  |
+|cell 2-1              |cell 2-2  |
+|cell 3-1 (a bit wider)|cell 3-2  |
+TEXT
+
+    html = <<HTML
+<table>
+<tr><th>header 1-1</th><th>header 1-2</th></tr>
+<tr><th>header 2-1</th><th>header 2-2</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td></tr>
+<tr><td>cell 2-1</td><td>cell 2-2</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td></tr>
+</table>
+
+HTML
+
+#    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
+      tree = BlockParser.parse(text.lines.to_a)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
+#    end
+  end
+
+  def test_non_gfm_conformant_table_with_multicolumn_cells
+    text = <<TEXT
+||!header 1-1||!header 1-2||!header 1-3||!header 1-4
+||cell 1-1||cell 1-2||cell 1-3||cell 1-4
+||cell 2-1||>cell 2-2||cell 2-4
+||cell 3-1 (a bit wider)||cell 3-2||cell 3-3||cell 3-4
+TEXT
+
+    md_text = <<TEXT
+|header 1-1            |header 1-2|header 1-3|header 1-4|
+|----------------------|----------|----------|----------|
+|cell 1-1              |cell 1-2  |cell 1-3  |cell 1-4  |
+|cell 2-1              |cell 2-2  |          |cell 2-4  |
+|cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
+TEXT
+
+    html = <<HTML
+<table>
+<tr><th>header 1-1</th><th>header 1-2</th><th>header 1-3</th><th>header 1-4</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td><td>cell 1-3</td><td>cell 1-4</td></tr>
+<tr><td>cell 2-1</td><td colspan="2">cell 2-2</td><td>cell 2-4</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4</td></tr>
+</table>
+
+HTML
+
+#    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
+      tree = BlockParser.parse(text.lines.to_a)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
+#    end
+  end
+
+  def test_non_gfm_conformant_table_with_multirow_cells
+    text = <<TEXT
+||!header 1-1||!header 1-2||!header 1-3||!header 1-4
+||cell 1-1||cell 1-2||^cell 1-3||cell 1-4
+||cell 2-1||>cell 2-2||cell 2-4
+||cell 3-1 (a bit wider)||cell 3-2||cell 3-3||cell 3-4
+TEXT
+
+    md_text = <<TEXT
+|header 1-1            |header 1-2|header 1-3|header 1-4|
+|----------------------|----------|----------|----------|
+|cell 1-1              |cell 1-2  |cell 1-3  |cell 1-4  |
+|cell 2-1              |cell 2-2  |          |cell 2-4  |
+|cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
+TEXT
+
+    html = <<HTML
+<table>
+<tr><th>header 1-1</th><th>header 1-2</th><th>header 1-3</th><th>header 1-4</th></tr>
+<tr><td>cell 1-1</td><td>cell 1-2</td><td rowspan=\"2\">cell 1-3</td><td>cell 1-4</td></tr>
+<tr><td>cell 2-1</td><td colspan="2">cell 2-2</td><td>cell 2-4</td></tr>
+<tr><td>cell 3-1 (a bit wider)</td><td>cell 3-2</td><td>cell 3-3</td><td>cell 3-4</td></tr>
+</table>
+
+HTML
+
+#    assert_raise(MarkDownFormat::TableNodeFormatter::NotConformantStyleError) do
+      tree = BlockParser.parse(text.lines.to_a)
+      assert_equal(html, @gfm_formatter.format(tree).to_s)
+      assert_equal(html, @formatter.format(tree).to_s)
+      assert_equal(md_text, @forced_gfm_formatter.format(tree).to_s)
+#    end
   end
 
   def test_list
@@ -197,11 +435,13 @@ TEXT
   end
 
   def test_escape
-    text = "test string with *asterisk and _underscore"
-    md_text = "test string with \\*asterisk and \\_underscore#{$/}"
+    text = "test string with *asterisk, _underscore and a html tag <h1>"
+    md_text = "test string with \\*asterisk, \\_underscore and a html tag &lt;h1&gt;#{$/}"
+    gfm_text = "test string with \\*asterisk, \\_underscore and a html tag \\<h1\\>#{$/}"
 
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
   end
 
   def test_not_escaped
@@ -212,7 +452,7 @@ a verbatim _underscore_
 >>>
 TEXT
 
-    md_text = <<TEXT
+    gfm_text = <<TEXT
 ```
 a verbatim asterisk *
 a verbatim _underscore_
@@ -220,7 +460,14 @@ a verbatim _underscore_
 
 TEXT
 
+    md_text = <<TEXT
+    a verbatim asterisk *
+    a verbatim _underscore_
+
+TEXT
+
     tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
 
@@ -230,6 +477,8 @@ TEXT
 
 # item 1
 ## item 1-1
+
+a paragraph for testing a striked through ==string with an ''emphasis'' in it.==
 TEXT
 
     md_text = <<TEXT
@@ -237,6 +486,8 @@ TEXT
 
 1. item 1
   2. item 1-1
+
+a paragraph for testing a striked through ~~string with an _emphasis_ in it.~~
 
 TEXT
 

@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
                         "lib/pseudohiki/blockparser.rb",
                         "lib/pseudohiki/htmlformat.rb",
                         "lib/pseudohiki/plaintextformat.rb",
+                        "lib/pseudohiki/markdownformat.rb",
                         "lib/pseudohiki/version.rb",
                         "lib/pseudohiki/htmlplugin.rb",
                         "lib/htmlelement.rb",

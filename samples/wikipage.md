@@ -1,65 +1,63 @@
-//title: A sample of PseudoHikiParser
+#Welcome to the PseudoHikiParser wiki!
 
-!Welcome to the PseudoHikiParser wiki!
+## About PseudoHikiParser
 
-!![about] About PseudoHikiParser
-
-PseudoHikiParser is a converter of texts written in a [[Hiki|http://hikiwiki.org/en/]] like notation, into html or other formats. 
+PseudoHikiParser is a converter of texts written in a [Hiki](http://hikiwiki.org/en/) like notation, into html or other formats. 
 
 Currently, only a limited range of notations can be converted into HTML4 or XHTML1.0.
 
 I am writing this tool with following objectives in mind,
 
 * provide some additional features that do not exist in the original Hiki notation
-** make the notation more line oriented
-** allow to assign ids to elements such as headings
+  * make the notation more line oriented
+  * allow to assign ids to elements such as headings
 * support several formats other than HTML
-** The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
+  * The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
 
 And, it would not be compatible with the original Hiki notation.
 
-!![license] License
+## License
 
 BSD 2-Clause License
 
-==I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style. ==
+~~I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style.~~
 
-==And one of them will be BSD 2-clause license or MIT license.==
+~~And one of them will be BSD 2-clause license or MIT license.~~
 
 (It seems bothersome for me to manage a dual-licensed script.)
 
-!![installation] Installation
+## Installation
 
-<<<
+```
 gem install pseudohikiparser --pre
->>>
+```
 
-!![usage] Usage
+## Usage
 
-!!! Samples
+### Samples
 
-[[A sample text|https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt]] in Hiki notation and [[a result of conversion|http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html]], [[another result of conversion|http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html]] and [[yet another result|http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html]].
+[A sample text](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt) in Hiki notation and [a result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html), [another result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html) and [yet another result](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html).
 
-You will find those samples in [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples]].
+You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
 
-!!! pseudohiki2html.rb
+### pseudohiki2html.rb
 
-After the installation of PseudoHikiParser, you could use a command: '''pseudohiki2html.rb'''.
+After the installation of PseudoHikiParser, you could use a command: **pseudohiki2html.rb**.
 
-''Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.''
+_Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development._
 
 Typing the following lines at the command prompt:
 
-<<<
+```
 pseudohiki2html.rb <<TEXT
 !! The first heading
 The first paragraph
 TEXT
->>>
+```
 
 will return the following result to stdout:
 
-<<<
+```
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -81,26 +79,26 @@ The first paragraph
 </div>
 </body>
 </html>
->>>
+```
 
-And if you specify a file name with ``--output`` option:
+And if you specify a file name with `--output` option:
 
-<<<
+```
 pseudohiki2html.rb --output first_example.html <<TEXT
 !! The first heading
 The first paragraph
 TEXT
->>>
+```
 
-the result will be saved in first_example.html.
+the result will be saved in first\_example.html.
 
-For more options, please try ``pseudohiki2html.rb --help``
+For more options, please try `pseudohiki2html.rb --help`
 
-!!! module PseudoHiki
+### module PseudoHiki
 
 If you save the lines below as a ruby script and execute it:
 
-<<<
+```
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -113,11 +111,11 @@ TEXT
 tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
 html = PseudoHiki::HtmlFormat.format(tree)
 puts html
->>>
+```
 
 you will get the following output:
 
-<<<
+```
 <div class="section h2">
 <h2> The first heading
 </h2>
@@ -126,21 +124,21 @@ The first paragraph
 </p>
 <!-- end of section h2 -->
 </div>
->>>
+```
 
 Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
 
-!![develepment_status] Development status of features from the original [[Hiki notation|http://rabbit-shocker.org/en/hiki.html]]
+## Development status of features from the original [Hiki notation](http://rabbit-shocker.org/en/hiki.html)
 
 * Paragraphs - Usable
 * Links
-** WikiNames - Not supported (and would never be)
-** Linking to other Wiki pages - Not supported as well
-** Linking to an arbitrary URL - Maybe usable
+  * WikiNames - Not supported (and would never be)
+  * Linking to other Wiki pages - Not supported as well
+  * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
-** Means of escaping tags for inline decorations is only experimetal.
-** The notation for inline literals by backquote tags({{``}}) is converted into not <tt> element but <code> element.
+  * Means of escaping tags for inline decorations is only experimetal.
+  * The notation for inline literals by backquote tags(``) is converted into not \<tt\> element but \<code\> element.
 * Headings - Usable
 * Horizontal lines - Usable
 * Lists - Usable
@@ -150,80 +148,85 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 * Comments - Usable
 * Plugins - Not supported (and will not be compatible with the original one)
 
-!![additional_features] Additional Features
+## Additional Features
 
-!!! Already Implemented
+### Already Implemented
 
-!!!! Assigning ids
+#### Assigning ids
 
-If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
+If you add [name\_of\_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 
+```
+!![heading_id]heading
 
- !![heading_id]heading
- 
- *[list_id]list
-
+*[list_id]list
+```
 
 will be rendered as
 
- <div class="section h2">
- <h2 id="HEADING_ID">heading
- </h2>
- <ul>
- <li id="LIST_ID">list
- </li>
- </ul>
- <!-- end of section h2 -->
- </div>
+```
+<div class="section h2">
+<h2 id="HEADING_ID">heading
+</h2>
+<ul>
+<li id="LIST_ID">list
+</li>
+</ul>
+<!-- end of section h2 -->
+</div>
+```
 
-!!! Partly Implemented
+### Partly Implemented
 
-!!!! A visitor that removes markups and returns plain texts
-The visitor, [[PlainTextFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]]. Below are examples
+#### A visitor that removes markups and returns plain texts
 
-<<<
+The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop). Below are examples
+
+```
 :tel:03-xxxx-xxxx
 ::03-yyyy-yyyy
 :fax:03-xxxx-xxxx
->>>
+```
+
 will be rendered as
 
-<<<
+```
 tel:	03-xxxx-xxxx
 	03-yyyy-yyyy
 fax:	03-xxxx-xxxx
->>>
+```
 
 And
 
-<<<
+```
 ||cell 1-1||>>cell 1-2,3,4||cell 1-5
 ||cell 2-1||^>cell 2-2,3 3-2,3||cell 2-4||cell 2-5
 ||cell 3-1||cell 3-4||cell 3-5
 ||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
->>>
+```
 
 will be rendered as
 
-<<<
+```
 cell 1-1	cell 1-2,3,4	==	==	cell 1-5
 cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
 cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
->>>
+```
 
-!!!! A visitor for HTML5
-The visitor, [[Xhtml5Format|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222]] is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop]].
+#### A visitor for HTML5
 
+The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
-!!!! A visitor for (Git Flavored) Markdown
-The visitor, [[MarkDownFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb]] too, is currently available only in the [[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop/]].
+#### A visitor for (Git Flavored) Markdown
+
+The visitor, [MarkDownFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb) too, is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/).
 
 It's just in experimental stage.
 
 The following are a sample script and its output:
 
-<<<
+```
 #!/usr/bin/env ruby
 
 require 'pseudohiki/markdownformat'
@@ -247,11 +250,11 @@ gfm_text = gfm.format(tree).to_s
 puts md_text
 puts "===================="
 puts gfm_text
->>>
+```
 
 (You will get the following output.)
 
-<<<
+```
 ## The first heading
 
 The first paragraph
@@ -269,22 +272,23 @@ The first paragraph
 |header 1|header 2|
 |--------|--------|
 |_cell 1_|cell2   |
->>>
+```
 
-!!! Experimental
+### Experimental
 
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 
-<<<
+```
 For example, {{''}} and {{==}} can be escaped.
 And {{ {}} and {{} }} should be rendered as two left curly braces and two right curly braces respectively.
->>>
+```
 
 will be rendered as
-<<<
+```
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
->>>
+```
 
-!!! Not Implemented Yet
+
+### Not Implemented Yet
 

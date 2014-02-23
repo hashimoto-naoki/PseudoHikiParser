@@ -27,7 +27,7 @@ module PseudoHiki
       #  class LinkSepLeaf < InlineLeaf; end
 
       PseudoHiki.subclass_of(InlineNode, binding,
-                             %w(LinkNode EmNode StrongNode DelNode PlainNode PluginNode))
+                             %w(LinkNode EmNode StrongNode DelNode PlainNode LiteralNode PluginNode))
 
       LinkSep, TableSep, DescSep = %w(| || :)
     end
@@ -42,6 +42,7 @@ module PseudoHiki
      [EmNode, "''", "''"],
      [StrongNode, "'''", "'''"],
      [DelNode, "==", "=="],
+     [LiteralNode, "``", "``"],
      [PluginNode, "{{","}}"]].each do |type, head, tail|
       HEAD[head] = type
       TAIL[tail] = type

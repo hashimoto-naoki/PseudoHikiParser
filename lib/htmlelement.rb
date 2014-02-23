@@ -13,7 +13,7 @@ class HtmlElement
         else
           yield child
         end
-      end      
+      end
     end
   end
 

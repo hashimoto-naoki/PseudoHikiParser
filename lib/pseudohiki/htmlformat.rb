@@ -11,7 +11,7 @@ module PseudoHiki
     include TableRowParser::InlineElement
 
     #for InlineParser
-    LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
+    LINK, IMG, EM, STRONG, DEL, LITERAL = %w(a img em strong del code)
     HREF, SRC, ALT = %w(href src alt)
     PLAIN, PLUGIN = %w(plain span)
     #for BlockParser
@@ -27,7 +27,7 @@ module PseudoHiki
 
     def self.setup_new_formatter(new_formatter, generator)
       new_formatter.each do |node_class, formatter|
-        new_formatter[node_class] = formatter.dup
+        new_formatter[node_class] = formatter.clone
         new_formatter[node_class].generator = generator
         new_formatter[node_class].formatter = new_formatter
       end
@@ -119,6 +119,14 @@ module PseudoHiki
       end
     end
 
+    class ListLeafNodeFormatter < self
+      def create_self_element(tree)
+        super(tree).tap do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
+      end
+    end
+
     #for BlockParser
 
     class VerbatimNodeFormatter < self
@@ -181,18 +189,11 @@ module PseudoHiki
       end
     end
 
-    class ListLeafNodeFormatter < self
-      def create_self_element(tree)
-        super(tree).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    [ [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
-      [PluginNode,PLUGIN], #Until here is for InlineParser
+    [ [EmNode, EM],
+      [StrongNode, STRONG],
+      [DelNode, DEL],
+      [LiteralNode, LITERAL],
+      [PluginNode, PLUGIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],
       [TableNode, TABLE],
@@ -217,6 +218,15 @@ module PseudoHiki
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
+
+    class << Formatter[PluginNode]
+      def visit(tree)
+        str = tree.join
+        return str if InlineParser::HEAD[str] or InlineParser::TAIL[str]
+        return str.strip * 2 if str == ' {' or str == '} '
+        super(tree)
+      end
+    end
   end
 
   class XhtmlFormat < HtmlFormat

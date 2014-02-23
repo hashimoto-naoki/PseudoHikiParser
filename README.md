@@ -8,10 +8,10 @@ Currently, only a limited range of notations can be converted into HTML4 or XHTM
 I am writing this tool with following objectives in mind,
 
 * provide some additional features that do not exist in the original Hiki notation
- * make the notation more line oriented
- * allow to assign ids to elements such as headings
+  * make the notation more line oriented
+  * allow to assign ids to elements such as headings
 * support several formats other than HTML
- * The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
+  * The visitor pattern is adopted for the implementation, so you only have to add a visitor class to support a certain format.
 
 And, it would not be compatible with the original Hiki notation.
 
@@ -30,14 +30,14 @@ gem install pseudohikiparser --pre
 
 ### Samples
 
-[A sample text](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt) in Hiki notation and [a result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html), and [another result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html)
+[A sample text](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt) in Hiki notation and [a result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html), [another result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html) and [yet another result](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html).
 
 You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
 
 
 ### pseudohiki2html.rb
 
-After the installation of PseudoHikiParser, you could use a command, _pseudohiki2html.rb_.
+After the installation of PseudoHikiParser, you could use a command: **pseudohiki2html.rb**.
 
 _Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development._
 
@@ -90,7 +90,7 @@ For more options, please try `pseudohiki2html.rb --help`
 
 If you save the lines below as a ruby script and execute it:
 
-```
+```ruby
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -106,7 +106,7 @@ puts html
 ```
 you will get the following output:
 
-```
+```html
 <div class="section h2">
 <h2> The first heading
 </h2>
@@ -119,17 +119,17 @@ The first paragraph
 
 Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
 
-## Development status of features from the original [Hiki notation](http://hikiwiki.org/en/TextFormattingRules.html)
+## Development status of features from the original [Hiki notation](http://rabbit-shocker.org/en/hiki.html)
 
 * Paragraphs - Usable
 * Links
- * WikiNames - Not supported (and would never be)
- * Linking to other Wiki pages - Not supported as well
- * Linking to an arbitrary URL - Maybe usable
+  * WikiNames - Not supported (and would never be)
+  * Linking to other Wiki pages - Not supported as well
+  * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
- * Currently, there is no means of escaping tags for inline decorations.
- * The notation with backquote tags(``) for inline literals is not supported.
+  * Means of escaping tags for inline decorations is only experimetal.
+  * The notation for inline literals by backquote tags(``) is converted into not \<tt\> element but \<code\> element.
 * Headings - Usable
 * Horizontal lines - Usable
 * Lists - Usable
@@ -197,7 +197,77 @@ cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 ```
 #### A visitor for HTML5
-The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L225) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
+The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
+#### A visitor for (Git Flavored) Markdown
+
+The visitor, [MarkDownFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb) too, is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/).
+
+It's just in experimental stage.
+
+The following are a sample script and its output:
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'pseudohiki/markdownformat'
+
+md = PseudoHiki::MarkDownFormat.create
+gfm = PseudoHiki::MarkDownFormat.create(gfm_style: true)
+
+hiki = <<TEXT
+!! The first heading
+
+The first paragraph
+
+||!header 1||!header 2
+||''cell 1''||cell2
+
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(hiki)
+md_text = md.format(tree).to_s
+gfm_text = gfm.format(tree).to_s
+puts md_text
+puts "===================="
+puts gfm_text
+```
+
+(You will get the following output.)
+
+```
+## The first heading
+
+The first paragraph
+
+<table>
+<tr><th>header 1</th><th>header 2</th></tr>
+<tr><td><em>cell 1</em></td><td>cell2</td></tr>
+</table>
+
+====================
+## The first heading
+
+The first paragraph
+
+|header 1|header 2|
+|--------|--------|
+|_cell 1_|cell2   |
+```
+
+### Experimental
+
+Tags for inline decorations are escaped when they are enclosed in plugin tags:
+
+```
+For example, {{''}} and {{==}} can be escaped.
+And {{ {}} and {{} }} should be rendered as two left curly braces and two right curly braces respectively.
+```
+
+will be rendered as
+```
+For example, '' or == can be escaped.
+And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+```
 
 ### Not Implemented Yet

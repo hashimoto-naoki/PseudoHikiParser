@@ -15,6 +15,16 @@ module PseudoHiki
       alias to_s join
     end
 
+    def initialize(formatter={}, options = { :verbose_mode=> false })
+      @formatter = formatter
+      options_given_via_block = nil
+      if block_given?
+        options_given_via_block = yield
+        options.merge!(options_given_via_block)
+      end
+      @options = OpenStruct.new(options)
+    end
+
     def create_self_element(tree=nil)
       Node.new
     end
@@ -34,47 +44,19 @@ module PseudoHiki
       element
     end
 
-    def initialize(formatter={}, options = { :verbose_mode=> false })
-      @formatter = formatter
-      options_given_via_block = nil
-      if block_given?
-        options_given_via_block = yield
-        options.merge!(options_given_via_block)
-      end
-      @options = OpenStruct.new(options)
+    def get_plain
+      @formatter[PlainNode]
+    end
+
+    def format(tree)
+      formatter = get_plain
+      tree.accept(formatter).join
     end
 
     def self.create(options = { :verbose_mode => false })
       formatter = {}
-      main = self.new(formatter, options)
-
-      [
-       PlainNode,
-       InlineNode,
-       EmNode,
-       StrongNode,
-       PluginNode,
-       VerbatimLeaf,
-       QuoteLeaf,
-       TableLeaf,
-       CommentOutLeaf,
-       HeadingLeaf,
-       ParagraphLeaf,
-       HrLeaf,
-       BlockNodeEnd,
-       ListLeaf,
-       EnumLeaf,
-       DescNode,
-       QuoteNode,
-       HeadingNode,
-       HrNode,
-       ListNode,
-       EnumNode,
-       ListWrapNode,
-       EnumWrapNode
-      ].each do |node_class|
-        formatter[node_class] = self.new(formatter, options)
-      end
+      main_formatter = self.new(formatter, options)
+      formatter.default = main_formatter
 
       formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
@@ -84,16 +66,8 @@ module PseudoHiki
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
       formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
-      main
-    end
-
-    def get_plain
-      @formatter[PlainNode]
-    end
-
-    def format(tree)
-      formatter = get_plain
-      tree.accept(formatter).join
+      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
+      main_formatter
     end
 
 ## Definitions of subclasses of PlainTextFormat begins here.
@@ -173,8 +147,8 @@ ERROR_TEXT
 
       def visit(tree)
         table = create_self_element(tree)
-        rows = tree.dup
-        rows.length.times { table.push Node.new }
+        rows = deep_copy_tree(tree)
+        rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
         cur_row = nil
@@ -193,7 +167,13 @@ ERROR_TEXT
             end
           end
         end
-        table.map {|row| row.join("\t")+$/ }.join
+        format_table(table, tree)
+      end
+
+      def deep_copy_tree(tree)
+        tree.dup.clear.tap do |new_tree|
+          new_tree.concat tree.map {|node| node.dup }
+        end
       end
 
       def each_cell_with_index(table, max_row, max_col, initial_row=0, initial_col=0)
@@ -205,8 +185,7 @@ ERROR_TEXT
       end
 
       def fill_expand(table, initial_row, initial_col, cur_cell)
-        row_expand, col_expand = "", ""
-        row_expand, col_expand = "||", "==" if @options.verbose_mode
+        row_expand, col_expand = choose_expander_of_col_and_row
         max_row = initial_row + cur_cell.rowspan - 1
         max_col = initial_col + cur_cell.colspan - 1
         each_cell_with_index(table, max_row, max_col,
@@ -220,6 +199,14 @@ ERROR_TEXT
       end
     end
 
+    def choose_expander_of_col_and_row
+      @options.verbose_mode ? ["||", "=="] : ["", ""]
+    end
+
+    def format_table(table, tree)
+      table.map {|row| row.join("\t")+$/ }.join
+    end
+
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
     end
@@ -227,6 +214,14 @@ ERROR_TEXT
     class ParagraphNodeFormatter < self
       def visit(tree)
         super(tree).join+$/
+      end
+    end
+
+    class PluginNodeFormatter < self
+      def visit(tree)
+        str =tree.join
+        return str.strip * 2 if str == " {" or str == "} "
+        super(tree)
       end
     end
   end
