@@ -352,27 +352,18 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       @input_file_basename = File.basename(@input_file_name,".*")
     end
 
-    def output_file_name
+    def output_filename
       return nil unless self.need_output_file
       if self[:output]
         File.expand_path(self[:output])
       else
-        case self[:html_version].version
-        when "markdown", "gfm"
-          ext = ".md"
-        when "plain" "plain_verbose"
-          ext = ".plain"
-        else
-          ext = ".html"
-        end
-
-        File.join(@input_file_dir, @input_file_basename+ext)
+        File.join(@input_file_dir, @input_file_basename + self[:html_version].ext)
       end
     end
 
     def open_output
-      if self.output_file_name
-        open(self.output_file_name, "w") {|f| yield f }
+      if self.output_filename
+        open(self.output_filename, "w") {|f| yield f }
       else
         yield STDOUT
       end
