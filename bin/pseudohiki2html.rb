@@ -52,7 +52,7 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
-    def create_main(toc, body, h1)
+    def create_html_main(toc, body, h1)
       return nil unless @options[:toc]
       toc_container = formatter.create_element("section").tap do |element|
         element["id"] = "toc"
@@ -69,6 +69,10 @@ module PseudoHiki
         element.push toc_container
         element.push contents_container
       end
+    end
+
+    def create_main(toc, body, h1)
+      create_html_main(toc, body, h1)
     end
 
     def create_style(path_to_css_file)
