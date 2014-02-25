@@ -28,7 +28,7 @@ module PseudoHiki
       PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
     end
 
-    def create_table_of_contents(lines)
+    def create_html_table_of_contents(lines)
       return "" unless @options[:toc]
       toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
         m = HEADING_WITH_ID_PAT.match(line)
@@ -42,6 +42,10 @@ module PseudoHiki
           end
         end
       end
+    end
+
+    def create_table_of_contents(lines)
+      create_html_table_of_contents(lines)
     end
 
     def split_main_heading(input_lines)
