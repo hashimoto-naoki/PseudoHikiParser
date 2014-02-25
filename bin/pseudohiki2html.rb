@@ -105,7 +105,7 @@ module PseudoHiki
         erb = ERB.new(@options.read_template_file)
         html = erb.result(binding)
       else
-        html = @options.create_html_with_current_options
+        html = @options.create_html_template_with_current_options
         html.head.push create_style(@options[:embed_css]) if @options[:embed_css]
         html.push main||body
       end
@@ -344,7 +344,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       end
     end
 
-    def create_html_with_current_options
+    def create_html_template_with_current_options
       return [] unless self.html_template
       html = self.html_template.new
       html.charset = self.charset
