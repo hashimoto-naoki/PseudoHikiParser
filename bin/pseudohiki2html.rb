@@ -28,8 +28,17 @@ module PseudoHiki
       PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
     end
 
+    def create_plain_table_of_contents(lines)
+      toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
+        m = HEADING_WITH_ID_PAT.match(line)
+        heading_depth = m[1].length
+        line.sub(/^!+/o, '*'*heading_depth)
+      end
+
+      @options.formatter.format(BlockParser.parse(toc_lines))
+    end
+
     def create_html_table_of_contents(lines)
-      return "" unless @options[:toc]
       toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
         m = HEADING_WITH_ID_PAT.match(line)
         heading_depth, id = m[1].length, m[2].upcase
@@ -45,6 +54,8 @@ module PseudoHiki
     end
 
     def create_table_of_contents(lines)
+      return "" unless @options[:toc]
+      return create_plain_table_of_contents(lines) unless @options.html_template
       create_html_table_of_contents(lines)
     end
 
@@ -76,6 +87,7 @@ module PseudoHiki
     end
 
     def create_main(toc, body, h1)
+      return [h1, toc, body].join($/) unless @options.html_template
       create_html_main(toc, body, h1)
     end
 
