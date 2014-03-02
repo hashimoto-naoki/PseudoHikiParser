@@ -67,6 +67,14 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
+    def create_plain_main(toc, body, h1)
+      contents = [body]
+      contents.unshift toc unless toc.empty?
+      contents.unshift @options.formatter.format(BlockParser.parse("!!" + @options[:toc])) if @options[:toc]
+      contents.unshift h1 unless h1.empty?
+      contents.join($/)
+    end
+
     def create_html_main(toc, body, h1)
       return nil unless @options[:toc]
       toc_container = formatter.create_element("section").tap do |element|
@@ -87,7 +95,7 @@ module PseudoHiki
     end
 
     def create_main(toc, body, h1)
-      return [h1, toc, body].join($/) unless @options.html_template
+      return create_plain_main(toc, body, h1) unless @options.html_template
       create_html_main(toc, body, h1)
     end
 
