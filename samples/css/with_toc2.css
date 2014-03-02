@@ -27,8 +27,6 @@ h1 {
     -1px 1px 0 #00bbbb,
     2px 1px 0 #00bbbb,
     2px 0px 0 #00bbbb;
-    
-    
 }
 
 #toc {
@@ -112,4 +110,13 @@ h1 {
     margin-right: 1em;
     margin-left: 1em;
     font-size: 120%;
+}
+
+#contents code {
+    background: #eeeeee;
+    border-style: solid;
+    border-color: #aaaaaa;
+    border-width: 1px;
+    font-size: 120%;
+    padding: 0.1em 0.3em 0.1em 0.3em;
 }
