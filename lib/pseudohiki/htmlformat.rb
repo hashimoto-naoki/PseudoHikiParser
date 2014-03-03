@@ -78,35 +78,6 @@ module PseudoHiki
 
     #for InlineParser
 
-    class LinkNodeFormatter < self
-      def visit(tree)
-        tree = tree.dup
-        caption = get_caption(tree)
-        begin
-          ref = tree.last.join
-        rescue NoMethodError
-          raise NoMethodError unless tree.empty?
-          STDERR.puts "No uri is specified for #{caption}"
-        end
-        if ImageSuffix =~ ref
-          htmlelement = ImgFormat.create_self_element
-          htmlelement[SRC] = tree.join
-          htmlelement[ALT] = caption.join if caption
-        else
-          htmlelement = create_self_element
-          htmlelement[HREF] = tree.join
-          htmlelement.push caption||tree.join
-        end
-        htmlelement
-      end
-
-      def get_caption(tree)
-        first_part, second_part = split_into_parts(tree, [LinkSep])
-        return nil unless second_part
-        first_part.map {|token| visited_result(token) }
-      end
-    end
-
     class InlineLeafFormatter < self
       def visit(leaf)
         @generator.escape(leaf.first)
@@ -193,6 +164,7 @@ module PseudoHiki
       [StrongNode, STRONG],
       [DelNode, DEL],
       [LiteralNode, LITERAL],
+      [LinkNode, LINK],
       [PluginNode, PLUGIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],
@@ -206,7 +178,6 @@ module PseudoHiki
 
     #for InlineParser
     ImgFormat = self.new(IMG)
-    Formatter[LinkNode] = LinkNodeFormatter.new(LINK)
     Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
     Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
     #for BlockParser
@@ -225,6 +196,35 @@ module PseudoHiki
         return str if InlineParser::HEAD[str] or InlineParser::TAIL[str]
         return str.strip * 2 if str == ' {' or str == '} '
         super(tree)
+      end
+    end
+
+   class << Formatter[LinkNode]
+      def visit(tree)
+        tree = tree.dup
+        caption = get_caption(tree)
+        begin
+          ref = tree.last.join
+        rescue NoMethodError
+          raise NoMethodError unless tree.empty?
+          STDERR.puts "No uri is specified for #{caption}"
+        end
+        if ImageSuffix =~ ref
+          htmlelement = ImgFormat.create_self_element
+          htmlelement[SRC] = tree.join
+          htmlelement[ALT] = caption.join if caption
+        else
+          htmlelement = create_self_element
+          htmlelement[HREF] = tree.join
+          htmlelement.push caption||tree.join
+        end
+        htmlelement
+      end
+
+      def get_caption(tree)
+        first_part, second_part = split_into_parts(tree, [LinkSep])
+        return nil unless second_part
+        first_part.map {|token| visited_result(token) }
       end
     end
   end
