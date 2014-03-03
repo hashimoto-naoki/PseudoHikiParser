@@ -76,8 +76,6 @@ module PseudoHiki
       chunks.push tree
     end
 
-    #for InlineParser
-
     class ListLeafNodeFormatter < self
       def create_self_element(tree)
         super(tree).tap do |element|
@@ -90,10 +88,10 @@ module PseudoHiki
       [StrongNode, STRONG],
       [DelNode, DEL],
       [LiteralNode, LITERAL],
+      [PluginNode, PLUGIN],
       [LinkNode, LINK],
       [InlineLeaf, nil],
-      [PlainNode, PLAIN],
-      [PluginNode, PLUGIN], #Until here is for InlineParser
+      [PlainNode, PLAIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],
       [TableNode, TABLE],
@@ -101,13 +99,13 @@ module PseudoHiki
       [HrNode, HR],
       [ListNode, UL],
       [EnumNode, OL],
+      [TableLeaf, TR],
       [VerbatimNode, VERB],
       [CommentOutNode, nil],
       [HeadingNode, SECTION],
       [DescLeaf, DT],
       [TableCellNode, nil],
-      [HeadingLeaf, HEADING],
-      [TableLeaf, TR], #Until here is for BlockParser
+      [HeadingLeaf, HEADING], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
@@ -115,6 +113,8 @@ module PseudoHiki
     #for BlockParser
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
+
+    #for InlineParser
 
     class << Formatter[PluginNode]
       def visit(tree)
@@ -125,7 +125,7 @@ module PseudoHiki
       end
     end
 
-   class << Formatter[LinkNode]
+    class << Formatter[LinkNode]
       def visit(tree)
         tree = tree.dup
         caption = get_caption(tree)
