@@ -86,25 +86,6 @@ module PseudoHiki
       end
     end
 
-    class TableCellNodeFormatter < self
-      def visit(tree)
-        @element_name = tree.cell_type
-        super(tree).tap do |element|
-          element["rowspan"] = tree.rowspan if tree.rowspan > 1
-          element["colspan"] = tree.colspan if tree.colspan > 1
-          # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
-        end
-      end
-    end
-
-    class HeadingLeafFormatter < self
-      def create_self_element(tree)
-        @generator.create(@element_name+tree.nominal_level.to_s).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
     [ [EmNode, EM],
       [StrongNode, STRONG],
       [DelNode, DEL],
@@ -124,14 +105,14 @@ module PseudoHiki
       [CommentOutNode, nil],
       [HeadingNode, SECTION],
       [DescLeaf, DT],
+      [TableCellNode, nil],
+      [HeadingLeaf, HEADING],
       [TableLeaf, TR], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
     ImgFormat = self.new(IMG)
     #for BlockParser
-    Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
-    Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
 
@@ -227,7 +208,26 @@ module PseudoHiki
         element
       end
     end
- end
+
+    class << Formatter[TableCellNode]
+      def visit(tree)
+        @element_name = tree.cell_type
+        super(tree).tap do |element|
+          element["rowspan"] = tree.rowspan if tree.rowspan > 1
+          element["colspan"] = tree.colspan if tree.colspan > 1
+          # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
+        end
+      end
+    end
+
+    class << Formatter[HeadingLeaf]
+      def create_self_element(tree)
+        @generator.create(@element_name+tree.nominal_level.to_s).tap do |element|
+          element["id"] = tree.node_id.upcase if tree.node_id
+        end
+      end
+    end
+  end
 
   class XhtmlFormat < HtmlFormat
     Formatter = HtmlFormat::Formatter.dup
