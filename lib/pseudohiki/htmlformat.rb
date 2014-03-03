@@ -86,19 +86,6 @@ module PseudoHiki
       end
     end
 
-    #for BlockParser
-
-    class VerbatimNodeFormatter < self
-      def visit(tree)
-        create_self_element.tap do |element|
-          contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            @generator.create("a", url, "href" => url).to_s
-          end
-          element.push contents
-        end
-      end
-    end
-
     class CommentOutNodeFormatter < self
       def visit(tree); ""; end
     end
@@ -163,13 +150,13 @@ module PseudoHiki
       [HrNode, HR],
       [ListNode, UL],
       [EnumNode, OL],
+      [VerbatimNode, VERB],
       [TableLeaf, TR], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
     ImgFormat = self.new(IMG)
     #for BlockParser
-    Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
@@ -225,6 +212,19 @@ module PseudoHiki
     class << Formatter[PlainNode]
       def create_self_element(tree=nil)
         @generator::Children.new
+      end
+    end
+
+    #for BlockParser
+
+    class << Formatter[VerbatimNode]
+      def visit(tree)
+        create_self_element.tap do |element|
+          contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
+            @generator.create("a", url, "href" => url).to_s
+          end
+          element.push contents
+        end
       end
     end
   end
