@@ -86,16 +86,6 @@ module PseudoHiki
       end
     end
 
-    class HeadingNodeFormatter < self
-      def create_self_element(tree)
-        super(tree).tap do |element|
-          heading_level = "h#{tree.first.nominal_level}"
-          element['class'] ||= heading_level
-          element['class'] +=  " " + heading_level unless element['class'] == heading_level
-        end
-      end
-    end
-
     class DescLeafFormatter < self
       def visit(tree)
         tree = tree.dup
@@ -148,13 +138,13 @@ module PseudoHiki
       [EnumNode, OL],
       [VerbatimNode, VERB],
       [CommentOutNode, nil],
+      [HeadingNode, SECTION],
       [TableLeaf, TR], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
     ImgFormat = self.new(IMG)
     #for BlockParser
-    Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
@@ -226,6 +216,16 @@ module PseudoHiki
 
     class << Formatter[CommentOutNode]
       def visit(tree); ""; end
+    end
+
+    class << Formatter[HeadingNode]
+      def create_self_element(tree)
+        super(tree).tap do |element|
+          heading_level = "h#{tree.first.nominal_level}"
+          element['class'] ||= heading_level
+          element['class'] +=  " " + heading_level unless element['class'] == heading_level
+        end
+      end
     end
  end
 
