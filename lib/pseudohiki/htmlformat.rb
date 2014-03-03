@@ -78,12 +78,6 @@ module PseudoHiki
 
     #for InlineParser
 
-    class PlainNodeFormatter < self
-      def create_self_element(tree=nil)
-        @generator::Children.new
-      end
-    end
-
     class ListLeafNodeFormatter < self
       def create_self_element(tree)
         super(tree).tap do |element|
@@ -160,6 +154,7 @@ module PseudoHiki
       [LiteralNode, LITERAL],
       [LinkNode, LINK],
       [InlineLeaf, nil],
+      [PlainNode, PLAIN],
       [PluginNode, PLUGIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],
@@ -173,7 +168,6 @@ module PseudoHiki
 
     #for InlineParser
     ImgFormat = self.new(IMG)
-    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
     #for BlockParser
     Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
     Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
@@ -225,6 +219,12 @@ module PseudoHiki
     class << Formatter[InlineLeaf]
       def visit(leaf)
         @generator.escape(leaf.first)
+      end
+    end
+
+    class << Formatter[PlainNode]
+      def create_self_element(tree=nil)
+        @generator::Children.new
       end
     end
   end
