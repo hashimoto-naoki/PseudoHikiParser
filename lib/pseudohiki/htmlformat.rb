@@ -86,22 +86,6 @@ module PseudoHiki
       end
     end
 
-    class DescLeafFormatter < self
-      def visit(tree)
-        tree = tree.dup
-        element = @generator::Children.new
-        dt_part, dd_part = split_into_parts(tree, DescSep)
-        dt = super(dt_part)
-        element.push dt
-        unless dd_part.nil? or dd_part.empty?
-          dd = @generator.create(DD)
-          push_visited_results(dd, dd_part)
-          element.push dd
-        end
-        element
-      end
-    end
-
     class TableCellNodeFormatter < self
       def visit(tree)
         @element_name = tree.cell_type
@@ -139,13 +123,13 @@ module PseudoHiki
       [VerbatimNode, VERB],
       [CommentOutNode, nil],
       [HeadingNode, SECTION],
+      [DescLeaf, DT],
       [TableLeaf, TR], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
     ImgFormat = self.new(IMG)
     #for BlockParser
-    Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
     Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
@@ -225,6 +209,22 @@ module PseudoHiki
           element['class'] ||= heading_level
           element['class'] +=  " " + heading_level unless element['class'] == heading_level
         end
+      end
+    end
+
+    class << Formatter[DescLeaf]
+      def visit(tree)
+        tree = tree.dup
+        element = @generator::Children.new
+        dt_part, dd_part = split_into_parts(tree, DescSep)
+        dt = super(dt_part)
+        element.push dt
+        unless dd_part.nil? or dd_part.empty?
+          dd = @generator.create(DD)
+          push_visited_results(dd, dd_part)
+          element.push dd
+        end
+        element
       end
     end
  end
