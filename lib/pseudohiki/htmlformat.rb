@@ -86,10 +86,6 @@ module PseudoHiki
       end
     end
 
-    class CommentOutNodeFormatter < self
-      def visit(tree); ""; end
-    end
-
     class HeadingNodeFormatter < self
       def create_self_element(tree)
         super(tree).tap do |element|
@@ -151,13 +147,13 @@ module PseudoHiki
       [ListNode, UL],
       [EnumNode, OL],
       [VerbatimNode, VERB],
+      [CommentOutNode, nil],
       [TableLeaf, TR], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
     ImgFormat = self.new(IMG)
     #for BlockParser
-    Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
     Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
     Formatter[DescLeaf] = DescLeafFormatter.new(DT)
     Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
@@ -227,7 +223,11 @@ module PseudoHiki
         end
       end
     end
-  end
+
+    class << Formatter[CommentOutNode]
+      def visit(tree); ""; end
+    end
+ end
 
   class XhtmlFormat < HtmlFormat
     Formatter = HtmlFormat::Formatter.dup
