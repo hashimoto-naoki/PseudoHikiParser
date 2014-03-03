@@ -78,12 +78,6 @@ module PseudoHiki
 
     #for InlineParser
 
-    class InlineLeafFormatter < self
-      def visit(leaf)
-        @generator.escape(leaf.first)
-      end
-    end
-
     class PlainNodeFormatter < self
       def create_self_element(tree=nil)
         @generator::Children.new
@@ -165,6 +159,7 @@ module PseudoHiki
       [DelNode, DEL],
       [LiteralNode, LITERAL],
       [LinkNode, LINK],
+      [InlineLeaf, nil],
       [PluginNode, PLUGIN], #Until here is for InlineParser
       [DescNode, DESC],
       [QuoteNode, QUOTE],
@@ -178,7 +173,6 @@ module PseudoHiki
 
     #for InlineParser
     ImgFormat = self.new(IMG)
-    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
     Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
     #for BlockParser
     Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
@@ -225,6 +219,12 @@ module PseudoHiki
         first_part, second_part = split_into_parts(tree, [LinkSep])
         return nil unless second_part
         first_part.map {|token| visited_result(token) }
+      end
+    end
+
+    class << Formatter[InlineLeaf]
+      def visit(leaf)
+        @generator.escape(leaf.first)
       end
     end
   end
