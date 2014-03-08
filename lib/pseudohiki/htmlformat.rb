@@ -12,7 +12,7 @@ module PseudoHiki
 
     #for InlineParser
     LINK, IMG, EM, STRONG, DEL, LITERAL = %w(a img em strong del code)
-    HREF, SRC, ALT = %w(href src alt)
+    HREF, SRC, ALT, ID, CLASS, ROWSPAN, COLSPAN = %w(href src alt id class rowspan colspan)
     PLAIN, PLUGIN = %w(plain span)
     #for BlockParser
     DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
@@ -79,7 +79,7 @@ module PseudoHiki
     class ListLeafNodeFormatter < self
       def create_self_element(tree)
         super(tree).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
+          element[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
@@ -172,7 +172,7 @@ module PseudoHiki
       def visit(tree)
         create_self_element.tap do |element|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            @generator.create("a", url, "href" => url).to_s
+            @generator.create(LINK, url, HREF => url).to_s
           end
           element.push contents
         end
@@ -187,8 +187,8 @@ module PseudoHiki
       def create_self_element(tree)
         super(tree).tap do |element|
           heading_level = "h#{tree.first.nominal_level}"
-          element['class'] ||= heading_level
-          element['class'] +=  " " + heading_level unless element['class'] == heading_level
+          element[CLASS] ||= heading_level
+          element[CLASS] +=  " " + heading_level unless element[CLASS] == heading_level
         end
       end
     end
@@ -213,8 +213,8 @@ module PseudoHiki
       def visit(tree)
         @element_name = tree.cell_type
         super(tree).tap do |element|
-          element["rowspan"] = tree.rowspan if tree.rowspan > 1
-          element["colspan"] = tree.colspan if tree.colspan > 1
+          element[ROWSPAN] = tree.rowspan if tree.rowspan > 1
+          element[COLSPAN] = tree.colspan if tree.colspan > 1
           # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
         end
       end
@@ -223,7 +223,7 @@ module PseudoHiki
     class << Formatter[HeadingLeaf]
       def create_self_element(tree)
         @generator.create(@element_name+tree.nominal_level.to_s).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
+          element[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
