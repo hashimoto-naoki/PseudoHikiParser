@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'pseudohiki/markdownformat'
 
-class TC_MarkDownFormat < Test::Unit::TestCase
+class TC_MarkDownFormat < MiniTest::Unit::TestCase
   include PseudoHiki
 
   def setup

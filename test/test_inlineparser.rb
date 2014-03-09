@@ -1,11 +1,11 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'lib/pseudohiki/inlineparser'
 require 'lib/pseudohiki/htmlformat'
 
 
-class TC_InlineParser < Test::Unit::TestCase
+class TC_InlineParser < MiniTest::Unit::TestCase
   include PseudoHiki
 
   def test_inlineparser_compile_token_pat
@@ -47,7 +47,7 @@ class TC_InlineParser < Test::Unit::TestCase
   end
 end
 
-class TC_HtmlFormat < Test::Unit::TestCase
+class TC_HtmlFormat < MiniTest::Unit::TestCase
   include PseudoHiki
 
   def test_visit_linknode

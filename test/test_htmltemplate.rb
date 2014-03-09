@@ -1,9 +1,9 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'htmlelement/htmltemplate'
 
-class TC_HtmlTemplate < Test::Unit::TestCase
+class TC_HtmlTemplate < MiniTest::Unit::TestCase
 
   def test_new
     html_result = <<HTML
@@ -94,7 +94,7 @@ HTML
   end
 end
 
-class TC_XhtmlTemplate < Test::Unit::TestCase
+class TC_XhtmlTemplate < MiniTest::Unit::TestCase
 
   def test_new
     html_result = <<HTML

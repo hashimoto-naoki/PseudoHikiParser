@@ -1,9 +1,9 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'lib/pseudohiki/htmlplugin'
 
-class TC_HtmlPlugin < Test::Unit::TestCase
+class TC_HtmlPlugin < MiniTest::Unit::TestCase
   include PseudoHiki
 
   def test_visit_pluginnode

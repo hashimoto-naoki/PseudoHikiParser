@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'pseudohiki/plaintextformat'
 
-class TC_PlainTextFormat < Test::Unit::TestCase
+class TC_PlainTextFormat < MiniTest::Unit::TestCase
   include PseudoHiki
 
   def setup
@@ -238,7 +238,7 @@ cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 TEXT
 
-    assert_raise(PlainTextFormat::TableNodeFormatter::MalFormedTableError) do
+    assert_raises(PlainTextFormat::TableNodeFormatter::MalFormedTableError) do
       tree = BlockParser.parse(mal_formed_text.lines.to_a)
       @strict_formatter.format(tree).to_s
     end

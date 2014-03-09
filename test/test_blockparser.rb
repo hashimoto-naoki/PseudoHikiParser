@@ -1,9 +1,9 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'lib/pseudohiki/blockparser'
 
-class TC_BlockLeaf < Test::Unit::TestCase
+class TC_BlockLeaf < MiniTest::Unit::TestCase
   include PseudoHiki::BlockParser::BlockElement
 
   def test_block_when_descnode

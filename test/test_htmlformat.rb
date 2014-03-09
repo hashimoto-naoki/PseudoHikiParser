@@ -1,11 +1,10 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'lib/pseudohiki/blockparser'
 require 'lib/pseudohiki/htmlformat'
 
-
-class TC_HtmlFormat < Test::Unit::TestCase
+class TC_HtmlFormat < MiniTest::Unit::TestCase
   include PseudoHiki
 
   class ::String
