@@ -11,13 +11,12 @@ module PseudoHiki
     include TableRowParser::InlineElement
 
     #for InlineParser
-    LINK, IMG, EM, STRONG, DEL, LITERAL = %w(a img em strong del code)
+    LINK, LITERAL = %w(a code)
+    BLANK, SPACE = "", " "
     HREF, SRC, ALT, ID, CLASS, ROWSPAN, COLSPAN = %w(href src alt id class rowspan colspan)
     PLAIN, PLUGIN = %w(plain span)
     #for BlockParser
-    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
-    SECTION = "section"
-    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
+    DT, DD, HEADING, LI = %w(dt dd h li)
     DescSep = [InlineParser::DescSep]
 
     Formatter = {}
@@ -84,32 +83,32 @@ module PseudoHiki
       end
     end
 
-    [ [EmNode, EM],
-      [StrongNode, STRONG],
-      [DelNode, DEL],
+    [ [EmNode, "em"],
+      [StrongNode, "strong"],
+      [DelNode, "del"],
       [LiteralNode, LITERAL],
       [PluginNode, PLUGIN],
       [LinkNode, LINK],
       [InlineLeaf, nil],
       [PlainNode, PLAIN], #Until here is for InlineParser
-      [DescNode, DESC],
-      [QuoteNode, QUOTE],
-      [TableNode, TABLE],
-      [ParagraphNode, PARA],
-      [HrNode, HR],
-      [ListNode, UL],
-      [EnumNode, OL],
-      [TableLeaf, TR],
-      [VerbatimNode, VERB],
+      [DescNode, "dl"],
+      [QuoteNode, "blockquote"],
+      [TableNode, "table"],
+      [ParagraphNode, "p"],
+      [HrNode, "hr"],
+      [ListNode, "ul"],
+      [EnumNode, "ol"],
+      [TableLeaf, "tr"],
+      [VerbatimNode, "pre"],
       [CommentOutNode, nil],
-      [HeadingNode, SECTION],
+      [HeadingNode, "section"],
       [DescLeaf, DT],
       [TableCellNode, nil],
       [HeadingLeaf, HEADING], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
-    ImgFormat = self.new(IMG)
+    ImgFormat = self.new("img")
     #for BlockParser
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
@@ -180,7 +179,7 @@ module PseudoHiki
     end
 
     class << Formatter[CommentOutNode]
-      def visit(tree); ""; end
+      def visit(tree); BLANK; end
     end
 
     class << Formatter[HeadingNode]
@@ -188,7 +187,7 @@ module PseudoHiki
         super(tree).tap do |element|
           heading_level = "h#{tree.first.nominal_level}"
           element[CLASS] ||= heading_level
-          element[CLASS] +=  " " + heading_level unless element[CLASS] == heading_level
+          element[CLASS] +=  SPACE + heading_level unless element[CLASS] == heading_level
         end
       end
     end
