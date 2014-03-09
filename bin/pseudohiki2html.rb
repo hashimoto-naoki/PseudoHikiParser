@@ -255,7 +255,7 @@ module PseudoHiki
       STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version].version}\" is chosen instead."
     end
 
-    def set_encoding(given_opt)
+    def set_html_encoding(given_opt)
       if ENCODING_REGEXP.values.include? given_opt
         self[:encoding] = given_opt
       else
@@ -279,9 +279,9 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
           self[:lang] = lang if value_given?(lang)
         end
 
-        opt.on("-e [encoding]", "--encoding [=encoding]",
+        opt.on("-e [encoding]", "--html-encoding [=encoding]",
                "Available options: utf8, euc-jp, sjis, latin1 (default: #{self[:encoding]})") do |given_opt|
-          self.set_encoding(given_opt)
+          self.set_html_encoding(given_opt)
         end
 
         #use '-w' to avoid the conflict with the short option for '[-t]emplate'
