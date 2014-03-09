@@ -11,12 +11,11 @@ module PseudoHiki
     include TableRowParser::InlineElement
 
     #for InlineParser
-    LINK, LITERAL = %w(a code)
+    LINK, LITERAL, PLUGIN = %w(a code span)
     BLANK, SPACE = "", " "
     HREF, SRC, ALT, ID, CLASS, ROWSPAN, COLSPAN = %w(href src alt id class rowspan colspan)
-    PLAIN, PLUGIN = %w(plain span)
     #for BlockParser
-    DT, DD, HEADING, LI = %w(dt dd h li)
+    DT, DD, LI = %w(dt dd li)
     DescSep = [InlineParser::DescSep]
 
     Formatter = {}
@@ -90,7 +89,7 @@ module PseudoHiki
       [PluginNode, PLUGIN],
       [LinkNode, LINK],
       [InlineLeaf, nil],
-      [PlainNode, PLAIN], #Until here is for InlineParser
+      [PlainNode, nil], #Until here is for InlineParser
       [DescNode, "dl"],
       [QuoteNode, "blockquote"],
       [TableNode, "table"],
@@ -104,7 +103,7 @@ module PseudoHiki
       [HeadingNode, "section"],
       [DescLeaf, DT],
       [TableCellNode, nil],
-      [HeadingLeaf, HEADING], #Until here is for BlockParser
+      [HeadingLeaf, "h"], #Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = self.new(element) }
 
     #for InlineParser
