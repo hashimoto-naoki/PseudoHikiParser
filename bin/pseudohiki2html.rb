@@ -266,6 +266,13 @@ module PseudoHiki
       end
     end
 
+    def set_encoding(given_opt)
+      return nil unless String.new.respond_to? :encoding
+      external, internal = given_opt.split(/:/o)
+      Encoding.default_external = external if external
+      Encoding.default_interanl = internal if internal
+    end
+
     def parse_command_line_options
       OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
@@ -282,6 +289,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         opt.on("-e [encoding]", "--html-encoding [=encoding]",
                "Available options: utf8, euc-jp, sjis, latin1 (default: #{self[:encoding]})") do |given_opt|
           self.set_html_encoding(given_opt)
+        end
+
+        opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
+               "Specify the default external and internal character encodings (same as the option of MRI") do |given_opt|
+          self.set_encoding(given_opt)
         end
 
         #use '-w' to avoid the conflict with the short option for '[-t]emplate'
