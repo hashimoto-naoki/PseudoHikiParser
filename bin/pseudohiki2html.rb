@@ -252,7 +252,7 @@ module PseudoHiki
           self[:html_version] = v if v.opt_pat =~ version
         end
       end
-      STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version].version}\" is chosen instead."
+      STDERR.puts "\"#{version}\" is an invalid option for --format-version. \"#{self[:html_version].version}\" is chosen instead."
     end
 
     def set_html_encoding(given_opt)
@@ -276,7 +276,7 @@ module PseudoHiki
     def parse_command_line_options
       OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
-        opt.on("-h [html_version]", "--html_version [=html_version]",
+        opt.on("-f [html_version]", "--format-version [=format_version]",
                "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version].version})") do |version|
           self.set_html_version(version)
         end
@@ -286,7 +286,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
           self[:lang] = lang if value_given?(lang)
         end
 
-        opt.on("-e [encoding]", "--html-encoding [=encoding]",
+        opt.on("-e [encoding]", "--format-encoding [=encoding]",
                "Available options: utf8, euc-jp, sjis, latin1 (default: #{self[:encoding]})") do |given_opt|
           self.set_html_encoding(given_opt)
         end
@@ -328,7 +328,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
           self.need_output_file = true
         end
 
-        opt.on("-f", "--force",
+        opt.on("-F", "--force",
                "Force to apply command line options.(default: false)") do |force|
           self[:force] = force
         end
