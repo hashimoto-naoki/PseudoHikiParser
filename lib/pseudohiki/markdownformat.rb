@@ -294,7 +294,7 @@ module PseudoHiki
             format%[cell]
           end
           "|#{formatted_row.join("|") }|#{$/}"
-        end.join
+        end.join+$/
       end
 
       def format_html_table(tree)
