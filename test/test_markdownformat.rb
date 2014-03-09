@@ -36,6 +36,7 @@ TEXT
 |cell 1-1              |cell 1-2|
 |cell 2-1              |cell 2-2|
 |cell 3-1 (a bit wider)|cell 3-2|
+
 TEXT
 
     tree = BlockParser.parse(text)
@@ -208,6 +209,7 @@ TEXT
 |cell 1-1              |cell 1-2|
 |cell 2-1              |cell 2-2|
 |cell 3-1 (a bit wider)|cell 3-2|
+
 TEXT
 
     html =<<HTML
@@ -231,6 +233,7 @@ HTML
 ||cell 1-1||cell 1-2
 ||cell 2-1||cell 2-2
 ||cell 3-1 (a bit wider)||cell 3-2
+
 TEXT
 
     md_text = <<TEXT
@@ -239,6 +242,7 @@ TEXT
 |cell 1-1              |cell 1-2|
 |cell 2-1              |cell 2-2|
 |cell 3-1 (a bit wider)|cell 3-2|
+
 TEXT
 
     html =<<HTML
@@ -275,6 +279,7 @@ TEXT
 |cell 1-1              |cell 1-2  |
 |cell 2-1              |cell 2-2  |
 |cell 3-1 (a bit wider)|cell 3-2  |
+
 TEXT
 
     html = <<HTML
@@ -310,6 +315,7 @@ TEXT
 |cell 1-1              |cell 1-2  |cell 1-3  |cell 1-4  |
 |cell 2-1              |cell 2-2  |          |cell 2-4  |
 |cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
+
 TEXT
 
     html = <<HTML
@@ -344,6 +350,7 @@ TEXT
 |cell 1-1              |cell 1-2  |cell 1-3  |cell 1-4  |
 |cell 2-1              |cell 2-2  |          |cell 2-4  |
 |cell 3-1 (a bit wider)|cell 3-2  |cell 3-3  |cell 3-4  |
+
 TEXT
 
     html = <<HTML
