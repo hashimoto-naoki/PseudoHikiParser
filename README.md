@@ -86,6 +86,18 @@ the result will be saved in first_example.html.
 
 For more options, please try `pseudohiki2html.rb --help`
 
+#### Incompatible changes
+
+From version 0.0.0.9, command line options are renamed as follows:
+
+|old name       |new name         |note                                                       |
+|---------------|-----------------|-----------------------------------------------------------|
+|-f             |-F               |'-f' is now used as the short version of '--format-version'|
+|-h             |-f               |'-h' is now used as the short version of '--help'          |
+|--html\_version|--format-version |other formats than html should be supported                |
+|--encoding     |--format-encoding|'--encoding' is now used as the long version of '-E' option|
+|-              |--encoding       |now same as '-E' option of MRI                             |
+
 ### module PseudoHiki
 
 If you save the lines below as a ruby script and execute it:
