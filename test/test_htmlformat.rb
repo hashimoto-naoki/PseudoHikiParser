@@ -670,6 +670,9 @@ HTML
 
   def test_decorator
     text = <<TEXT
+//@class[section_type]
+!!title of section
+
 a paragraph.
 //@class[class_name]
 //@id[id_name]
@@ -677,14 +680,16 @@ another paragraph.
 TEXT
 
     xhtml = <<HTML
+<div class="section_type">
+<h2>title of section</h2>
 <p>
 a paragraph.</p>
-<p>
+<p class="class_name" id="ID_NAME">
 another paragraph.</p>
+<!-- end of section_type -->
+</div>
 HTML
     tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
-#    puts tree.to_s
-    tree.map {|node| p node.decorator }
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 end
