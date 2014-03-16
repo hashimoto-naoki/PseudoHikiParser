@@ -39,7 +39,7 @@ module PseudoHiki
 
     class BlockStack < TreeStack
       def pop_with_breaker(breaker=nil)
-        self.current_node.parse_leafs
+        self.current_node.parse_leafs(breaker)
         pop
       end
     end
@@ -91,7 +91,7 @@ module PseudoHiki
         super(stack)
       end
 
-      def parse_leafs
+      def parse_leafs(breaker)
         parsed = InlineParser.parse(self.join)
         self.clear
         self.concat(parsed)
@@ -160,7 +160,7 @@ module PseudoHiki
         not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
       end
 
-      def parse_leafs; end
+      def parse_leafs(breaker); end
 
       def in_link_tag?(preceding_str)
         preceding_str[-2, 2] == "[[" or preceding_str[-1, 1] == "|"
@@ -182,8 +182,8 @@ module PseudoHiki
     end
 
     class NonNestedBlockNode < BlockNode
-      def parse_leafs
-        self.each {|leaf| leaf.parse_leafs }
+      def parse_leafs(breaker)
+        self.each {|leaf| leaf.parse_leafs(breaker) }
       end
     end
 
@@ -237,7 +237,7 @@ module PseudoHiki
     end
 
     class BlockElement::QuoteNode
-      def parse_leafs
+      def parse_leafs(breaker)
         self[0] = BlockParser.parse(self[0])
       end
     end
