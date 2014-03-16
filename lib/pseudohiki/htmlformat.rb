@@ -178,6 +178,17 @@ module PseudoHiki
 
     #for BlockParser
 
+    class << Formatter[TableNode]
+      def decorate(htmlelement, tree)
+        super
+        tree.decorator.tap do |decorator|
+          if decorator and decorator["summary"]
+            htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join)
+          end
+        end
+      end
+    end
+
     class << Formatter[VerbatimNode]
       def visit(tree)
         create_self_element.tap do |element|
