@@ -316,24 +316,25 @@ TEXT
 //@class[section_name]
 !!title of section
 
-//@summary
+//@summary: Summary of the table
 ||!header 1||! header 2
 ||cell 1||cell 2
 
 a paragraph.
 //@class[class_name]
-//@id[id_name]
+//@[id_name]
 another paragraph.
 TEXT
 
     tree = PseudoHiki::BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
     assert_equal(PseudoHiki::BlockParser::BlockNode, tree.class)
-    assert_equal('[[["class[section_name]"]]]', tree[0].decorator.to_s)
+    assert_equal("section_name", tree[0].decorator["class"].id)
     assert_equal(PseudoHiki::BlockParser::BlockElement::HeadingNode, tree[0].class)
     assert_equal('[[["title of section"]]]', tree[0].to_s)
-    assert_equal('[[["summary"]]]', tree[1].decorator.to_s)
+    assert_equal('[["Summary of the table"]]', tree[1].decorator["summary"].value.to_s)
     assert_equal(PseudoHiki::BlockParser::BlockElement::TableNode, tree[1].class)
     assert_equal(nil, tree[2].decorator)
-    assert_equal('[[["class[class_name]"]], [["id[id_name]"]]]', tree[3].decorator.to_s)
+    assert_equal('id_name', tree[3].decorator[:id].id)
+    assert_equal('class_name', tree[3].decorator["class"].id)
   end
 end

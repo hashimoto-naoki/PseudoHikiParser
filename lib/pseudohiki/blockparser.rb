@@ -234,8 +234,24 @@ module PseudoHiki
     end
 
     class BlockElement::DecoratorNode
+      DECORATOR_PAT = /\A(?:([^\[\]:]+))?(?:\[([^\[\]]+)\])?(?::\s*(\S.*))?/o
+
+      class DecoratorItem < Struct.new(:string, :type, :id, :value)
+        def initialize(*args)
+          super
+          self.value = InlineParser.parse(self.value) if self.value
+        end
+      end
+
       def parse_leafs(breaker)
-        breaker.decorator = @stack.remove_current_node
+        decorator = {}
+        breaker.decorator = decorator
+        @stack.remove_current_node.each do |leaf|
+          m = DECORATOR_PAT.match(leaf.join)
+          return nil unless m
+          item = DecoratorItem.new(*(m.to_a))
+          decorator[item.type||:id] = item
+        end
       end
     end
 
