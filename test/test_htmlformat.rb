@@ -667,4 +667,24 @@ HTML
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
+
+  def test_decorator
+    text = <<TEXT
+a paragraph.
+//@class[class_name]
+//@id[id_name]
+another paragraph.
+TEXT
+
+    xhtml = <<HTML
+<p>
+a paragraph.</p>
+<p>
+another paragraph.</p>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+#    puts tree.to_s
+    tree.map {|node| p node.decorator }
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
 end

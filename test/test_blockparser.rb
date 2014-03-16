@@ -310,4 +310,30 @@ TEXT
     parsed = PseudoHiki::BlockParser.parse(text2.split(/\r?\n/o))
     assert_equal([[[["heading"]]]],parsed)
   end
+
+  def test_decorator
+    text = <<TEXT
+//@class[section_name]
+!!title of section
+
+//@summary
+||!header 1||! header 2
+||cell 1||cell 2
+
+a paragraph.
+//@class[class_name]
+//@id[id_name]
+another paragraph.
+TEXT
+
+    tree = PseudoHiki::BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(PseudoHiki::BlockParser::BlockNode, tree.class)
+    assert_equal('[[["class[section_name]"]]]', tree[0].decorator.to_s)
+    assert_equal(PseudoHiki::BlockParser::BlockElement::HeadingNode, tree[0].class)
+    assert_equal('[[["title of section"]]]', tree[0].to_s)
+    assert_equal('[[["summary"]]]', tree[1].decorator.to_s)
+    assert_equal(PseudoHiki::BlockParser::BlockElement::TableNode, tree[1].class)
+    assert_equal(nil, tree[2].decorator)
+    assert_equal('[[["class[class_name]"]], [["id[id_name]"]]]', tree[3].decorator.to_s)
+  end
 end

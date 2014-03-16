@@ -234,6 +234,9 @@ module PseudoHiki
     end
 
     class BlockElement::DecoratorNode
+      def parse_leafs(breaker)
+        breaker.decorator = @stack.remove_current_node
+      end
     end
 
     class BlockElement::QuoteNode
