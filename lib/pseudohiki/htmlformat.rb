@@ -76,14 +76,18 @@ module PseudoHiki
     end
 
     def decorate(htmlelement, tree)
-      return unless htmlelement.kind_of? HtmlElement
-      return unless tree.kind_of? BlockParser::BlockNode and tree.decorator
-      tree.decorator.tap do |decorator|
-        htmlelement[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
+      each_decorator(htmlelement, tree) do |element, decorator|
+        element[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
         if id_item = decorator[ID]||decorator[:id]
-          htmlelement[ID] = HtmlElement.escape(id_item.id).upcase
+          element[ID] = HtmlElement.escape(id_item.id).upcase
         end
       end
+    end
+
+    def each_decorator(element, tree)
+      return unless element.kind_of? HtmlElement
+      return unless tree.kind_of? BlockParser::BlockNode and tree.decorator
+      tree.decorator.tap {|decorator| yield element, decorator }
     end
 
     class ListLeafNodeFormatter < self
@@ -180,11 +184,8 @@ module PseudoHiki
 
     class << Formatter[TableNode]
       def decorate(htmlelement, tree)
-        super
-        tree.decorator.tap do |decorator|
-          if decorator and decorator["summary"]
-            htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join)
-          end
+        each_decorator(htmlelement, tree) do |element, decorator|
+          htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join) if decorator["summary"]
         end
       end
     end
