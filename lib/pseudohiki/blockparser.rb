@@ -38,9 +38,9 @@ module PseudoHiki
     end
 
     class BlockStack < TreeStack
-      def pop
+      def pop_with_breaker(breaker=nil)
         self.current_node.parse_leafs
-        super
+        pop
       end
     end
 
@@ -176,7 +176,7 @@ module PseudoHiki
         end
         line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
         leaf = blockparser.select_leaf_type(line).create(line)
-        blockparser.stack.pop while blockparser.breakable?(leaf)
+        blockparser.stack.pop_with_breaker(leaf) while blockparser.breakable?(leaf)
         blockparser.stack.push leaf
       end
     end
@@ -226,7 +226,7 @@ module PseudoHiki
       attr_writer :in_block_tag
 
       def add_leaf(line, blockparser)
-        return @stack.pop if LINE_PAT::VERBATIM_END =~ line
+        return @stack.pop_with_breaker if LINE_PAT::VERBATIM_END =~ line
         return super(line, blockparser) unless @in_block_tag
         line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line and not @in_block_tag
         @stack.push BlockElement::VerbatimLeaf.create(line, @in_block_tag)
@@ -341,7 +341,7 @@ module PseudoHiki
     def read_lines(lines)
       each_line = lines.respond_to?(:each_line) ? :each_line : :each
       lines.send(each_line) {|line| @stack.current_node.add_leaf(line, self) }
-      @stack.pop
+      @stack.pop_with_breaker
     end
   end
 end
