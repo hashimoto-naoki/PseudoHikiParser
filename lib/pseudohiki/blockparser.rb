@@ -46,7 +46,7 @@ module PseudoHiki
 
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
-      attr_accessor :nominal_level, :node_id
+      attr_accessor :nominal_level, :node_id, :decorator
 
       def self.head_re=(head_regex)
         @@head_re[self] = head_regex
@@ -146,6 +146,11 @@ module PseudoHiki
         first.nominal_level
       end
 
+      def decorator
+        return nil unless first
+        first.decorator
+      end
+
       def push_self(stack)
         @stack = stack
         super(stack)
@@ -198,11 +203,11 @@ module PseudoHiki
 
     module BlockElement
       {
-        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf),
+        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf DecoratorLeaf),
         NonNestedBlockLeaf => %w(QuoteLeaf ParagraphLeaf),
         NestedBlockLeaf => %w(HeadingLeaf),
         ListTypeLeaf => %w(ListLeaf EnumLeaf),
-        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode),
+        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode DecoratorNode),
         NonNestedBlockNode => %w(QuoteNode ParagraphNode),
         NestedBlockNode => %w(HeadingNode),
         ListTypeBlockNode => %w(ListNode EnumNode),
@@ -226,6 +231,9 @@ module PseudoHiki
         line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line and not @in_block_tag
         @stack.push BlockElement::VerbatimLeaf.create(line, @in_block_tag)
       end
+    end
+
+    class BlockElement::DecoratorNode
     end
 
     class BlockElement::QuoteNode
@@ -278,7 +286,8 @@ module PseudoHiki
      [ParagraphLeaf, ParagraphNode],
      [HrLeaf, HrNode],
      [ListLeaf, ListNode],
-     [EnumLeaf, EnumNode]
+     [EnumLeaf, EnumNode],
+     [DecoratorLeaf, DecoratorNode]
     ].each do |leaf, node|
       ParentNode[leaf] = node
     end
@@ -305,6 +314,7 @@ module PseudoHiki
       end
       HrLeaf.head_re = Regexp.new(/\A(----)\s*$/o)
       BlockNodeEnd.head_re = Regexp.new(/^(\r?\n?)$/o)
+      DecoratorLeaf.head_re = Regexp.new(/^(\/\/@)/o)
       Regexp.new('\\A('+head_pats.join('|')+')')
     end
     HEAD_RE = assign_head_re
@@ -322,7 +332,7 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      [BlockNodeEnd, HrLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
+      [BlockNodeEnd, HrLeaf, DecoratorLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
       return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || HeadToLeaf['\s'] if matched
       ParagraphLeaf
