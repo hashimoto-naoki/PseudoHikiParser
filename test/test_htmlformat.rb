@@ -709,4 +709,24 @@ HTML
     tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
+
+  def test_decorator_for_verbatim
+    text = <<TEXT
+//@code[ruby]
+ def bonjour!
+   puts "Bonjour!"
+ end
+TEXT
+
+    xhtml = <<HTML
+<pre>
+def bonjour!
+  puts &quot;Bonjour!&quot;
+end
+</pre>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
 end
