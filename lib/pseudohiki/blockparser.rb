@@ -187,7 +187,7 @@ module PseudoHiki
       def with_decorator(blockparser, node)
         if blockparser.stack.current_node.kind_of?(BlockElement::DecoratorNode)
           empty_verbatim_leaf = BlockElement::VerbatimLeaf.create("", true)
-          blockparser.stack.pop_with_breaker(empty_verbatim_leaf)
+          blockparser.stack.current_node.pop_with_breaker(empty_verbatim_leaf)
           node.push empty_verbatim_leaf
         end
       end
@@ -264,6 +264,10 @@ module PseudoHiki
           item = DecoratorItem.new(*(m.to_a))
           decorator[item.type||:id] = item
         end
+      end
+
+      def pop_with_breaker(breaker=nil)
+        parse_leafs(breaker)
       end
     end
 
