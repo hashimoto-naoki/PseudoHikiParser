@@ -127,7 +127,7 @@ puts html
 
 you will get the following output:
 
-```
+```html
 <div class="section h2">
 <h2> The first heading
 </h2>
@@ -238,7 +238,7 @@ It's just in experimental stage.
 
 The following are a sample script and its output:
 
-```
+```ruby
 #!/usr/bin/env ruby
 
 require 'pseudohiki/markdownformat'
