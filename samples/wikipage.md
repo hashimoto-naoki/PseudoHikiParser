@@ -57,7 +57,7 @@ TEXT
 
 will return the following result to stdout:
 
-```
+```html
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -110,7 +110,7 @@ From version 0.0.0.9, command line options are renamed as follows:
 
 If you save the lines below as a ruby script and execute it:
 
-```
+```ruby
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -176,7 +176,7 @@ If you add [name\_of\_id], just after the marks that denote heading or list type
 
 will be rendered as
 
-```
+```html
 <div class="section h2">
 <h2 id="HEADING_ID">heading
 </h2>
@@ -296,11 +296,11 @@ And {{ {}} and {{} }} should be rendered as two left curly braces and two right 
 ```
 
 will be rendered as
+
 ```
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
 ```
-
 
 ### Not Implemented Yet
 
