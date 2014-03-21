@@ -269,6 +269,12 @@ module PseudoHiki
       def pop_with_breaker(breaker=nil)
         parse_leafs(breaker)
       end
+
+      def breakable?(breaker)
+        return super if breaker.kind_of?(BlockElement::DecoratorLeaf)
+        parse_leafs(breaker)
+        @stack.current_node.breakable?(breaker)
+      end
     end
 
     class BlockElement::QuoteNode

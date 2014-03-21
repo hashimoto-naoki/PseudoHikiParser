@@ -674,6 +674,7 @@ HTML
 !!title of section
 
 a paragraph.
+
 //@class[class_name]
 //@id[id_name]
 another paragraph.
