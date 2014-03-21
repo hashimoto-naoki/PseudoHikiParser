@@ -288,6 +288,8 @@ The first paragraph
 
 ### Experimental
 
+#### Escaping tags for inline decorations
+
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 
 ```
@@ -300,6 +302,32 @@ will be rendered as
 ```
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+```
+
+#### Decorator for blocks
+
+By lines that begin with '//@', you can assign certain attributes to its succeeding block.
+
+For example,
+
+```
+//@class[class_name]
+!!A section with a class name
+
+paragraph
+```
+
+will be renderes as
+
+```
+<div class="class_name">
+<h2>A section with a class name
+</h2>
+<p>
+paragraph
+</p>
+<!-- end of class_name -->
+</div>
 ```
 
 ### Not Implemented Yet
