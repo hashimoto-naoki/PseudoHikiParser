@@ -172,10 +172,7 @@ module PseudoHiki
 
       def add_leaf(line, blockparser)
         if LINE_PAT::VERBATIM_BEGIN =~ line
-          BlockElement::VerbatimNode.new.tap do |node|
-            node.in_block_tag = true
-            return blockparser.stack.push node
-          end
+          return blockparser.stack.push BlockElement::VerbatimNode.new.tap {|node| node.in_block_tag = true }
         end
         line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
         leaf = blockparser.select_leaf_type(line).create(line)
