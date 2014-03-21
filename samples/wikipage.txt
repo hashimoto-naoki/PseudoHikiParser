@@ -169,11 +169,9 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 
 If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 
-
  !![heading_id]heading
  
  *[list_id]list
-
 
 will be rendered as
 
