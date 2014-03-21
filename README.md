@@ -25,7 +25,6 @@ BSD 2-Clause License
 gem install pseudohikiparser --pre
 ```
 
-
 ## Usage
 
 ### Samples
@@ -33,7 +32,6 @@ gem install pseudohikiparser --pre
 [A sample text](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt) in Hiki notation and [a result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html), [another result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html) and [yet another result](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html).
 
 You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
-
 
 ### pseudohiki2html.rb
 
@@ -49,6 +47,7 @@ pseudohiki2html.rb <<TEXT
 The first paragraph
 TEXT
 ```
+
 will return the following result to stdout:
 
 ```html
@@ -74,6 +73,7 @@ The first paragraph
 </body>
 </html>
 ```
+
 And if you specify a file name with `--output` option:
 
 ```
@@ -82,6 +82,7 @@ pseudohiki2html.rb --output first_example.html <<TEXT
 The first paragraph
 TEXT
 ```
+
 the result will be saved in first_example.html.
 
 For more options, please try `pseudohiki2html.rb --help`
@@ -116,6 +117,7 @@ tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
 html = PseudoHiki::HtmlFormat.format(tree)
 puts html
 ```
+
 you will get the following output:
 
 ```html
@@ -152,8 +154,11 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 * Plugins - Not supported (and will not be compatible with the original one)
 
 ## Additional Features
+
 ### Already Implemented
+
 #### Assigning ids
+
 If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 
 ```
@@ -161,6 +166,7 @@ If you add [name_of_id], just after the marks that denote heading or list type i
 
 *[list_id]list
 ```
+
 will be rendered as
 
 ```html
@@ -176,7 +182,9 @@ will be rendered as
 ```
 
 ### Partly Implemented
+
 #### A visitor that removes markups and returns plain texts
+
 The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop). Below are examples
 
 ```
@@ -184,6 +192,7 @@ The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/
 ::03-yyyy-yyyy
 :fax:03-xxxx-xxxx
 ```
+
 will be rendered as
 
 ```
@@ -200,6 +209,7 @@ And
 ||cell 3-1||cell 3-4||cell 3-5
 ||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
 ```
+
 will be rendered as
 
 ```
@@ -208,8 +218,10 @@ cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
 cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 ```
+
 #### A visitor for HTML5
-The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L222) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
+
+The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L239) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
 #### A visitor for (Git Flavored) Markdown
 
@@ -279,6 +291,7 @@ And {{ {}} and {{} }} should be rendered as two left curly braces and two right 
 ```
 
 will be rendered as
+
 ```
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
@@ -311,3 +324,4 @@ paragraph
 ```
 
 ### Not Implemented Yet
+

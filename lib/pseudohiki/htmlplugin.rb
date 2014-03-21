@@ -9,7 +9,7 @@ module PseudoHiki
   class HtmlFormat
     class << Formatter[PluginNode]
       def visit(leaf)
-        HtmlPlugin.new(@element_name,leaf.join).apply
+        escape_inline_tags(leaf) { HtmlPlugin.new(@element_name,leaf.join).apply }
       end
     end
   end
