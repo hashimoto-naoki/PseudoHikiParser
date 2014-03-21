@@ -25,7 +25,6 @@ BSD 2-Clause License
 gem install pseudohikiparser --pre
 ```
 
-
 ## Usage
 
 ### Samples
@@ -33,7 +32,6 @@ gem install pseudohikiparser --pre
 [A sample text](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt) in Hiki notation and [a result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html), [another result of conversion](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html) and [yet another result](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html).
 
 You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
-
 
 ### pseudohiki2html.rb
 
@@ -280,6 +278,8 @@ The first paragraph
 
 ### Experimental
 
+#### Escaping tags for inline decorations
+
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 
 ```
@@ -293,6 +293,31 @@ For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
 ```
 
+#### Decorator for blocks
+
+By lines that begin with '//@', you can assign certain attributes to its succeeding block.
+
+For example,
+
+```
+//@class[class_name]
+!!A section with a class name
+
+paragraph
+```
+
+will be renderes as
+
+```
+<div class="class_name">
+<h2>A section with a class name
+</h2>
+<p>
+paragraph
+</p>
+<!-- end of class_name -->
+</div>
+```
 
 ### Not Implemented Yet
 
