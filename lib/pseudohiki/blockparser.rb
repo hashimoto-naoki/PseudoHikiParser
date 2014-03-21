@@ -176,7 +176,7 @@ module PseudoHiki
         end
         line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
         leaf = blockparser.select_leaf_type(line).create(line)
-        blockparser.stack.pop_with_breaker(leaf) while blockparser.breakable?(leaf) and not leaf.kind_of? BlockElement::DecoratorLeaf
+        blockparser.stack.pop_with_breaker(leaf) while blockparser.breakable?(leaf)
         blockparser.stack.push leaf
       end
     end
