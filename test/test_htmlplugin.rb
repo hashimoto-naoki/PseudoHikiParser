@@ -17,4 +17,10 @@ class TC_HtmlPlugin < MiniTest::Unit::TestCase
     tree = InlineParser.new("a line with an inline tag such as {{''}}").parse.tree
     assert_equal("a line with an inline tag such as ''",tree.accept(formatter).to_s)
   end
+
+  def test_html_plugin
+    formatter = HtmlFormat.get_plain
+    tree = InlineParser.new("you can directly embed a snippet of html code like '{{html(<i>italic</i>)}}'.").parse.tree
+    assert_equal("you can directly embed a snippet of html code like '<i>italic</i>'.",tree.accept(formatter).to_s)
+  end
 end

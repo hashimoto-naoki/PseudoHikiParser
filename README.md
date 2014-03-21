@@ -49,6 +49,7 @@ pseudohiki2html.rb <<TEXT
 The first paragraph
 TEXT
 ```
+
 will return the following result to stdout:
 
 ```html
@@ -116,6 +117,7 @@ tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
 html = PseudoHiki::HtmlFormat.format(tree)
 puts html
 ```
+
 you will get the following output:
 
 ```html
@@ -152,8 +154,11 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 * Plugins - Not supported (and will not be compatible with the original one)
 
 ## Additional Features
+
 ### Already Implemented
+
 #### Assigning ids
+
 If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 
 ```
@@ -176,7 +181,9 @@ will be rendered as
 ```
 
 ### Partly Implemented
+
 #### A visitor that removes markups and returns plain texts
+
 The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop). Below are examples
 
 ```
@@ -184,6 +191,7 @@ The visitor, [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/
 ::03-yyyy-yyyy
 :fax:03-xxxx-xxxx
 ```
+
 will be rendered as
 
 ```
@@ -200,6 +208,7 @@ And
 ||cell 3-1||cell 3-4||cell 3-5
 ||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
 ```
+
 will be rendered as
 
 ```
@@ -208,7 +217,9 @@ cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
 cell 3-1	||	||	cell 3-4	cell 3-5
 cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
 ```
+
 #### A visitor for HTML5
+
 The visitor, [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L239) is currently available only in the [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
 #### A visitor for (Git Flavored) Markdown
@@ -282,4 +293,6 @@ For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
 ```
 
+
 ### Not Implemented Yet
+
