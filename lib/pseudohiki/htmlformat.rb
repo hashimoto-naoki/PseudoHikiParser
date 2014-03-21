@@ -116,10 +116,14 @@ module PseudoHiki
 
     class << Formatter[PluginNode]
       def visit(tree)
+        escape_inline_tags(tree) { super(tree) }
+      end
+
+      def escape_inline_tags(tree)
         str = tree.join
         return str if InlineParser::HEAD[str] or InlineParser::TAIL[str]
         return str.strip * 2 if str == ' {' or str == '} '
-        super(tree)
+        yield
       end
     end
 
