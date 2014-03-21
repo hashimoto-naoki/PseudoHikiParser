@@ -174,7 +174,6 @@ module PseudoHiki
         if LINE_PAT::VERBATIM_BEGIN =~ line
           BlockElement::VerbatimNode.new.tap do |node|
             node.in_block_tag = true
-            with_decorator(blockparser, node)
             return blockparser.stack.push node
           end
         end
@@ -182,14 +181,6 @@ module PseudoHiki
         leaf = blockparser.select_leaf_type(line).create(line)
         blockparser.stack.pop_with_breaker(leaf) while blockparser.breakable?(leaf) and not leaf.kind_of? BlockElement::DecoratorLeaf
         blockparser.stack.push leaf
-      end
-
-      def with_decorator(blockparser, node)
-        if blockparser.stack.current_node.kind_of?(BlockElement::DecoratorNode)
-          empty_verbatim_leaf = BlockElement::VerbatimLeaf.create("", true)
-          blockparser.stack.current_node.pop_with_breaker(empty_verbatim_leaf)
-          node.push empty_verbatim_leaf
-        end
       end
     end
 
@@ -235,7 +226,7 @@ module PseudoHiki
     end
 
     class BlockElement::VerbatimNode
-      attr_writer :in_block_tag
+      attr_accessor :in_block_tag
 
       def add_leaf(line, blockparser)
         return @stack.pop_with_breaker if LINE_PAT::VERBATIM_END =~ line
@@ -274,6 +265,17 @@ module PseudoHiki
         return super if breaker.kind_of?(BlockElement::DecoratorLeaf)
         parse_leafs(breaker)
         @stack.current_node.breakable?(breaker)
+      end
+
+      def push(node)
+        if node.kind_of?(BlockElement::VerbatimNode) and node.in_block_tag
+          empty_verbatim_leaf = BlockElement::VerbatimLeaf.create("", true)
+          pop_with_breaker(empty_verbatim_leaf)
+          node.push empty_verbatim_leaf
+          @stack.current_node.push node
+        end
+
+        super
       end
     end
 
