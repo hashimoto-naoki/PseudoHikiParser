@@ -667,4 +667,35 @@ HTML
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
+
+  def test_comment_out_followed_by_a_verbatim_block
+    text = <<TEXT
+the first paragraph
+
+//a comment
+the second paragraph
+
+//a comment
+<<<
+the first verbatim line
+the second verbatim line
+>>>
+TEXT
+
+    xhtml = <<HTML
+<p>
+the first paragraph
+</p>
+<p>
+the second paragraph
+</p>
+<pre>
+the first verbatim line
+the second verbatim line
+</pre>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
 end
