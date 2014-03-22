@@ -311,6 +311,7 @@ TEXT
     assert_equal([[[["heading"]]]],parsed)
   end
 
+
   def test_decorator
     text = <<TEXT
 //@class[section_name]
@@ -337,5 +338,20 @@ TEXT
     assert_equal(nil, tree[0][2].decorator)
     assert_equal('id_name', tree[0][3].decorator[:id].id)
     assert_equal('class_name', tree[0][3].decorator["class"].id)
+  end
+
+  def test_comment_out_followed_by_a_verbatim_block
+    text = <<TEXT
+the first paragraph
+
+//a comment
+<<<
+the first verbatim line
+the second verbatim line
+>>>
+TEXT
+
+    parsed = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
+    assert_equal([[[["the first paragraph"]]], [[["a comment"]]], [["the first verbatim line"], ["the second verbatim line"]]],parsed)
   end
 end
