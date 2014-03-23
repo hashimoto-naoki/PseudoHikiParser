@@ -119,10 +119,10 @@ module PseudoHiki
       return create_plain_main(toc, body, h1) unless @options.html_template
       create_html_main(toc, body, h1).tap do |html_main|
         if domain = @options[:domain]
-          internal_pdf_pat = /http:\/\/#{domain}.*\.pdf$/o
+          internal_pdf_pat = /^http:\/\/#{domain}.*$/o
           html_main.traverse do |element|
             if element.kind_of? HtmlElement and element.tagname == "a"
-              element["class"] = "pdf" if internal_pdf_pat =~ element["href"]
+              element.push "(外部へのリンク)" if /^http:\/\//o =~ element["href"] and internal_pdf_pat !~ element["href"]
             end
           end
         end
