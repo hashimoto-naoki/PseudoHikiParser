@@ -117,7 +117,16 @@ module PseudoHiki
 
     def create_main(toc, body, h1)
       return create_plain_main(toc, body, h1) unless @options.html_template
-      create_html_main(toc, body, h1)
+      create_html_main(toc, body, h1).tap do |html_main|
+        if domain = @options[:domain]
+          internal_pdf_pat = /http:\/\/#{domain}.*\.pdf$/o
+          html_main.traverse do |element|
+            if element.kind_of? HtmlElement and element.tagname == "a"
+              element["class"] = "pdf" if internal_pdf_pat =~ element["href"]
+            end
+          end
+        end
+      end
     end
 
     def create_style(path_to_css_file)
@@ -216,7 +225,8 @@ module PseudoHiki
         :force => false,
         :toc => nil,
         :split_main_heading => false,
-        :breadcrumb => nil
+        :breadcrumb => nil,
+        :domain => nil
       }
       @written_option_pat = {}
       @options.keys.each {|opt| @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/ }
@@ -368,6 +378,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         opt.on("-s", "--split-main-heading",
                "Split the first h1 element") do |should_be_split|
           self[:split_main_heading] = should_be_split
+        end
+
+        opt.on("-d [domain]", "--domain [=domain]",
+               "Specify domain") do |domain_name|
+          self[:domain] = domain_name
         end
 
         opt.parse!
