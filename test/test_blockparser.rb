@@ -352,6 +352,6 @@ the second verbatim line
 TEXT
 
     parsed = PseudoHiki::BlockParser.parse(text.split(/\r?\n/o))
-    assert_equal([[[["the first paragraph"]]], [[["a comment"]]], [["the first verbatim line"], ["the second verbatim line"]]],parsed)
+    assert_equal([[[["the first paragraph"]]], [[["a comment"]]], [[""], ["the first verbatim line"], ["the second verbatim line"]]],parsed)
   end
 end
