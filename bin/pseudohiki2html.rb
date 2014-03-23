@@ -74,6 +74,13 @@ module PseudoHiki
       create_html_table_of_contents(lines)
     end
 
+    def create_breadcrumb
+      return "" if not @options[:breadcrumb] or @options[:breadcrumb].empty?
+      links = @options[:breadcrumb].split(/; /o).map {|link| HtmlFormat.format(InlineParser.parse(link)) }
+      links.push @options[:title]
+      links.join("＞")
+    end
+
     def split_main_heading(input_lines)
       return "" unless @options[:split_main_heading]
       h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
@@ -134,6 +141,7 @@ module PseudoHiki
       body = compose_body(input_lines)
       title = @options.title
       main = create_main(toc,body, h1)
+      breadcrumb = create_breadcrumb
 
       if @options[:template]
         erb = ERB.new(@options.read_template_file)
@@ -207,7 +215,8 @@ module PseudoHiki
         :output => nil,
         :force => false,
         :toc => nil,
-        :split_main_heading => false
+        :split_main_heading => false,
+        :breadcrumb => nil
       }
       @written_option_pat = {}
       @options.keys.each {|opt| @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/ }
