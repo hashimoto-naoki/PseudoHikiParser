@@ -1,3 +1,3 @@
 module PseudoHiki
-  VERSION = "0.0.0.9.develop"
+  VERSION = "0.0.0.10.develop"
 end
