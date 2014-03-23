@@ -38,15 +38,15 @@ module PseudoHiki
     end
 
     class BlockStack < TreeStack
-      def pop
-        self.current_node.parse_leafs
-        super
+      def pop_with_breaker(breaker=nil)
+        self.current_node.parse_leafs(breaker)
+        pop
       end
     end
 
     class BlockLeaf < BlockStack::Leaf
       @@head_re = {}
-      attr_accessor :nominal_level, :node_id
+      attr_accessor :nominal_level, :node_id, :decorator
 
       def self.head_re=(head_regex)
         @@head_re[self] = head_regex
@@ -91,7 +91,7 @@ module PseudoHiki
         super(stack)
       end
 
-      def parse_leafs
+      def parse_leafs(breaker)
         parsed = InlineParser.parse(self.join)
         self.clear
         self.concat(parsed)
@@ -146,6 +146,11 @@ module PseudoHiki
         first.nominal_level
       end
 
+      def decorator
+        return nil unless first
+        first.decorator
+      end
+
       def push_self(stack)
         @stack = stack
         super(stack)
@@ -155,7 +160,7 @@ module PseudoHiki
         not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
       end
 
-      def parse_leafs; end
+      def parse_leafs(breaker); end
 
       def in_link_tag?(preceding_str)
         preceding_str[-2, 2] == "[[" or preceding_str[-1, 1] == "|"
@@ -166,19 +171,21 @@ module PseudoHiki
       end
 
       def add_leaf(line, blockparser)
-        if LINE_PAT::VERBATIM_BEGIN =~ line
-          return blockparser.stack.push BlockElement::VerbatimNode.new.tap {|node| node.in_block_tag = true }
-        end
-        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
-        leaf = blockparser.select_leaf_type(line).create(line)
-        blockparser.stack.pop while blockparser.breakable?(leaf)
+        leaf = create_leaf(line, blockparser)
+        blockparser.stack.pop_with_breaker(leaf) while blockparser.breakable?(leaf)
         blockparser.stack.push leaf
+      end
+
+      def create_leaf(line, blockparser)
+        return BlockElement::VerbatimLeaf.create("", true) if LINE_PAT::VERBATIM_BEGIN =~ line
+        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
+        blockparser.select_leaf_type(line).create(line)
       end
     end
 
     class NonNestedBlockNode < BlockNode
-      def parse_leafs
-        self.each {|leaf| leaf.parse_leafs }
+      def parse_leafs(breaker)
+        self.each {|leaf| leaf.parse_leafs(breaker) }
       end
     end
 
@@ -198,11 +205,11 @@ module PseudoHiki
 
     module BlockElement
       {
-        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf),
+        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf DecoratorLeaf),
         NonNestedBlockLeaf => %w(QuoteLeaf ParagraphLeaf),
         NestedBlockLeaf => %w(HeadingLeaf),
         ListTypeLeaf => %w(ListLeaf EnumLeaf),
-        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode),
+        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode DecoratorNode),
         NonNestedBlockNode => %w(QuoteNode ParagraphNode),
         NestedBlockNode => %w(HeadingNode),
         ListTypeBlockNode => %w(ListNode EnumNode),
@@ -218,18 +225,46 @@ module PseudoHiki
     end
 
     class BlockElement::VerbatimNode
-      attr_writer :in_block_tag
+      attr_accessor :in_block_tag
 
       def add_leaf(line, blockparser)
-        return @stack.pop if LINE_PAT::VERBATIM_END =~ line
+        return @stack.pop_with_breaker if LINE_PAT::VERBATIM_END =~ line
         return super(line, blockparser) unless @in_block_tag
-        line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line
-        @stack.push BlockElement::VerbatimLeaf.create(line)
+        line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line and not @in_block_tag
+        @stack.push BlockElement::VerbatimLeaf.create(line, @in_block_tag)
+      end
+    end
+
+    class BlockElement::DecoratorNode
+      DECORATOR_PAT = /\A(?:([^\[\]:]+))?(?:\[([^\[\]]+)\])?(?::\s*(\S.*))?/o
+
+      class DecoratorItem < Struct.new(:string, :type, :id, :value)
+        def initialize(*args)
+          super
+          self.value = InlineParser.parse(self.value) if self.value
+        end
+      end
+
+      def parse_leafs(breaker)
+        decorator = {}
+        breaker.decorator = decorator
+        @stack.remove_current_node.each do |leaf|
+          m = DECORATOR_PAT.match(leaf.join)
+          return nil unless m
+          item = DecoratorItem.new(*(m.to_a))
+          decorator[item.type||:id] = item
+        end
+      end
+
+      def breakable?(breaker)
+        return super if breaker.kind_of?(BlockElement::DecoratorLeaf)
+        parse_leafs(breaker)
+        @stack.current_node.breakable?(breaker)
       end
     end
 
     class BlockElement::QuoteNode
-      def parse_leafs
+      def parse_leafs(breaker)
         self[0] = BlockParser.parse(self[0])
       end
     end
@@ -241,9 +276,18 @@ module PseudoHiki
     end
 
     class BlockElement::VerbatimLeaf
-      def self.create(line)
-        line.sub!(self.head_re, "") if self.head_re
-        self.new.tap {|leaf| leaf.push line }
+      attr_accessor :in_block_tag
+
+      def self.create(line, in_block_tag=nil)
+        line.sub!(self.head_re, "") if self.head_re and not in_block_tag
+        self.new.tap do |leaf|
+          leaf.push line
+          leaf.in_block_tag = in_block_tag
+        end
+      end
+
+      def push_block(stack)
+        stack.push(block.new.tap {|n| n.in_block_tag = @in_block_tag })
       end
     end
 
@@ -278,7 +322,8 @@ module PseudoHiki
      [ParagraphLeaf, ParagraphNode],
      [HrLeaf, HrNode],
      [ListLeaf, ListNode],
-     [EnumLeaf, EnumNode]
+     [EnumLeaf, EnumNode],
+     [DecoratorLeaf, DecoratorNode]
     ].each do |leaf, node|
       ParentNode[leaf] = node
     end
@@ -305,6 +350,7 @@ module PseudoHiki
       end
       HrLeaf.head_re = Regexp.new(/\A(----)\s*$/o)
       BlockNodeEnd.head_re = Regexp.new(/^(\r?\n?)$/o)
+      DecoratorLeaf.head_re = Regexp.new(/^(\/\/@)/o)
       Regexp.new('\\A('+head_pats.join('|')+')')
     end
     HEAD_RE = assign_head_re
@@ -322,7 +368,7 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      [BlockNodeEnd, HrLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
+      [BlockNodeEnd, HrLeaf, DecoratorLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
       return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || HeadToLeaf['\s'] if matched
       ParagraphLeaf
@@ -331,7 +377,7 @@ module PseudoHiki
     def read_lines(lines)
       each_line = lines.respond_to?(:each_line) ? :each_line : :each
       lines.send(each_line) {|line| @stack.current_node.add_leaf(line, self) }
-      @stack.pop
+      @stack.pop_with_breaker
     end
   end
 end

@@ -1,0 +1,137 @@
+html, body, #main {
+    margin-top: 0%;
+    margin-right: 0%;
+    margin-left: 0%;
+    padding-top: 0%;
+    height: 100%;
+    background: #eeffff;
+}
+
+
+
+h1 {
+    width: 100%;
+    background: #ccffff;
+    color: #ffffff;
+    -webkit-text-stroke: thin #00bbbb;
+    font-size: 200%;
+    font-weight: bold;
+    padding: 1em 0em 1em 1em;
+    margin-top: 0%;
+    margin-right: 0%;
+    margin-bottom: 0%;
+    margin-left: 0%;
+    text-shadow: 
+    -1px -1px 0 #00bbbb,
+    1px -1px 0 #00bbbb,
+    -1px 1px 0 #00bbbb,
+    2px 1px 0 #00bbbb,
+    2px 0px 0 #00bbbb;
+}
+
+#toc {
+    float: left;
+    width: 20%;
+    height: 100%;
+    min-height: 100%;
+}
+
+#toc * {
+    margin-left: 0%;
+    padding-left: 0%;
+    border-style: none;
+}
+
+#toc h2 {
+    color: #4444ff;
+    padding-left: 0.5em;
+}
+
+#toc li {
+    margin-left: 0.5em;
+    padding-left: 0%;
+    padding-right: 0%;
+    list-style-type: none;
+    margin-right: 1em;
+    padding-right: 1em;
+}
+
+#toc a {
+    border-radius: 5px;
+    text-decoration: none;
+    display: block;
+    background: #cceeff;
+    padding: 0.4em 0.4em 0.4em 0.4em;
+    margin-bottom: 1px;
+}
+
+#toc a:hover {
+    background: #ffffaa;
+}
+
+#contents * {
+    margin-right: 0%;
+}
+
+#contents {
+    background: #ffffff;
+    width: 77%;
+    float: left;
+    padding-right: 1%;
+    padding-left: 1.5%;
+    border-style: none none none dotted;
+    border-width: 1px;
+    border-color: #aaeeee;
+}
+
+#contents h2 {
+    color: #4444ff;
+}
+
+#contents .h3 {
+    border-style: dotted;
+    border-width: 0px;
+    background: #ddeedd;
+    margin-right: 2%;
+    margin-bottom: 1em;
+    padding: 0em 1em 1em 1em;
+}
+
+#contents h3 {
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    padding: 1em 1em 0em 0em;
+}
+
+#contents pre {
+    background: #000000;
+    color: #ffffff;
+    padding: 0.8em 1em 0.8em 0.6em;
+    margin-right: 1em;
+    margin-left: 1em;
+    font-size: 120%;
+}
+
+#contents code {
+    background: #eeeeee;
+    border-style: solid;
+    border-color: #aaaaaa;
+    border-width: 1px;
+    font-size: 120%;
+    padding: 0.1em 0.3em 0.1em 0.3em;
+}
+
+table {
+    border-style: solid;
+    border-width: 1px;
+    border-collapse: collapse;
+}
+
+td, th {
+    border-style: solid;
+    border-width: 1px;
+}
+
+td {
+    padding: 0.2em 0.3em 0.2em 0.3em;
+}

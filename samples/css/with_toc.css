@@ -77,3 +77,12 @@ h1 {
     margin-left: 1em;
     font-size: 120%;
 }
+
+#contents code {
+    background: #eeeeee;
+    border-style: solid;
+    border-color: #aaaaaa;
+    border-width: 1px;
+    font-size: 120%;
+    padding: 0.1em 0.3em 0.1em 0.3em;
+}

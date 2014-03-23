@@ -1,9 +1,9 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'lib/htmlelement'
 
-class TC_HtmlElement < Test::Unit::TestCase
+class TC_HtmlElement < MiniTest::Unit::TestCase
 
   def test_format_attributes
     a = HtmlElement.create("a")

@@ -6,6 +6,7 @@ require 'erb'
 require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
 require 'pseudohiki/plaintextformat'
+require 'pseudohiki/markdownformat'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 require 'htmlelement/start_of_page'
@@ -42,8 +43,17 @@ module PseudoHiki
       PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
     end
 
-    def create_table_of_contents(lines)
-      return "" unless @options[:toc]
+    def create_plain_table_of_contents(lines)
+      toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
+        m = HEADING_WITH_ID_PAT.match(line)
+        heading_depth = m[1].length
+        line.sub(/^!+/o, '*'*heading_depth)
+      end
+
+      @options.formatter.format(BlockParser.parse(toc_lines))
+    end
+
+    def create_html_table_of_contents(lines)
       toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
         m = HEADING_WITH_ID_PAT.match(line)
         heading_depth, id = m[1].length, m[2].upcase
@@ -58,6 +68,12 @@ module PseudoHiki
       end
     end
 
+    def create_table_of_contents(lines)
+      return "" unless @options[:toc]
+      return create_plain_table_of_contents(lines) unless @options.html_template
+      create_html_table_of_contents(lines)
+    end
+
     def split_main_heading(input_lines)
       return "" unless @options[:split_main_heading]
       h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
@@ -65,7 +81,15 @@ module PseudoHiki
       to_plain(input_lines.delete_at(h1_pos))
     end
 
-    def create_main(toc, body, h1)
+    def create_plain_main(toc, body, h1)
+      contents = [body]
+      contents.unshift toc unless toc.empty?
+      contents.unshift @options.formatter.format(BlockParser.parse("!!" + @options[:toc])) if @options[:toc]
+      contents.unshift h1 unless h1.empty?
+      contents.join($/)
+    end
+
+    def create_html_main(toc, body, h1)
       return nil unless @options[:toc]
       toc_container = formatter.create_element("section").tap do |element|
         element["id"] = "toc"
@@ -82,6 +106,11 @@ module PseudoHiki
         element.push toc_container
         element.push contents_container
       end
+    end
+
+    def create_main(toc, body, h1)
+      return create_plain_main(toc, body, h1) unless @options.html_template
+      create_html_main(toc, body, h1)
     end
 
     def create_style(path_to_css_file)
@@ -110,7 +139,7 @@ module PseudoHiki
         erb = ERB.new(@options.read_template_file)
         html = erb.result(binding)
       else
-        html = @options.create_html_with_current_options
+        html = @options.create_html_template_with_current_options
         html.head.push create_style(@options[:embed_css]) if @options[:embed_css]
         html.push main||body
       end
@@ -122,13 +151,30 @@ module PseudoHiki
   class OptionManager
     include HtmlElement::CHARSET
 
+    PlainVerboseFormat = PlainTextFormat.create(:verbose_mode => true)
+    MDFormat = MarkDownFormat.create
+    GFMFormat = MarkDownFormat.create(:gfm_style => true)
+
+    class Formatter < Struct.new(:version, :formatter, :template, :ext, :opt_pat)
+    end
+
+    VERSIONS = [
+                ["html4", HtmlFormat, HtmlTemplate, ".html", /^h/io],
+                ["xhtml1", XhtmlFormat, XhtmlTemplate, ".html", /^x/io],
+                ["html5", Xhtml5Format, Xhtml5Template, ".html", /^h5/io],
+                ["plain", PageComposer::PlainFormat, nil, ".plain", /^p/io],
+                ["plain_verbose", PlainVerboseFormat, nil, ".plain", /^pv/io],
+                ["markdown", MDFormat, nil, ".md", /^m/io],
+                ["gfm", GFMFormat, nil, ".md", /^g/io]
+               ].map {|args| Formatter.new(*args) }
+
     ENCODING_REGEXP = {
       /^u/io => 'utf8',
       /^e/io => 'euc-jp',
       /^s/io => 'sjis',
       /^l[a-zA-Z]*1/io => 'latin1'
     }
-    HTML_VERSIONS = %w(html4 xhtml1 html5)
+
     BOM = "\xef\xbb\xbf"
     BOM.force_encoding("ASCII-8BIT") if BOM.respond_to? :encoding
     FILE_HEADER_PAT = /^\/\//
@@ -139,8 +185,6 @@ module PseudoHiki
       'sjis' => SJIS,
       'latin1' => LATIN1
     }
-    HTML_TEMPLATES = Hash[*HTML_VERSIONS.zip([HtmlTemplate, XhtmlTemplate, Xhtml5Template]).flatten]
-    FORMATTERS = Hash[*HTML_VERSIONS.zip([HtmlFormat, XhtmlFormat, Xhtml5Format]).flatten]
 
     attr_accessor :need_output_file, :default_title
     attr_reader :input_file_basename
@@ -152,7 +196,7 @@ module PseudoHiki
 
     def initialize(options=nil)
       @options = options||{
-        :html_version => "html4",
+        :html_version => VERSIONS[0],
         :lang => 'en',
         :encoding => 'utf8',
         :title => nil,
@@ -186,11 +230,11 @@ module PseudoHiki
     end
 
     def html_template
-      HTML_TEMPLATES[self[:html_version]]
+      self[:html_version].template
     end
 
     def formatter
-      FORMATTERS[self[:html_version]]
+      self[:html_version].formatter
     end
 
     def charset
@@ -219,20 +263,17 @@ module PseudoHiki
     end
 
     def set_html_version(version)
-      if HTML_VERSIONS.include? version
-        self[:html_version] = version
-      else
-        case version
-        when /^x/io
-          self[:html_version] = HTML_VERSIONS[1] #xhtml1
-        when /^h5/io
-          self[:html_version] = HTML_VERSIONS[2] #html5
+      VERSIONS.each do |v|
+        if v.version == version
+          return self[:html_version] = v
+        else
+          self[:html_version] = v if v.opt_pat =~ version
         end
-        STDERR.puts "\"#{version}\" is an invalid option for --html_version. \"#{self[:html_version]}\" is chosen instead."
       end
+      STDERR.puts "\"#{version}\" is an invalid option for --format-version. \"#{self[:html_version].version}\" is chosen instead."
     end
 
-    def set_encoding(given_opt)
+    def set_html_encoding(given_opt)
       if ENCODING_REGEXP.values.include? given_opt
         self[:encoding] = given_opt
       else
@@ -243,11 +284,18 @@ module PseudoHiki
       end
     end
 
+    def set_encoding(given_opt)
+      return nil unless String.new.respond_to? :encoding
+      external, internal = given_opt.split(/:/o)
+      Encoding.default_external = external if external
+      Encoding.default_interanl = internal if internal
+    end
+
     def parse_command_line_options
       OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
-        opt.on("-h [html_version]", "--html_version [=html_version]",
-               "HTML version to be used. Choose html4, xhtml1 or html5 (default: #{self[:html_version]})") do |version|
+        opt.on("-f [html_version]", "--format-version [=format_version]",
+               "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version].version})") do |version|
           self.set_html_version(version)
         end
 
@@ -256,8 +304,13 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
           self[:lang] = lang if value_given?(lang)
         end
 
-        opt.on("-e [encoding]", "--encoding [=encoding]",
+        opt.on("-e [encoding]", "--format-encoding [=encoding]",
                "Available options: utf8, euc-jp, sjis, latin1 (default: #{self[:encoding]})") do |given_opt|
+          self.set_html_encoding(given_opt)
+        end
+
+        opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
+               "Specify the default external and internal character encodings (same as the option of MRI") do |given_opt|
           self.set_encoding(given_opt)
         end
 
@@ -293,7 +346,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
           self.need_output_file = true
         end
 
-        opt.on("-f", "--force",
+        opt.on("-F", "--force",
                "Force to apply command line options.(default: false)") do |force|
           self[:force] = force
         end
@@ -341,7 +394,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       end
     end
 
-    def create_html_with_current_options
+    def create_html_template_with_current_options
+      return [] unless self.html_template
       html = self.html_template.new
       html.charset = self.charset
       html.language = self[:lang]
@@ -356,18 +410,18 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       @input_file_basename = File.basename(@input_file_name,".*")
     end
 
-    def output_file_name
+    def output_filename
       return nil unless self.need_output_file
       if self[:output]
         File.expand_path(self[:output])
       else
-        File.join(@input_file_dir, @input_file_basename+".html")
+        File.join(@input_file_dir, @input_file_basename + self[:html_version].ext)
       end
     end
 
     def open_output
-      if self.output_file_name
-        open(self.output_file_name, "w") {|f| yield f }
+      if self.output_filename
+        open(self.output_filename, "w") {|f| yield f }
       else
         yield STDOUT
       end

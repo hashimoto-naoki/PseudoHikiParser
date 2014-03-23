@@ -1,9 +1,9 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'pseudohiki/treestack'
 
-class TC_TreeStack < Test::Unit::TestCase
+class TC_TreeStack < MiniTest::Unit::TestCase
 
   def test_push_node
     stack = TreeStack.new
@@ -34,7 +34,7 @@ class TC_TreeStack < Test::Unit::TestCase
     node = TreeStack::Node.new
     assert_same node.class, TreeStack::Node
     assert_equal true, node.kind_of?(TreeStack::Node)
-    assert_not_equal true, node.kind_of?(TreeStack::Mergeable)
+    refute node.kind_of?(TreeStack::Mergeable)
   end
 
   def test_with_mergeable

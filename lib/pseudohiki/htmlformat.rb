@@ -11,13 +11,11 @@ module PseudoHiki
     include TableRowParser::InlineElement
 
     #for InlineParser
-    LINK, IMG, EM, STRONG, DEL = %w(a img em strong del)
-    HREF, SRC, ALT = %w(href src alt)
-    PLAIN, PLUGIN = %w(plain span)
+    LINK, LITERAL, PLUGIN = %w(a code span)
+    BLANK, SPACE = "", " "
+    HREF, SRC, ALT, ID, CLASS, ROWSPAN, COLSPAN = %w(href src alt id class rowspan colspan)
     #for BlockParser
-    DESC, VERB, QUOTE, TABLE, PARA, HR, UL, OL = %w(dl pre blockquote table p hr ul ol)
-    SECTION = "section"
-    DT, DD, TR, HEADING, LI = %w(dt dd tr h li)
+    DT, DD, LI = %w(dt dd li)
     DescSep = [InlineParser::DescSep]
 
     Formatter = {}
@@ -27,7 +25,7 @@ module PseudoHiki
 
     def self.setup_new_formatter(new_formatter, generator)
       new_formatter.each do |node_class, formatter|
-        new_formatter[node_class] = formatter.dup
+        new_formatter[node_class] = formatter.clone
         new_formatter[node_class].generator = generator
         new_formatter[node_class].formatter = new_formatter
       end
@@ -59,6 +57,7 @@ module PseudoHiki
 
     def visit(tree)
       htmlelement = create_self_element(tree)
+      decorate(htmlelement, tree)
       push_visited_results(htmlelement, tree)
       htmlelement
     end
@@ -76,9 +75,75 @@ module PseudoHiki
       chunks.push tree
     end
 
+    def decorate(htmlelement, tree)
+      each_decorator(htmlelement, tree) do |element, decorator|
+        element[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
+        if id_item = decorator[ID]||decorator[:id]
+          element[ID] = HtmlElement.escape(id_item.id).upcase
+        end
+      end
+    end
+
+    def each_decorator(element, tree)
+      return unless element.kind_of? HtmlElement
+      return unless tree.kind_of? BlockParser::BlockNode and tree.decorator
+      tree.decorator.tap {|decorator| yield element, decorator }
+    end
+
+    class ListLeafNodeFormatter < self
+      def create_self_element(tree)
+        super(tree).tap do |element|
+          element[ID] = tree.node_id.upcase if tree.node_id
+        end
+      end
+    end
+
+    [ [EmNode, "em"],
+      [StrongNode, "strong"],
+      [DelNode, "del"],
+      [LiteralNode, LITERAL],
+      [PluginNode, PLUGIN],
+      [LinkNode, LINK],
+      [InlineLeaf, nil],
+      [PlainNode, nil], #Until here is for InlineParser
+      [DescNode, "dl"],
+      [QuoteNode, "blockquote"],
+      [TableNode, "table"],
+      [ParagraphNode, "p"],
+      [HrNode, "hr"],
+      [ListNode, "ul"],
+      [EnumNode, "ol"],
+      [TableLeaf, "tr"],
+      [VerbatimNode, "pre"],
+      [CommentOutNode, nil],
+      [HeadingNode, "section"],
+      [DescLeaf, DT],
+      [TableCellNode, nil],
+      [HeadingLeaf, "h"], #Until here is for BlockParser
+    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
+
+    #for InlineParser
+    ImgFormat = self.new("img")
+    #for BlockParser
+    Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
+    Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
+
     #for InlineParser
 
-    class LinkNodeFormatter < self
+    class << Formatter[PluginNode]
+      def visit(tree)
+        escape_inline_tags(tree) { super(tree) }
+      end
+
+      def escape_inline_tags(tree)
+        str = tree.join
+        return str if InlineParser::HEAD[str] or InlineParser::TAIL[str]
+        return str.strip * 2 if str == ' {' or str == '} '
+        yield
+      end
+    end
+
+    class << Formatter[LinkNode]
       def visit(tree)
         tree = tree.dup
         caption = get_caption(tree)
@@ -108,13 +173,13 @@ module PseudoHiki
       end
     end
 
-    class InlineLeafFormatter < self
+    class << Formatter[InlineLeaf]
       def visit(leaf)
         @generator.escape(leaf.first)
       end
     end
 
-    class PlainNodeFormatter < self
+    class << Formatter[PlainNode]
       def create_self_element(tree=nil)
         @generator::Children.new
       end
@@ -122,32 +187,40 @@ module PseudoHiki
 
     #for BlockParser
 
-    class VerbatimNodeFormatter < self
+    class << Formatter[TableNode]
+      def decorate(htmlelement, tree)
+        each_decorator(htmlelement, tree) do |element, decorator|
+          htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join) if decorator["summary"]
+        end
+      end
+    end
+
+    class << Formatter[VerbatimNode]
       def visit(tree)
         create_self_element.tap do |element|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            @generator.create("a", url, "href" => url).to_s
+            @generator.create(LINK, url, HREF => url).to_s
           end
           element.push contents
         end
       end
     end
 
-    class CommentOutNodeFormatter < self
-      def visit(tree); ""; end
+    class << Formatter[CommentOutNode]
+      def visit(tree); BLANK; end
     end
 
-    class HeadingNodeFormatter < self
+    class << Formatter[HeadingNode]
       def create_self_element(tree)
         super(tree).tap do |element|
           heading_level = "h#{tree.first.nominal_level}"
-          element['class'] ||= heading_level
-          element['class'] +=  " " + heading_level unless element['class'] == heading_level
+          element[CLASS] ||= heading_level
+          element[CLASS] +=  SPACE + heading_level unless element[CLASS] == heading_level
         end
       end
     end
 
-    class DescLeafFormatter < self
+    class << Formatter[DescLeaf]
       def visit(tree)
         tree = tree.dup
         element = @generator::Children.new
@@ -163,61 +236,24 @@ module PseudoHiki
       end
     end
 
-    class TableCellNodeFormatter < self
+    class << Formatter[TableCellNode]
       def visit(tree)
         @element_name = tree.cell_type
         super(tree).tap do |element|
-          element["rowspan"] = tree.rowspan if tree.rowspan > 1
-          element["colspan"] = tree.colspan if tree.colspan > 1
+          element[ROWSPAN] = tree.rowspan if tree.rowspan > 1
+          element[COLSPAN] = tree.colspan if tree.colspan > 1
           # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
         end
       end
     end
 
-    class HeadingLeafFormatter < self
+    class << Formatter[HeadingLeaf]
       def create_self_element(tree)
         @generator.create(@element_name+tree.nominal_level.to_s).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
+          element[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
-
-    class ListLeafNodeFormatter < self
-      def create_self_element(tree)
-        super(tree).tap do |element|
-          element["id"] = tree.node_id.upcase if tree.node_id
-        end
-      end
-    end
-
-    [ [EmNode,EM],
-      [StrongNode,STRONG],
-      [DelNode,DEL],
-      [PluginNode,PLUGIN], #Until here is for InlineParser
-      [DescNode, DESC],
-      [QuoteNode, QUOTE],
-      [TableNode, TABLE],
-      [ParagraphNode, PARA],
-      [HrNode, HR],
-      [ListNode, UL],
-      [EnumNode, OL],
-      [TableLeaf, TR], #Until here is for BlockParser
-    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
-
-    #for InlineParser
-    ImgFormat = self.new(IMG)
-    Formatter[LinkNode] = LinkNodeFormatter.new(LINK)
-    Formatter[InlineLeaf] = InlineLeafFormatter.new(nil)
-    Formatter[PlainNode] = PlainNodeFormatter.new(PLAIN)
-    #for BlockParser
-    Formatter[VerbatimNode] = VerbatimNodeFormatter.new(VERB)
-    Formatter[CommentOutNode] = CommentOutNodeFormatter.new(nil)
-    Formatter[HeadingNode] = HeadingNodeFormatter.new(SECTION)
-    Formatter[DescLeaf] = DescLeafFormatter.new(DT)
-    Formatter[TableCellNode] = TableCellNodeFormatter.new(nil)
-    Formatter[HeadingLeaf] = HeadingLeafFormatter.new(HEADING)
-    Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
-    Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
   end
 
   class XhtmlFormat < HtmlFormat

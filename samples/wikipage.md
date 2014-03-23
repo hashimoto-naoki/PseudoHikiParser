@@ -1,5 +1,6 @@
-PseudoHikiParser
-================
+#Welcome to the PseudoHikiParser wiki!
+
+## About PseudoHikiParser
 
 PseudoHikiParser is a converter of texts written in a [Hiki](http://hikiwiki.org/en/) like notation, into html or other formats. 
 
@@ -18,6 +19,12 @@ And, it would not be compatible with the original Hiki notation.
 ## License
 
 BSD 2-Clause License
+
+~~I haven't yet decided the terms and conditions for the reuse and redistribution, but consider adopting a dual-licensed style.~~
+
+~~And one of them will be BSD 2-clause license or MIT license.~~
+
+(It seems bothersome for me to manage a dual-licensed script.)
 
 ## Installation
 
@@ -83,7 +90,7 @@ The first paragraph
 TEXT
 ```
 
-the result will be saved in first_example.html.
+the result will be saved in first\_example.html.
 
 For more options, please try `pseudohiki2html.rb --help`
 
@@ -159,7 +166,7 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 
 #### Assigning ids
 
-If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
+If you add [name\_of\_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 
 ```
 !![heading_id]heading

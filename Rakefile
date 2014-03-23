@@ -16,12 +16,17 @@ treestack
 blockparser
 htmlformat
 plaintextformat
+markdownformat
 )
   failed_tests = []
 
   test_files.each do |libname|
     begin
-      ruby "-I. -I./lib test/test_%s.rb"%[libname]
+      if /^1\.8/o =~ RUBY_VERSION
+        ruby "-I. -I./lib -rubygems test/test_%s.rb"%[libname]
+      else
+        ruby "-I. -I./lib test/test_%s.rb"%[libname]
+      end
     rescue
       failed_tests.push libname
     end

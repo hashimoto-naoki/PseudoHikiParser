@@ -1,11 +1,10 @@
 #/usr/bin/env ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'lib/pseudohiki/blockparser'
 require 'lib/pseudohiki/htmlformat'
 
-
-class TC_HtmlFormat < Test::Unit::TestCase
+class TC_HtmlFormat < MiniTest::Unit::TestCase
   include PseudoHiki
 
   class ::String
@@ -98,6 +97,8 @@ HTML
 
 a paragraph with an ''emphasised'' word.
 a paragraph with a [[link|http://www.example.org/]].
+
+a paragraph with a ``literal`` word.
 TEXT
 
     html = <<HTML
@@ -105,11 +106,37 @@ TEXT
 <h2>heading2</h2>
 <p>
 a paragraph with an <em>emphasised</em> word.a paragraph with a <a href="http://www.example.org/">link</a>.</p>
+<p>
+a paragraph with a <code>literal</code> word.</p>
 <!-- end of section h2 -->
 </div>
 HTML
 
     assert_equal(html,convert_text_to_html(text))
+  end
+
+  def test_plugin
+    text = <<TEXT
+a paragraph with several plugin tags.
+{{''}} should be presented as two quotation marks.
+{{ {}} should be presented as two left curly braces.
+{{} }} should be presented as two right curly braces.
+{{in span}} should be presented as <span>in span</span>.
+TEXT
+
+    html = <<HTML
+<p>
+a paragraph with several plugin tags.
+'' should be presented as two quotation marks.
+{{ should be presented as two left curly braces.
+}} should be presented as two right curly braces.
+<span>in span</span> should be presented as &lt;span&gt;in span&lt;/span&gt;.
+</p>
+HTML
+
+    tree = BlockParser.parse(text)
+    assert_equal(html, HtmlFormat.format(tree).to_s)
+    assert_equal(html, XhtmlFormat.format(tree).to_s)
   end
 
   def test_table
@@ -561,6 +588,8 @@ a verbatim line with [[a link]]
 
 another verbatim line
 
+ a verbatim line that begins with a space.
+
 the last verbatim line
 >>>
 TEXT
@@ -569,6 +598,9 @@ TEXT
  a verbatim line with [[a link]]
  
  another verbatim line
+
+  a verbatim line that begins with a space.
+
  
  the last verbatim line
 TEXT
@@ -579,6 +611,8 @@ TEXT
 a verbatim line with [[a link]]
 
 another verbatim line
+
+ a verbatim line that begins with a space.
 
 the last verbatim line
 </pre>
@@ -630,6 +664,100 @@ a line with a url <a href="http://www.example.org/">http://www.example.org/</a> 
 another line with [[link|sample.html]]
 </pre>
 HTML
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_decorator
+    text = <<TEXT
+//@class[section_type]
+!!title of section
+
+a paragraph.
+
+//@class[class_name]
+//@id[id_name]
+another paragraph.
+TEXT
+
+    xhtml = <<HTML
+<div class="section_type">
+<h2>title of section</h2>
+<p>
+a paragraph.</p>
+<p class="class_name" id="ID_NAME">
+another paragraph.</p>
+<!-- end of section_type -->
+</div>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_decorator_for_table
+    text = <<TEXT
+//@summary: Summary of the table
+||!header 1||! header 2
+||cell 1||cell 2
+TEXT
+
+    xhtml = <<HTML
+<table summary="Summary of the table">
+<tr><th>header 1</th><th> header 2</th></tr>
+<tr><td>cell 1</td><td>cell 2</td></tr>
+</table>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_decorator_for_verbatim
+    text = <<TEXT
+//@code[ruby]
+ def bonjour!
+   puts "Bonjour!"
+ end
+TEXT
+
+    xhtml = <<HTML
+<pre>
+def bonjour!
+  puts &quot;Bonjour!&quot;
+end
+</pre>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_comment_out_followed_by_a_verbatim_block
+    text = <<TEXT
+the first paragraph
+
+//a comment
+the second paragraph
+
+//a comment
+<<<
+the first verbatim line
+the second verbatim line
+>>>
+TEXT
+
+    xhtml = <<HTML
+<p>
+the first paragraph
+</p>
+<p>
+the second paragraph
+</p>
+<pre>
+the first verbatim line
+the second verbatim line
+</pre>
+HTML
+
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
