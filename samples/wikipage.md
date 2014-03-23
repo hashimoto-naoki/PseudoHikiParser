@@ -296,11 +296,11 @@ And {{ {}} and {{} }} should be rendered as two left curly braces and two right 
 ```
 
 will be rendered as
+
 ```
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
 ```
-
 
 ### Not Implemented Yet
 
