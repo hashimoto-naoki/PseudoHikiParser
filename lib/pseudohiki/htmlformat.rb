@@ -57,6 +57,7 @@ module PseudoHiki
 
     def visit(tree)
       htmlelement = create_self_element(tree)
+      decorate(htmlelement, tree)
       push_visited_results(htmlelement, tree)
       htmlelement
     end
@@ -72,6 +73,21 @@ module PseudoHiki
         tree.shift
       end
       chunks.push tree
+    end
+
+    def decorate(htmlelement, tree)
+      each_decorator(htmlelement, tree) do |element, decorator|
+        element[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
+        if id_item = decorator[ID]||decorator[:id]
+          element[ID] = HtmlElement.escape(id_item.id).upcase
+        end
+      end
+    end
+
+    def each_decorator(element, tree)
+      return unless element.kind_of? HtmlElement
+      return unless tree.kind_of? BlockParser::BlockNode and tree.decorator
+      tree.decorator.tap {|decorator| yield element, decorator }
     end
 
     class ListLeafNodeFormatter < self
@@ -169,6 +185,14 @@ module PseudoHiki
     end
 
     #for BlockParser
+
+    class << Formatter[TableNode]
+      def decorate(htmlelement, tree)
+        each_decorator(htmlelement, tree) do |element, decorator|
+          htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join) if decorator["summary"]
+        end
+      end
+    end
 
     class << Formatter[VerbatimNode]
       def visit(tree)

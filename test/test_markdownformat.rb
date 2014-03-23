@@ -501,5 +501,65 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
+
+  def test_decorator_for_verbatim
+    text = <<TEXT
+//@code[ruby]
+ def bonjour!
+   puts "Bonjour!"
+ end
+TEXT
+
+    gfm_text =<<TEXT
+```ruby
+def bonjour!
+  puts "Bonjour!"
+end
+```
+
+TEXT
+
+    md_text = <<TEXT
+    def bonjour!
+      puts "Bonjour!"
+    end
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
+  def test_decorator_for_verbatim_block
+    text = <<TEXT
+//@code[ruby]
+<<<
+def bonjour!
+  puts "Bonjour!"
+end
+>>>
+TEXT
+
+    gfm_text =<<TEXT
+```ruby
+def bonjour!
+  puts "Bonjour!"
+end
+```
+
+TEXT
+
+    md_text = <<TEXT
+    def bonjour!
+      puts "Bonjour!"
+    end
+
+TEXT
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
+    assert_equal(md_text, @formatter.format(tree).to_s)
+  end
 end
 

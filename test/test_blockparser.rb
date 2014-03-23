@@ -311,6 +311,35 @@ TEXT
     assert_equal([[[["heading"]]]],parsed)
   end
 
+
+  def test_decorator
+    text = <<TEXT
+//@class[section_name]
+!!title of section
+
+//@summary: Summary of the table
+||!header 1||! header 2
+||cell 1||cell 2
+
+a paragraph.
+
+//@class[class_name]
+//@[id_name]
+another paragraph.
+TEXT
+
+    tree = PseudoHiki::BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(PseudoHiki::BlockParser::BlockNode, tree.class)
+    assert_equal("section_name", tree[0].decorator["class"].id)
+    assert_equal(PseudoHiki::BlockParser::BlockElement::HeadingNode, tree[0].class)
+    assert_equal('[[["title of section"]], [[[["header 1"]], [[" header 2"]]], [[["cell 1"]], [["cell 2"]]]], [[["a paragraph."]]], [[["another paragraph."]]]]', tree[0].to_s)
+    assert_equal('[["Summary of the table"]]', tree[0][1].decorator["summary"].value.to_s)
+    assert_equal(PseudoHiki::BlockParser::BlockElement::TableNode, tree[0][1].class)
+    assert_equal(nil, tree[0][2].decorator)
+    assert_equal('id_name', tree[0][3].decorator[:id].id)
+    assert_equal('class_name', tree[0][3].decorator["class"].id)
+  end
+
   def test_comment_out_followed_by_a_verbatim_block
     text = <<TEXT
 the first paragraph

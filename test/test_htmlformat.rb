@@ -668,6 +668,69 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_decorator
+    text = <<TEXT
+//@class[section_type]
+!!title of section
+
+a paragraph.
+
+//@class[class_name]
+//@id[id_name]
+another paragraph.
+TEXT
+
+    xhtml = <<HTML
+<div class="section_type">
+<h2>title of section</h2>
+<p>
+a paragraph.</p>
+<p class="class_name" id="ID_NAME">
+another paragraph.</p>
+<!-- end of section_type -->
+</div>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_decorator_for_table
+    text = <<TEXT
+//@summary: Summary of the table
+||!header 1||! header 2
+||cell 1||cell 2
+TEXT
+
+    xhtml = <<HTML
+<table summary="Summary of the table">
+<tr><th>header 1</th><th> header 2</th></tr>
+<tr><td>cell 1</td><td>cell 2</td></tr>
+</table>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
+  def test_decorator_for_verbatim
+    text = <<TEXT
+//@code[ruby]
+ def bonjour!
+   puts "Bonjour!"
+ end
+TEXT
+
+    xhtml = <<HTML
+<pre>
+def bonjour!
+  puts &quot;Bonjour!&quot;
+end
+</pre>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_comment_out_followed_by_a_verbatim_block
     text = <<TEXT
 the first paragraph

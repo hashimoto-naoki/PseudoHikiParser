@@ -243,19 +243,26 @@ module PseudoHiki
     class VerbatimNodeFormatter < self
       def visit(tree)
         element = super(tree)
+        @language_name = language_name(tree)
         return gfm_verbatim(element) if @options.gfm_style
         md_verbatim(element)
       end
 
       def gfm_verbatim(element)
         element.tap do |lines|
-          lines.unshift "```#{$/}"
+          lines.unshift "```#{@language_name + $/}"
           lines.push "```#{$/ * 2}"
         end
       end
 
       def md_verbatim(element)
         element.join.gsub(/^/o, "    ").sub(/    \Z/o, "").concat $/
+      end
+
+      def language_name(tree)
+        tree.decorator.tap do |decorator|
+          return decorator ? decorator["code"].id : ""
+        end
       end
     end
 
