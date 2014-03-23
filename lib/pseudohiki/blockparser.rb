@@ -256,25 +256,10 @@ module PseudoHiki
         end
       end
 
-      def pop_with_breaker(breaker=nil)
-        parse_leafs(breaker)
-      end
-
       def breakable?(breaker)
         return super if breaker.kind_of?(BlockElement::DecoratorLeaf)
         parse_leafs(breaker)
         @stack.current_node.breakable?(breaker)
-      end
-
-      def push(node)
-        if node.kind_of?(BlockElement::VerbatimNode) and node.in_block_tag
-          empty_verbatim_leaf = BlockElement::VerbatimLeaf.create("", true)
-          pop_with_breaker(empty_verbatim_leaf)
-          node.push empty_verbatim_leaf
-          @stack.current_node.push node
-        end
-
-        super
       end
     end
 
