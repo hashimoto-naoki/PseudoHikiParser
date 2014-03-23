@@ -166,19 +166,15 @@ module PseudoHiki
       end
 
       def add_leaf(line, blockparser)
-        if LINE_PAT::VERBATIM_BEGIN =~ line
-          break_nodes(blockparser)
-          return blockparser.stack.push BlockElement::VerbatimNode.new.tap {|node| node.in_block_tag = true }
-        end
-        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
-        leaf = blockparser.select_leaf_type(line).create(line)
+        leaf = create_leaf(line, blockparser)
         blockparser.stack.pop while blockparser.breakable?(leaf)
         blockparser.stack.push leaf
       end
 
-      def break_nodes(blockparser)
-        @empty_verbatim_leaf ||= BlockElement::VerbatimLeaf.create("", true)
-        blockparser.stack.pop while blockparser.breakable?(@empty_verbatim_leaf)
+      def create_leaf(line, blockparser)
+        return BlockElement::VerbatimLeaf.create("", true) if LINE_PAT::VERBATIM_BEGIN =~ line
+        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
+        blockparser.select_leaf_type(line).create(line)
       end
     end
 
@@ -224,7 +220,7 @@ module PseudoHiki
     end
 
     class BlockElement::VerbatimNode
-      attr_writer :in_block_tag
+      attr_accessor :in_block_tag
 
       def add_leaf(line, blockparser)
         return @stack.pop if LINE_PAT::VERBATIM_END =~ line
@@ -247,9 +243,18 @@ module PseudoHiki
     end
 
     class BlockElement::VerbatimLeaf
+      attr_accessor :in_block_tag
+
       def self.create(line, in_block_tag=nil)
         line.sub!(self.head_re, "") if self.head_re and not in_block_tag
-        self.new.tap {|leaf| leaf.push line }
+        self.new.tap do |leaf|
+          leaf.push line
+          leaf.in_block_tag = in_block_tag
+        end
+      end
+
+      def push_block(stack)
+        stack.push(block.new.tap {|n| n.in_block_tag = @in_block_tag })
       end
     end
 
