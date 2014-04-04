@@ -118,6 +118,7 @@ module PseudoHiki
     def create_main(toc, body, h1)
       return create_plain_main(toc, body, h1) unless @options.html_template
       create_html_main(toc, body, h1).tap do |html_main|
+        return unless html_main
         if domain = @options[:domain]
           internal_pdf_pat = /^http:\/\/#{domain}.*$/o
           html_main.traverse do |element|
