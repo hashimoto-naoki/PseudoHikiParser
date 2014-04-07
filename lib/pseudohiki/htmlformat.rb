@@ -35,6 +35,10 @@ module PseudoHiki
       self::Formatter[PlainNode]
     end
 
+    def self.create(options=nil)
+      self
+    end
+
     def self.format(tree)
       formatter = self.get_plain
       tree.accept(formatter)
