@@ -11,8 +11,20 @@ module PseudoHiki
 
     DescSep = [InlineParser::DescSep]
 
+    Formatters = {}
+
     class Node < Array
       alias to_s join
+    end
+
+    def self.format(tree, options={ :verbose_mode => false })
+      if Formatters.empty?
+        default_options = { :verbose_mode => false }
+        Formatters[default_options] = create(default_options)
+      end
+
+      Formatters[options] ||= create(options)
+      Formatters[options].format(tree)
     end
 
     def initialize(formatter={}, options = { :verbose_mode=> false })
