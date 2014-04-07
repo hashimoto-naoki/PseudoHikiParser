@@ -246,4 +246,23 @@ TEXT
     tree = BlockParser.parse(mal_formed_text.lines.to_a)
     assert_equal(expected_mal_formed_text, @verbose_formatter.format(tree).to_s)
   end
+
+  def test_self_format
+    text = <<TEXT
+A test string ==with deleted words ==is here.
+TEXT
+    expected_text = <<TEXT
+A test string is here.
+
+TEXT
+
+    expected_text_in_verbose_mode = <<TEXT
+A test string [deleted:with deleted words ]is here.
+
+TEXT
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, PlainTextFormat.format(tree, { :verbose_mode => false }).to_s)
+    assert_equal(expected_text_in_verbose_mode, PlainTextFormat.format(tree, { :verbose_mode => true }).to_s)
+    assert_equal(expected_text, PlainTextFormat.format(tree, { :verbose_mode => false }).to_s)
+  end
 end
