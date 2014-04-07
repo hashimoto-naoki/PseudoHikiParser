@@ -65,3 +65,5 @@ module PseudoHiki
     end
   end
 end
+
+require 'pseudohiki/sinatra_helpers'if defined? Sinatra
