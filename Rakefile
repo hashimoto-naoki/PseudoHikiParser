@@ -17,6 +17,7 @@ blockparser
 htmlformat
 plaintextformat
 markdownformat
+pseudohikiparser
 )
   failed_tests = []
 
