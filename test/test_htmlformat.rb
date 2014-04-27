@@ -761,4 +761,8 @@ HTML
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
+
+  def test_self_create
+    assert_equal(XhtmlFormat, XhtmlFormat.create)
+  end
 end

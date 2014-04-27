@@ -126,13 +126,10 @@ module PseudoHiki
       def parse_cellspan(token_str)
         return token_str if m = MODIFIED_CELL_PAT.match(token_str) and m[0].empty? #if token.kind_of? String
         cell_modifiers = m[0]
-        if cell_modifiers[0].chr == TH_PAT
-          cell_modifiers[0] = ""
-          @cell_type = TH
-        end
+        @cell_type = TH if cell_modifiers[0].chr == TH_PAT
         @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
         @colspan = cell_modifiers.count(COL_EXPANDER) + 1
-        token_str.sub(MODIFIED_CELL_PAT, "")
+        m.post_match
       end
 
       def parse_first_token(orig_tokens)

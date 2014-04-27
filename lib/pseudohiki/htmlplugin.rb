@@ -14,6 +14,16 @@ module PseudoHiki
     end
   end
   
+  class XhtmlFormat < HtmlFormat
+    Formatter = HtmlFormat::Formatter.dup
+    setup_new_formatter(Formatter, XhtmlElement)
+  end
+
+  class Xhtml5Format < XhtmlFormat
+    Formatter = HtmlFormat::Formatter.dup
+    setup_new_formatter(Formatter, Xhtml5Element)
+  end
+
   class HtmlPlugin
 
     PLUGIN_PAT = /^(\w+)([\s\(]+)/
