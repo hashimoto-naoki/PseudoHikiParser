@@ -90,4 +90,20 @@ LINES
     assert_equal("Table of Contents", options[:toc])
     assert_equal("Title set in the input file", options[:title])
   end
+
+  def test_option_not_in_command_line_nor_in_input_file
+    input_data = <<LINES
+//toc: Table of Contents set in the input file
+
+paragraph
+LINES
+    set_argv("-F -f h -m 'Table of Contents' -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.set_options_from_command_line
+    options.set_options_from_input_file(input_data.each_line.to_a)
+
+    assert_equal("Table of Contents", options[:toc])
+    assert_equal(nil, options[:title])
+  end
 end
