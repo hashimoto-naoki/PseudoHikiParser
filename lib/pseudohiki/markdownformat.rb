@@ -274,12 +274,6 @@ module PseudoHiki
         super(tree)
       end
 
-      def deep_copy_tree(tree)
-        tree.dup.clear.tap do |new_tree|
-          new_tree.concat tree.map {|node| node.dup }
-        end
-      end
-
       def choose_expander_of_col_and_row
         ["", ""]
       end
