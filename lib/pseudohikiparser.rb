@@ -5,11 +5,17 @@ require "pseudohiki/plaintextformat"
 require "pseudohiki/markdownformat"
 require "pseudohiki/version"
 
+# = PseudoHikiParser -- A converter of texts written in a Hiki-like notation into HTML or other formats.
+#
+# You may find more detailed information at {PseudoHikiParser Wiki}[https://github.com/nico-hn/PseudoHikiParser/wiki]
+#
 module PseudoHiki
+  # This class provides class methods for converting texts written in a Hiki-like notation into HTML or other formats.
+  #
   class Format
-    Formatter = {}
-    PRESET_OPTIONS = {}
-    TYPE_TO_FORMATTER = {}
+    Formatter = {} # :nodoc:
+    PRESET_OPTIONS = {} # :nodoc:
+    TYPE_TO_FORMATTER = {} # :nodoc:
 
     [
      [:html, HtmlFormat, nil],
@@ -27,6 +33,19 @@ module PseudoHiki
     end
 
     class << self
+      # Converts <hiki_data> into a format specified by <format_type>
+      #
+      # <hiki_data> should be a string or an array of strings
+      #
+      # Options for <format_type> are:
+      # [:html] HTML4.1
+      # [:xhtml] XHTML1.0
+      # [:html5] HTML5
+      # [:plain] remove all of tags
+      # [:plain_verbose] similar to :plain, but certain information such as urls in link tags will be kept
+      # [:markdown] Markdown
+      # [:gfm] GitHub Flavored Markdown
+      #
       def format(hiki_data, format_type, options=nil, &block)
         tree = BlockParser.parse(hiki_data)
 
@@ -39,26 +58,39 @@ module PseudoHiki
         end.to_s
       end
 
+      # Converts <hiki_data> into HTML4.1
+      #
+      #
       def to_html(hiki_data, &block)
         format(hiki_data, :html, options=nil, &block)
       end
 
+      # Converts <hiki_data> into XHTML1.0
+      #
       def to_xhtml(hiki_data, &block)
         format(hiki_data, :xhtml, options=nil, &block)
       end
 
+      # Converts <hiki_data> into HTML5
+      #
       def to_html5(hiki_data, &block)
         format(hiki_data, :html5, options=nil, &block)
       end
 
+      # Converts <hiki_data> into plain texts without tags
+      #
       def to_plain(hiki_data, &block)
         format(hiki_data, :plain, options=nil, &block)
       end
 
+      # Converts <hiki_data> into Markdown
+      #
       def to_markdown(hiki_data, &block)
         format(hiki_data, :markdown, options=nil, &block)
       end
 
+      # Converts <hiki_data> into GitHub Flavored Markdown
+      #
       def to_gfm(hiki_data, &block)
         format(hiki_data, :gfm, options=nil, &block)
       end
