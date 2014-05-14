@@ -3,7 +3,7 @@
 require 'stringio'
 require 'shellwords'
 require 'minitest/autorun'
-require './bin/pseudohiki2html.rb'
+require 'pseudohiki/converter'
 
 def set_argv(command_line_str)
   ARGV.replace Shellwords.split(command_line_str)
