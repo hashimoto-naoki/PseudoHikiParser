@@ -18,6 +18,7 @@ htmlformat
 plaintextformat
 markdownformat
 pseudohikiparser
+pseudohiki2html
 )
   failed_tests = []
 
