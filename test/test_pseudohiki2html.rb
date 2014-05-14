@@ -5,12 +5,12 @@ require 'shellwords'
 require 'minitest/autorun'
 require './bin/pseudohiki2html.rb'
 
+def set_argv(command_line_str)
+  ARGV.replace Shellwords.split(command_line_str)
+end
+
 class TC_OptionManager < MiniTest::Unit::TestCase
   include PseudoHiki
-
-  def set_argv(command_line_str)
-    ARGV.replace Shellwords.split(command_line_str)
-  end
 
   def test_set_options_from_command_line
     set_argv("-fx -s -m 'Table of Contents' -c css/with_toc.css wikipage.txt -o wikipage_with_toc.html")
