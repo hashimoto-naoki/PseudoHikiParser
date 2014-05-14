@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
                         "lib/pseudohiki/plaintextformat.rb",
                         "lib/pseudohiki/markdownformat.rb",
                         "lib/pseudohiki/version.rb",
+                        "lib/pseudohiki/converter.rb",
                         "lib/pseudohiki/htmlplugin.rb",
                         "lib/htmlelement.rb",
                         "lib/htmlelement/htmltemplate.rb"
