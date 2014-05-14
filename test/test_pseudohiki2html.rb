@@ -5,12 +5,12 @@ require 'shellwords'
 require 'minitest/autorun'
 require './bin/pseudohiki2html.rb'
 
+def set_argv(command_line_str)
+  ARGV.replace Shellwords.split(command_line_str)
+end
+
 class TC_OptionManager < MiniTest::Unit::TestCase
   include PseudoHiki
-
-  def set_argv(command_line_str)
-    ARGV.replace Shellwords.split(command_line_str)
-  end
 
   def test_set_options_from_command_line
     set_argv("-fx -s -m 'Table of Contents' -c css/with_toc.css wikipage.txt -o wikipage_with_toc.html")
@@ -89,5 +89,71 @@ LINES
 
     assert_equal("Table of Contents", options[:toc])
     assert_equal("Title set in the input file", options[:title])
+  end
+
+  def test_option_not_in_command_line_nor_in_input_file
+    input_data = <<LINES
+//toc: Table of Contents set in the input file
+
+paragraph
+LINES
+    set_argv("-F -f h -m 'Table of Contents' -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.set_options_from_command_line
+    options.set_options_from_input_file(input_data.each_line.to_a)
+
+    assert_equal("Table of Contents", options[:toc])
+    assert_equal(nil, options[:title])
+  end
+end
+
+class TC_PageComposer < MiniTest::Unit::TestCase
+  include PseudoHiki
+
+  def test_output_in_gfm_with_toc
+    input = <<TEXT.each_line.to_a
+//title: Test Data
+//toc: Table of Contents
+
+!Test Data
+
+!![first]The first heading
+
+Paragraph
+
+!![second]The second heading
+
+Paragraph
+TEXT
+
+output = <<GFM
+# Test Data
+
+
+## Table of Contents
+
+  * The first heading
+  * The second heading
+
+## The first heading
+
+Paragraph
+
+## The second heading
+
+Paragraph
+
+GFM
+
+    set_argv("-fg -s -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.set_options_from_command_line
+    options.set_options_from_input_file(input)
+
+    html = PageComposer.new(options).compose_html(input).join
+
+    assert_equal(output, html)
   end
 end
