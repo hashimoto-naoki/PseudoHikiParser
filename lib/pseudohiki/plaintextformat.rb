@@ -155,16 +155,14 @@ ERROR_TEXT
         each_cell_with_index(table, max_row, max_col) do |cell, r, c|
           cur_row = rows.shift if c == 0
           next if table[r][c]
-          unless cell
-            begin
-              raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
-              table[r][c] = cur_row.shift
-              fill_expand(table, r, c, table[r][c])
-            rescue
-              raise if @options.strict_mode
-              STDERR.puts ERROR_MESSAGE%[table[r].inspect]
-              next
-            end
+          begin
+            raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
+            table[r][c] = cur_row.shift
+            fill_expand(table, r, c, table[r][c])
+          rescue
+            raise if @options.strict_mode
+            STDERR.puts ERROR_MESSAGE%[table[r].inspect]
+            next
           end
         end
         format_table(table, tree)
