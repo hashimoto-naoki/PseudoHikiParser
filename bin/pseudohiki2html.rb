@@ -404,7 +404,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       if self.output_filename
         open(self.output_filename, "w") {|f| yield f }
       else
-        yield STDOUT
+        yield $stdout
       end
     end
   end
