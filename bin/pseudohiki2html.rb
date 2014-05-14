@@ -369,9 +369,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         break if FILE_HEADER_PAT !~ line
         line = line.chomp
         @options.keys.each do |opt|
-          if @written_option_pat[opt] =~ line and not self[:force]
-            self[opt] = $1
-          end
+          next if self[opt] and self[:force]
+          self[opt] = $1 if @written_option_pat[opt] =~ line
         end
       end
     end
@@ -411,18 +410,20 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
   end
 end
 
-options = PseudoHiki::OptionManager.new
-options.set_options_from_command_line
+if $0 == __FILE__
+  options = PseudoHiki::OptionManager.new
+  options.set_options_from_command_line
 
-if $KCODE
-  PseudoHiki::OptionManager::ENCODING_REGEXP.each do |pat, encoding|
-    options[:encoding] = encoding if pat =~ $KCODE and not options[:force]
+  if $KCODE
+    PseudoHiki::OptionManager::ENCODING_REGEXP.each do |pat, encoding|
+      options[:encoding] = encoding if pat =~ $KCODE and not options[:force]
+    end
   end
+
+  PseudoHiki::OptionManager.remove_bom
+  input_lines = ARGF.readlines.map {|line| line.encode(options.charset) }
+  options.set_options_from_input_file(input_lines)
+  html = PseudoHiki::PageComposer.new(options).compose_html(input_lines)
+
+  options.open_output {|out| out.puts html }
 end
-
-PseudoHiki::OptionManager.remove_bom
-input_lines = ARGF.readlines.map {|line| line.encode(options.charset) }
-options.set_options_from_input_file(input_lines)
-html = PseudoHiki::PageComposer.new(options).compose_html(input_lines)
-
-options.open_output {|out| out.puts html }
