@@ -152,7 +152,7 @@ ERROR_TEXT
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
         cur_row = nil
-        each_cell_with_index(max_row, max_col) do |r, c|
+        each_cell_index(max_row, max_col) do |r, c|
           cur_row = rows.shift if c == 0
           next if table[r][c]
           begin
@@ -174,7 +174,7 @@ ERROR_TEXT
         end
       end
 
-      def each_cell_with_index(max_row, max_col, initial_row=0, initial_col=0)
+      def each_cell_index(max_row, max_col, initial_row=0, initial_col=0)
         initial_row.upto(max_row) do |r|
           initial_col.upto(max_col) do |c|
             yield r, c
@@ -186,8 +186,8 @@ ERROR_TEXT
         row_expand, col_expand = choose_expander_of_col_and_row
         max_row = initial_row + cur_cell.rowspan - 1
         max_col = initial_col + cur_cell.colspan - 1
-        each_cell_with_index(max_row, max_col,
-                             initial_row, initial_col) do |r, c|
+        each_cell_index(max_row, max_col,
+                        initial_row, initial_col) do |r, c|
           if initial_row == r and initial_col == c
             table[r][c] = visited_result(cur_cell).join.lstrip.chomp
             next
