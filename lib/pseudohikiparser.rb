@@ -32,7 +32,6 @@ module PseudoHiki
       @@type_to_formatter[type] = formatter
     end
 
-    class << self
       # Converts <hiki_data> into a format specified by <format_type>
       #
       # <hiki_data> should be a string or an array of strings
@@ -46,7 +45,7 @@ module PseudoHiki
       # [:markdown] Markdown
       # [:gfm] GitHub Flavored Markdown
       #
-      def format(hiki_data, format_type, options=nil, &block)
+      def self.format(hiki_data, format_type, options=nil, &block)
         tree = BlockParser.parse(hiki_data)
 
         if options
@@ -61,39 +60,38 @@ module PseudoHiki
       # Converts <hiki_data> into HTML4.1
       #
       #
-      def to_html(hiki_data, &block)
+      def self.to_html(hiki_data, &block)
         format(hiki_data, :html, options=nil, &block)
       end
 
       # Converts <hiki_data> into XHTML1.0
       #
-      def to_xhtml(hiki_data, &block)
+      def self.to_xhtml(hiki_data, &block)
         format(hiki_data, :xhtml, options=nil, &block)
       end
 
       # Converts <hiki_data> into HTML5
       #
-      def to_html5(hiki_data, &block)
+      def self.to_html5(hiki_data, &block)
         format(hiki_data, :html5, options=nil, &block)
       end
 
       # Converts <hiki_data> into plain texts without tags
       #
-      def to_plain(hiki_data, &block)
+      def self.to_plain(hiki_data, &block)
         format(hiki_data, :plain, options=nil, &block)
       end
 
       # Converts <hiki_data> into Markdown
       #
-      def to_markdown(hiki_data, &block)
+      def self.to_markdown(hiki_data, &block)
         format(hiki_data, :markdown, options=nil, &block)
       end
 
       # Converts <hiki_data> into GitHub Flavored Markdown
       #
-      def to_gfm(hiki_data, &block)
+      def self.to_gfm(hiki_data, &block)
         format(hiki_data, :gfm, options=nil, &block)
       end
-    end
   end
 end
