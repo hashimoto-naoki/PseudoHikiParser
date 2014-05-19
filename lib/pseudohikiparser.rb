@@ -59,6 +59,38 @@ module PseudoHiki
 
     # Converts <hiki_data> into HTML4.1
     #
+    # When you give a block to this method, a tree of HtmlElement objects is passed as a parameter to the block,
+    # so you can traverse it, as in the following example:
+    #
+    #    hiki = <<HIKI
+    #    !! heading
+    #    
+    #    paragraph 1 that contains [[a link to a html file|http://www.example.org/example.html]]
+    #    
+    #    paragraph 2 that contains [[a link to a pdf file|http://www.example.org/example.pdf]]
+    #    HIKI
+    #    
+    #    html_str = PseudoHiki::Format.to_html(hiki) do |html|
+    #      html.traverse do |elm|
+    #        if elm.kind_of? HtmlElement and elm.tagname == "a"
+    #          elm["class"] = "pdf" if /pdf\Z/o =~ elm["href"]
+    #        end
+    #      end
+    #    end
+    #
+    # and the value of html_str is
+    #
+    #    <div class="section h2">
+    #    <h2> heading
+    #    </h2>
+    #    <p>
+    #    paragraph 1 that contains <a href="http://www.example.org/example.html">a link to a html file</a>
+    #    </p>
+    #    <p>
+    #    paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pdf">a link to a pdf file</a>
+    #    </p>
+    #    <!-- end of section h2 -->
+    #    </div>
     #
     def self.to_html(hiki_data, &block)
       format(hiki_data, :html, options=nil, &block)
@@ -66,11 +98,15 @@ module PseudoHiki
 
     # Converts <hiki_data> into XHTML1.0
     #
+    # You can give a block to this method as in the case of ::to_html, but the parameter to the block is a tree of XhtmlElement objects
+    #
     def self.to_xhtml(hiki_data, &block)
       format(hiki_data, :xhtml, options=nil, &block)
     end
 
     # Converts <hiki_data> into HTML5
+    #
+    # You can give a block to this method as in the case of ::to_html, but the parameter to the block is a tree of Xhtml5Element objects
     #
     def self.to_html5(hiki_data, &block)
       format(hiki_data, :html5, options=nil, &block)
