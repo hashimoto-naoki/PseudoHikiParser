@@ -115,6 +115,34 @@ HTML
     assert_equal(html,convert_text_to_html(text))
   end
 
+  def test_img
+    text = <<TEXT
+a paragraph with a normal [[link|http://www.example.org/]]
+
+a paragraph with an [[image|http://www.example.org/image.png]]
+
+a paragraph with a link to an image from [[[[a thumbnail image|image/thumb_nail.png]]|http://www.example.org/image.png]]
+TEXT
+
+    html = <<HTML
+<p>
+a paragraph with a normal <a href="http://www.example.org/">link</a>
+</p>
+<p>
+a paragraph with an <img alt="image" src="http://www.example.org/image.png">
+
+</p>
+<p>
+a paragraph with a link to an image from <a href="http://www.example.org/image.png"><img alt="a thumbnail image" src="image/thumb_nail.png">
+</a>
+</p>
+HTML
+
+
+    tree = BlockParser.parse(text)
+    assert_equal(html, HtmlFormat.format(tree).to_s)
+  end
+
   def test_plugin
     text = <<TEXT
 a paragraph with several plugin tags.
