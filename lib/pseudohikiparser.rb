@@ -59,7 +59,7 @@ module PseudoHiki
 
     # Converts <hiki_data> into HTML4.1
     #
-    # When you give a block to this method, a tree of HtmlElement objects is passed as a parameter to the block,
+    # When you give a block to this method, a tree of HtmlElement objects is passed as the parameter to the block,
     # so you can traverse it, as in the following example:
     #
     #    hiki = <<HIKI
@@ -73,7 +73,7 @@ module PseudoHiki
     #    html_str = PseudoHiki::Format.to_html(hiki) do |html|
     #      html.traverse do |elm|
     #        if elm.kind_of? HtmlElement and elm.tagname == "a"
-    #          elm["class"] = "pdf" if /pdf\Z/o =~ elm["href"]
+    #          elm["class"] = "pdf" if /\.pdf\Z/o =~ elm["href"]
     #        end
     #      end
     #    end
