@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'pseudohiki/converter'
+
 options = PseudoHiki::OptionManager.new
 options.set_options_from_command_line
 
