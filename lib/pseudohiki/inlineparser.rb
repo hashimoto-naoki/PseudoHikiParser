@@ -14,7 +14,7 @@ module PseudoHiki
   end
 
   def self.compile_token_pat(*token_sets)
-    tokens = token_sets.flatten.uniq.sort do |x,y|
+    tokens = token_sets.flatten.uniq.sort do |x, y|
       [y.length, y] <=> [x.length, x]
     end.collect {|token| Regexp.escape(token) }
     Regexp.new(tokens.join("|"))
@@ -22,7 +22,7 @@ module PseudoHiki
 
   class InlineParser < TreeStack
     module InlineElement
-      class InlineNode < InlineParser::Node;end
+      class InlineNode < InlineParser::Node; end
       class InlineLeaf < InlineParser::Leaf; end
       #  class LinkSepLeaf < InlineLeaf; end
 
