@@ -111,6 +111,44 @@ end
 class TC_PageComposer < MiniTest::Unit::TestCase
   include PseudoHiki
 
+  def setup
+    @toc_lines = <<HIKI.each_line.to_a
+!Title
+
+!![heading1]Heading1
+
+paragraph
+
+paragran
+
+!![heading2]Heading2
+
+!!![heading2-1]Heading2-1
+
+paragraph
+
+paragraph
+
+HIKI
+
+  end
+
+  def test_create_plain_table_of_contents
+    plain_toc = <<TEXT
+  * Heading1
+  * Heading2
+    * Heading2-1
+TEXT
+    set_argv("-fg -s -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.set_options_from_command_line
+
+    toc = PageComposer.new(options).create_plain_table_of_contents(@toc_lines)
+
+    assert_equal(plain_toc, toc)
+  end
+
   def test_output_in_gfm_with_toc
     input = <<TEXT.each_line.to_a
 //title: Test Data
