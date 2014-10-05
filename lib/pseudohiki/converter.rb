@@ -48,11 +48,11 @@ module PseudoHiki
     end
 
     def create_html_table_of_contents(lines)
-      toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
-        m = HEADING_WITH_ID_PAT.match(line)
-        heading_depth, id = m[1].length, m[2].upcase
-        "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
+      tree = BlockParser.parse(lines)
+      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, PlainFormat.format(toc_node).to_s, toc_node.node_id.upcase]
       end
+
       @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
         toc.traverse do |element|
           if element.kind_of? HtmlElement and element.tagname == "a"
