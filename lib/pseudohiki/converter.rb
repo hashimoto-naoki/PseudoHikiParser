@@ -126,7 +126,7 @@ module PseudoHiki
       toc = create_table_of_contents(tree)
       body = compose_body(tree)
       title = @options.title
-      main = create_main(toc,body, h1)
+      main = create_main(toc, body, h1)
 
       if @options[:template]
         erb = ERB.new(@options.read_template_file)
