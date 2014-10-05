@@ -118,16 +118,16 @@ module PseudoHiki
       end
     end
 
-    def compose_body(input_lines)
-      tree = BlockParser.parse(input_lines)
+    def compose_body(tree)
       @options.formatter.format(tree)
     end
 
     def compose_html(input_lines)
       h1 = split_main_heading(input_lines)
       css = @options[:css]
+      tree = BlockParser.parse(input_lines)
       toc = create_table_of_contents(input_lines)
-      body = compose_body(input_lines)
+      body = compose_body(tree)
       title = @options.title
       main = create_main(toc,body, h1)
 
