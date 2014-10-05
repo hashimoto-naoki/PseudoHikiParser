@@ -31,7 +31,7 @@ module PseudoHiki
     end
 
     def to_plain(line)
-      PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
+      PlainFormat.format(line).to_s
     end
 
     def collect_nodes_for_table_of_contents(tree)
@@ -41,7 +41,7 @@ module PseudoHiki
     def create_plain_table_of_contents(lines)
       tree = BlockParser.parse(lines)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        ('*' * toc_node.nominal_level) + PlainFormat.format(toc_node).to_s
+        ('*' * toc_node.nominal_level) + to_plain(toc_node)
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines))
@@ -50,7 +50,7 @@ module PseudoHiki
     def create_html_table_of_contents(lines)
       tree = BlockParser.parse(lines)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, PlainFormat.format(toc_node).to_s, toc_node.node_id.upcase]
+        "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, to_plain(toc_node), toc_node.node_id.upcase]
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
