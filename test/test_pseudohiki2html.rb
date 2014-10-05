@@ -133,6 +133,19 @@ HIKI
 
   end
 
+  def test_collect_nodes_for_table_of_contents
+    set_argv("-fg -s -c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+    collected_nodes = [[["Heading1\n"]],
+                       [["Heading2\n"]],
+                       [["Heading2-1\n"]]]
+
+    tree = BlockParser.parse(@input_lines)
+    toc_nodes = PageComposer.new(options).collect_nodes_for_table_of_contents(tree)
+    assert_equal(collected_nodes, toc_nodes)
+  end
+
   def test_create_plain_table_of_contents
     toc_in_plain_text = <<TEXT
   * Heading1

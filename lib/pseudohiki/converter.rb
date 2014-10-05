@@ -7,6 +7,7 @@ require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
 require 'pseudohiki/plaintextformat'
 require 'pseudohiki/markdownformat'
+require 'pseudohiki/utils'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 
@@ -18,6 +19,11 @@ module PseudoHiki
 
     def initialize(options)
       @options = options
+      @is_toc_item_pat = Proc.new do |node|
+        node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
+          (2..3).include? node.nominal_level and
+          node.node_id
+      end
     end
 
     def formatter
@@ -26,6 +32,10 @@ module PseudoHiki
 
     def to_plain(line)
       PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
+    end
+
+    def collect_nodes_for_table_of_contents(tree)
+      Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
     end
 
     def create_plain_table_of_contents(lines)
