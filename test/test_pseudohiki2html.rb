@@ -131,6 +131,7 @@ paragraph
 
 HIKI
 
+    @parsed_tree = BlockParser.parse(@input_lines)
   end
 
   def test_collect_nodes_for_table_of_contents
@@ -157,7 +158,7 @@ TEXT
     options = OptionManager.new
     options.set_options_from_command_line
 
-    toc = PageComposer.new(options).create_plain_table_of_contents(@input_lines)
+    toc = PageComposer.new(options).create_plain_table_of_contents(@parsed_tree)
 
     assert_equal(toc_in_plain_text, toc)
   end
@@ -181,7 +182,7 @@ TEXT
     options = OptionManager.new
     options.set_options_from_command_line
 
-    toc = PageComposer.new(options).create_html_table_of_contents(@input_lines).join
+    toc = PageComposer.new(options).create_html_table_of_contents(@parsed_tree).join
 
     assert_equal(toc_in_html, toc)
   end
@@ -190,7 +191,7 @@ TEXT
     set_argv("-c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
-    toc = PageComposer.new(options).create_table_of_contents(@input_lines)
+    toc = PageComposer.new(options).create_table_of_contents(@parsed_tree)
     assert_equal("", toc)
 
     toc_in_plain_text = <<TEXT
@@ -202,7 +203,7 @@ TEXT
     set_argv("-fg -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
-    toc = PageComposer.new(options).create_table_of_contents(@input_lines)
+    toc = PageComposer.new(options).create_table_of_contents(@parsed_tree)
     assert_equal(toc_in_plain_text, toc)
 
     toc_in_html = <<TEXT
@@ -221,7 +222,7 @@ TEXT
     set_argv("-fh5 -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
-    toc = PageComposer.new(options).create_table_of_contents(@input_lines).join
+    toc = PageComposer.new(options).create_table_of_contents(@parsed_tree).join
     assert_equal(toc_in_html, toc)
   end
 

@@ -38,8 +38,7 @@ module PseudoHiki
       Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
     end
 
-    def create_plain_table_of_contents(lines)
-      tree = BlockParser.parse(lines)
+    def create_plain_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
         ('*' * toc_node.nominal_level) + to_plain(toc_node)
       end
@@ -47,8 +46,7 @@ module PseudoHiki
       @options.formatter.format(BlockParser.parse(toc_lines))
     end
 
-    def create_html_table_of_contents(lines)
-      tree = BlockParser.parse(lines)
+    def create_html_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
         "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, to_plain(toc_node), toc_node.node_id.upcase]
       end
@@ -62,10 +60,10 @@ module PseudoHiki
       end
     end
 
-    def create_table_of_contents(lines)
+    def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      return create_plain_table_of_contents(lines) unless @options.html_template
-      create_html_table_of_contents(lines)
+      return create_plain_table_of_contents(tree) unless @options.html_template
+      create_html_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
@@ -125,7 +123,7 @@ module PseudoHiki
       h1 = split_main_heading(input_lines)
       css = @options[:css]
       tree = BlockParser.parse(input_lines)
-      toc = create_table_of_contents(input_lines)
+      toc = create_table_of_contents(tree)
       body = compose_body(tree)
       title = @options.title
       main = create_main(toc,body, h1)
