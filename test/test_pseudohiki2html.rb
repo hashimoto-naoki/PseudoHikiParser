@@ -112,7 +112,7 @@ class TC_PageComposer < MiniTest::Unit::TestCase
   include PseudoHiki
 
   def setup
-    @toc_lines = <<HIKI.each_line.to_a
+    @input_lines = <<HIKI.each_line.to_a
 !Title
 
 !![heading1]Heading1
@@ -134,7 +134,7 @@ HIKI
   end
 
   def test_create_plain_table_of_contents
-    plain_toc = <<TEXT
+    toc_in_plain_text = <<TEXT
   * Heading1
   * Heading2
     * Heading2-1
@@ -144,13 +144,13 @@ TEXT
     options = OptionManager.new
     options.set_options_from_command_line
 
-    toc = PageComposer.new(options).create_plain_table_of_contents(@toc_lines)
+    toc = PageComposer.new(options).create_plain_table_of_contents(@input_lines)
 
-    assert_equal(plain_toc, toc)
+    assert_equal(toc_in_plain_text, toc)
   end
 
   def test_create_html_table_of_contents
-    plain_toc = <<TEXT
+    toc_in_html = <<TEXT
 <ul>
 <li><a href="#HEADING1" title="toc_item: Heading1">Heading1
 </a></li>
@@ -168,16 +168,16 @@ TEXT
     options = OptionManager.new
     options.set_options_from_command_line
 
-    toc = PageComposer.new(options).create_html_table_of_contents(@toc_lines).join
+    toc = PageComposer.new(options).create_html_table_of_contents(@input_lines).join
 
-    assert_equal(plain_toc, toc)
+    assert_equal(toc_in_html, toc)
   end
 
   def test_create_table_of_contents
     set_argv("-c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
-    toc = PageComposer.new(options).create_table_of_contents(@toc_lines)
+    toc = PageComposer.new(options).create_table_of_contents(@input_lines)
     assert_equal("", toc)
 
     toc_in_plain_text = <<TEXT
@@ -189,7 +189,7 @@ TEXT
     set_argv("-fg -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
-    toc = PageComposer.new(options).create_table_of_contents(@toc_lines)
+    toc = PageComposer.new(options).create_table_of_contents(@input_lines)
     assert_equal(toc_in_plain_text, toc)
 
     toc_in_html = <<TEXT
@@ -208,7 +208,7 @@ TEXT
     set_argv("-fh5 -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
-    toc = PageComposer.new(options).create_table_of_contents(@toc_lines).join
+    toc = PageComposer.new(options).create_table_of_contents(@input_lines).join
     assert_equal(toc_in_html, toc)
   end
 
