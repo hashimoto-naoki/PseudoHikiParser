@@ -173,6 +173,45 @@ TEXT
     assert_equal(plain_toc, toc)
   end
 
+  def test_create_table_of_contents
+    set_argv("-c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+    toc = PageComposer.new(options).create_table_of_contents(@toc_lines)
+    assert_equal("", toc)
+
+    toc_in_plain_text = <<TEXT
+  * Heading1
+  * Heading2
+    * Heading2-1
+TEXT
+
+    set_argv("-fg -m 'table of contents' -c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+    toc = PageComposer.new(options).create_table_of_contents(@toc_lines)
+    assert_equal(toc_in_plain_text, toc)
+
+    toc_in_html = <<TEXT
+<ul>
+<li><a href="#HEADING1" title="toc_item: Heading1">Heading1
+</a></li>
+<li><a href="#HEADING2" title="toc_item: Heading2">Heading2
+</a><ul>
+<li><a href="#HEADING2-1" title="toc_item: Heading2-1">Heading2-1
+</a></li>
+</ul>
+</li>
+</ul>
+TEXT
+
+    set_argv("-fh5 -m 'table of contents' -c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+    toc = PageComposer.new(options).create_table_of_contents(@toc_lines).join
+    assert_equal(toc_in_html, toc)
+  end
+
   def test_output_in_gfm_with_toc
     input = <<TEXT.each_line.to_a
 //title: Test Data
