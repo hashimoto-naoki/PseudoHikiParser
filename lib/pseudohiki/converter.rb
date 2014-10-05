@@ -39,10 +39,9 @@ module PseudoHiki
     end
 
     def create_plain_table_of_contents(lines)
-      toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
-        m = HEADING_WITH_ID_PAT.match(line)
-        heading_depth = m[1].length
-        line.sub(/^!+/o, '*'*heading_depth)
+      tree = BlockParser.parse(lines)
+      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        ('*' * toc_node.nominal_level) + PlainFormat.format(toc_node).to_s
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines))
