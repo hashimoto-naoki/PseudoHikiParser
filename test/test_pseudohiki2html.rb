@@ -149,6 +149,30 @@ TEXT
     assert_equal(plain_toc, toc)
   end
 
+  def test_create_html_table_of_contents
+    plain_toc = <<TEXT
+<ul>
+<li><a href="#HEADING1" title="toc_item: Heading1">Heading1
+</a></li>
+<li><a href="#HEADING2" title="toc_item: Heading2">Heading2
+</a><ul>
+<li><a href="#HEADING2-1" title="toc_item: Heading2-1">Heading2-1
+</a></li>
+</ul>
+</li>
+</ul>
+TEXT
+
+    set_argv("-fh5 -s -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.set_options_from_command_line
+
+    toc = PageComposer.new(options).create_html_table_of_contents(@toc_lines).join
+
+    assert_equal(plain_toc, toc)
+  end
+
   def test_output_in_gfm_with_toc
     input = <<TEXT.each_line.to_a
 //title: Test Data
