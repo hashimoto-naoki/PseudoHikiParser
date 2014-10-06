@@ -7,6 +7,7 @@ require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
 require 'pseudohiki/plaintextformat'
 require 'pseudohiki/markdownformat'
+require 'pseudohiki/utils'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
 
@@ -18,6 +19,11 @@ module PseudoHiki
 
     def initialize(options)
       @options = options
+      @is_toc_item_pat = Proc.new do |node|
+        node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
+          (2..3).include? node.nominal_level and
+          node.node_id
+      end
     end
 
     def formatter
@@ -25,25 +31,26 @@ module PseudoHiki
     end
 
     def to_plain(line)
-      PlainFormat.format(BlockParser.parse(line.lines.to_a)).to_s.chomp
+      PlainFormat.format(line).to_s
     end
 
-    def create_plain_table_of_contents(lines)
-      toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
-        m = HEADING_WITH_ID_PAT.match(line)
-        heading_depth = m[1].length
-        line.sub(/^!+/o, '*'*heading_depth)
+    def collect_nodes_for_table_of_contents(tree)
+      Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
+    end
+
+    def create_plain_table_of_contents(tree)
+      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        ('*' * toc_node.nominal_level) + to_plain(toc_node)
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines))
     end
 
-    def create_html_table_of_contents(lines)
-      toc_lines = lines.grep(HEADING_WITH_ID_PAT).map do |line|
-        m = HEADING_WITH_ID_PAT.match(line)
-        heading_depth, id = m[1].length, m[2].upcase
-        "%s[[%s|#%s]]"%['*'*heading_depth, to_plain(line.sub(HEADING_WITH_ID_PAT,'')), id]
+    def create_html_table_of_contents(tree)
+      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, to_plain(toc_node), toc_node.node_id.upcase]
       end
+
       @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
         toc.traverse do |element|
           if element.kind_of? HtmlElement and element.tagname == "a"
@@ -53,10 +60,10 @@ module PseudoHiki
       end
     end
 
-    def create_table_of_contents(lines)
+    def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      return create_plain_table_of_contents(lines) unless @options.html_template
-      create_html_table_of_contents(lines)
+      return create_plain_table_of_contents(tree) unless @options.html_template
+      create_html_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
@@ -108,18 +115,18 @@ module PseudoHiki
       end
     end
 
-    def compose_body(input_lines)
-      tree = BlockParser.parse(input_lines)
+    def compose_body(tree)
       @options.formatter.format(tree)
     end
 
     def compose_html(input_lines)
       h1 = split_main_heading(input_lines)
       css = @options[:css]
-      toc = create_table_of_contents(input_lines)
-      body = compose_body(input_lines)
+      tree = BlockParser.parse(input_lines)
+      toc = create_table_of_contents(tree)
+      body = compose_body(tree)
       title = @options.title
-      main = create_main(toc,body, h1)
+      main = create_main(toc, body, h1)
 
       if @options[:template]
         erb = ERB.new(@options.read_template_file)
