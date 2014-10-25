@@ -40,7 +40,7 @@ module PseudoHiki
     # [:html] HTML4.1
     # [:xhtml] XHTML1.0
     # [:html5] HTML5
-    # [:plain] remove all of tags. certain information such as urls in link tags do not appear in the output
+    # [:plain] remove all of tags. certain information such as urls in link tags does not appear in the output
     # [:plain_verbose] similar to :plain, but certain information such as urls in link tags will be kept in the output
     # [:markdown] Markdown
     # [:gfm] GitHub Flavored Markdown
