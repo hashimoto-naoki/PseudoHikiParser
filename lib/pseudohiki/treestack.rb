@@ -64,9 +64,7 @@ class TreeStack
   def initialize(root_node=Node.new)
     @stack = [root_node]
     @node_end = NodeEnd.new
-    def root_node.depth
-      0
-    end
+    root_node.depth = 0
   end
 
   def current_node
