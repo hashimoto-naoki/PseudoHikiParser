@@ -61,7 +61,7 @@ module PseudoHiki
       end
 
       def self.create(line, inline_parser=InlineParser)
-        line.sub!(self.head_re, "") if self.head_re
+        line = line.sub(self.head_re, "") if self.head_re
         new.concat(inline_parser.parse(line)) #leaf = self.new
       end
 
@@ -102,7 +102,7 @@ module PseudoHiki
       include TreeStack::Mergeable
 
       def self.create(line)
-        line.sub!(self.head_re, "") if self.head_re
+        line = line.sub(self.head_re, "") if self.head_re
         self.new.tap {|leaf| leaf.push line }
       end
 
@@ -173,7 +173,7 @@ module PseudoHiki
 
       def create_leaf(line, blockparser)
         return BlockElement::VerbatimLeaf.create("", true) if LINE_PAT::VERBATIM_BEGIN =~ line
-        line = tagfy_link(line) unless BlockElement::VerbatimLeaf.head_re =~ line
+        line = tagfy_link(line) if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
         blockparser.select_leaf_type(line).create(line)
       end
     end
@@ -246,7 +246,7 @@ module PseudoHiki
       attr_accessor :in_block_tag
 
       def self.create(line, in_block_tag=nil)
-        line.sub!(self.head_re, "") if self.head_re and not in_block_tag
+        line = line.sub(self.head_re, "") if self.head_re and not in_block_tag
         self.new.tap do |leaf|
           leaf.push line
           leaf.in_block_tag = in_block_tag
