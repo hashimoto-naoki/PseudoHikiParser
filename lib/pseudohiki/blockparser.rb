@@ -216,7 +216,13 @@ module PseudoHiki
     include BlockElement
 
     class BlockElement::BlockNodeEnd
+      PARSED_NODE_END = new.concat(InlineParser.parse(""))
+
       def push_self(stack); end
+
+      def self.create(line, inline_parser=InlineParser)
+        PARSED_NODE_END
+      end
     end
 
     class BlockElement::VerbatimNode
