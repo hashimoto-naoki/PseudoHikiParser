@@ -360,6 +360,7 @@ module PseudoHiki
       Regexp.new('\\A('+head_pats.join('|')+')')
     end
     HEAD_RE = assign_head_re
+    IRREGULAR_LEAF_TYPES = [BlockNodeEnd, HrLeaf, DecoratorLeaf]
 
     def initialize
       root_node = BlockNode.new
@@ -374,7 +375,7 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      [BlockNodeEnd, HrLeaf, DecoratorLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
+      IRREGULAR_LEAF_TYPES.each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
       return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || VerbatimLeaf if matched
       ParagraphLeaf
