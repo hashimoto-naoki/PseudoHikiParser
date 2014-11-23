@@ -6,7 +6,7 @@ require 'pseudohiki/inlineparser'
 module PseudoHiki
   class BlockParser
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
-    ID_TAG_PAT = /^\[([^\[\]]+)\]/o
+    ID_TAG_PAT = /\A\[([^\[\]]+)\]/o
 
     module LINE_PAT
       VERBATIM_BEGIN = /\A(<<<\s*)/o
@@ -321,7 +321,7 @@ module PseudoHiki
         leaf.head_re = Regexp.new('\\A'+head_pat)
       end
       HrLeaf.head_re = Regexp.new(/\A(----)\s*$/o)
-      BlockNodeEnd.head_re = Regexp.new(/^(\r?\n?)$/o)
+      BlockNodeEnd.head_re = Regexp.new(/\A(\r?\n?)$/o)
       Regexp.new('\\A('+head_pats.join('|')+')')
     end
     HEAD_RE = assign_head_re
