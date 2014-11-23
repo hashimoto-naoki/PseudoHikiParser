@@ -325,6 +325,7 @@ module PseudoHiki
       Regexp.new('\\A('+head_pats.join('|')+')')
     end
     HEAD_RE = assign_head_re
+    IRREGULAR_LEAF_TYPES = [BlockNodeEnd, HrLeaf]
 
     def initialize
       root_node = BlockNode.new
@@ -339,7 +340,7 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      [BlockNodeEnd, HrLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
+      IRREGULAR_LEAF_TYPES.each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
       return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || HeadToLeaf['\s'] if matched
       ParagraphLeaf
