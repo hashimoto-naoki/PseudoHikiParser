@@ -376,7 +376,7 @@ module PseudoHiki
     def select_leaf_type(line)
       [BlockNodeEnd, HrLeaf, DecoratorLeaf].each {|leaf| return leaf if leaf.head_re =~ line }
       matched = HEAD_RE.match(line)
-      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || HeadToLeaf['\s'] if matched
+      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || VerbatimLeaf if matched
       ParagraphLeaf
     end
 
