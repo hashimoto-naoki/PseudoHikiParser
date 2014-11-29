@@ -338,7 +338,6 @@ module PseudoHiki
 
     def self.assign_head_re
       space = '\s'
-      head_pats = []
       [[':', DescLeaf],
        [space, VerbatimLeaf],
        ['""', QuoteLeaf],
@@ -351,15 +350,14 @@ module PseudoHiki
         HeadToLeaf[head] = leaf
         escaped_head = head != space ? Regexp.escape(head) : head
         head_pat = leaf.with_depth? ? "(#{escaped_head})+" : "(#{escaped_head})"
-        head_pats.push head_pat
         leaf.head_re = Regexp.new('\\A'+head_pat)
       end
       HrLeaf.head_re = Regexp.new(/\A(----)\s*$/o)
       BlockNodeEnd.head_re = Regexp.new(/\A(\r?\n?)$/o)
       DecoratorLeaf.head_re = Regexp.new(/\A(\/\/@)/o)
-      Regexp.new('\\A('+head_pats.join('|')+')')
     end
-    HEAD_RE = assign_head_re
+    assign_head_re
+
     NOT_PARAGRAPH_LEAF_TYPES = [:entire_matched_part, BlockNodeEnd, DecoratorLeaf, DescLeaf, VerbatimLeaf, QuoteLeaf, TableLeaf, CommentOutLeaf, HeadingLeaf, ListLeaf, EnumLeaf, HrLeaf]
     NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = NOT_PARAGRAPH_LEAF_TYPES.length - 1
     LEAF_HEAD_PATS = /\A(?:(\r?\n?$)|(\/\/@)|(:)|(\s)|("")|(\|\|)|(\/\/)|(!)|(\*)|(#)|(----\s*$))/o
