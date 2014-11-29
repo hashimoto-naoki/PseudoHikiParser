@@ -337,24 +337,24 @@ module PseudoHiki
     ParentNode[BlockNodeEnd] = BlockNodeEnd
 
     def self.assign_head_re
-      space = '\s'
-      [[':', DescLeaf],
-       [space, VerbatimLeaf],
+      irregular_leafs = [BlockNodeEnd, DecoratorLeaf, VerbatimLeaf, HrLeaf]
+      [['\r?\n?$', BlockNodeEnd],
+       ['\/\/@', DecoratorLeaf],
+       [':', DescLeaf],
+       ['\s', VerbatimLeaf],
        ['""', QuoteLeaf],
        ['||', TableLeaf],
        ['//', CommentOutLeaf],
        ['!', HeadingLeaf],
        ['*', ListLeaf],
-       ['#', EnumLeaf]
+       ['#', EnumLeaf],
+       ['----\s*$', HrLeaf]
       ].each do |head, leaf|
         HeadToLeaf[head] = leaf
-        escaped_head = head != space ? Regexp.escape(head) : head
+        escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "(#{escaped_head})+" : "(#{escaped_head})"
         leaf.head_re = Regexp.new('\\A'+head_pat)
       end
-      HrLeaf.head_re = Regexp.new(/\A(----)\s*$/o)
-      BlockNodeEnd.head_re = Regexp.new(/\A(\r?\n?)$/o)
-      DecoratorLeaf.head_re = Regexp.new(/\A(\/\/@)/o)
     end
     assign_head_re
 
