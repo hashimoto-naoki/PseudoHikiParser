@@ -16,7 +16,6 @@ module PseudoHiki
     end
 
     ParentNode = {}
-    HeadToLeaf = {}
 
     attr_reader :stack
 
@@ -351,7 +350,6 @@ module PseudoHiki
        ['#', EnumLeaf],
        ['----\s*$', HrLeaf]
       ].each do |head, leaf|
-        HeadToLeaf[head] = leaf
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "(#{escaped_head})+" : "(#{escaped_head})"
         leaf.head_re = Regexp.new('\\A'+head_pat)
