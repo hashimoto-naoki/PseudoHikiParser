@@ -338,6 +338,7 @@ module PseudoHiki
 
     def self.assign_head_re
       irregular_leafs = [BlockNodeEnd, DecoratorLeaf, VerbatimLeaf, HrLeaf]
+      head_pats, leaf_types = [], [:entire_matched_part]
       [['\r?\n?$', BlockNodeEnd],
        ['\/\/@', DecoratorLeaf],
        [':', DescLeaf],
@@ -354,13 +355,13 @@ module PseudoHiki
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "(#{escaped_head})+" : "(#{escaped_head})"
         leaf.head_re = Regexp.new('\\A'+head_pat)
+        head_pats.push "(#{escaped_head})"
+        leaf_types.push leaf
       end
+      return Regexp.new('\\A(?:'+head_pats.join('|')+')'), leaf_types, leaf_types.length - 1
     end
-    assign_head_re
 
-    NOT_PARAGRAPH_LEAF_TYPES = [:entire_matched_part, BlockNodeEnd, DecoratorLeaf, DescLeaf, VerbatimLeaf, QuoteLeaf, TableLeaf, CommentOutLeaf, HeadingLeaf, ListLeaf, EnumLeaf, HrLeaf]
-    NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = NOT_PARAGRAPH_LEAF_TYPES.length - 1
-    LEAF_HEAD_PAT = /\A(?:(\r?\n?$)|(\/\/@)|(:)|(\s)|("")|(\|\|)|(\/\/)|(!)|(\*)|(#)|(----\s*$))/o
+    LEAF_HEAD_PAT, NOT_PARAGRAPH_LEAF_TYPES, NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = assign_head_re
 
     def initialize
       root_node = BlockNode.new
