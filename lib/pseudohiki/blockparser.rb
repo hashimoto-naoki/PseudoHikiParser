@@ -360,7 +360,9 @@ module PseudoHiki
       Regexp.new('\\A('+head_pats.join('|')+')')
     end
     HEAD_RE = assign_head_re
-    IRREGULAR_LEAF_TYPES = [BlockNodeEnd, HrLeaf, DecoratorLeaf]
+    NOT_PARAGRAPH_LEAF_TYPES = [:entire_matched_part, BlockNodeEnd, DecoratorLeaf, DescLeaf, VerbatimLeaf, QuoteLeaf, TableLeaf, CommentOutLeaf, HeadingLeaf, ListLeaf, EnumLeaf, HrLeaf]
+    NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = NOT_PARAGRAPH_LEAF_TYPES.length - 1
+    LEAF_HEAD_PATS = /\A(?:(\r?\n?$)|(\/\/@)|(:)|(\s)|("")|(\|\|)|(\/\/)|(!)|(\*)|(#)|(----\s*$))/o
 
     def initialize
       root_node = BlockNode.new
@@ -375,10 +377,9 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      IRREGULAR_LEAF_TYPES.each {|leaf| return leaf if leaf.head_re =~ line }
-      matched = HEAD_RE.match(line)
-      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || VerbatimLeaf if matched
-      ParagraphLeaf
+      matched = LEAF_HEAD_PATS.match(line)
+      return ParagraphLeaf unless matched
+      1.upto(NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES) {|i| return NOT_PARAGRAPH_LEAF_TYPES[i] if matched[i] }
     end
 
     def read_lines(lines)
