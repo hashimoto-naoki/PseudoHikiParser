@@ -16,7 +16,6 @@ module PseudoHiki
     end
 
     ParentNode = {}
-    HeadToLeaf = {}
 
     attr_reader :stack
 
@@ -303,29 +302,29 @@ module PseudoHiki
     ParentNode[BlockNodeEnd] = BlockNodeEnd
 
     def self.assign_head_re
-      space = '\s'
-      head_pats = []
-      [[':', DescLeaf],
-       [space, VerbatimLeaf],
+      irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
+      head_pats, leaf_types = [], [:entire_matched_part]
+      [['\r?\n?$', BlockNodeEnd],
+       [':', DescLeaf],
+       ['\s', VerbatimLeaf],
        ['""', QuoteLeaf],
        ['||', TableLeaf],
        ['//', CommentOutLeaf],
        ['!', HeadingLeaf],
        ['*', ListLeaf],
-       ['#', EnumLeaf]
+       ['#', EnumLeaf],
+       ['----\s*$', HrLeaf]
       ].each do |head, leaf|
-        HeadToLeaf[head] = leaf
-        escaped_head = head != space ? Regexp.escape(head) : head
+        escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "(#{escaped_head})+" : "(#{escaped_head})"
-        head_pats.push head_pat
         leaf.head_re = Regexp.new('\\A'+head_pat)
+        head_pats.push "(#{escaped_head})"
+        leaf_types.push leaf
       end
-      HrLeaf.head_re = Regexp.new(/\A(----)\s*$/o)
-      BlockNodeEnd.head_re = Regexp.new(/\A(\r?\n?)$/o)
-      Regexp.new('\\A('+head_pats.join('|')+')')
+      return Regexp.new('\\A(?:'+head_pats.join('|')+')'), leaf_types, leaf_types.length - 1
     end
-    HEAD_RE = assign_head_re
-    IRREGULAR_LEAF_TYPES = [BlockNodeEnd, HrLeaf]
+
+    LEAF_HEAD_PAT, NOT_PARAGRAPH_LEAF_TYPES, NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = assign_head_re
 
     def initialize
       root_node = BlockNode.new
@@ -340,10 +339,9 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      IRREGULAR_LEAF_TYPES.each {|leaf| return leaf if leaf.head_re =~ line }
-      matched = HEAD_RE.match(line)
-      return HeadToLeaf[matched[0]]||HeadToLeaf[line[0, 1]] || VerbatimLeaf if matched
-      ParagraphLeaf
+      matched = LEAF_HEAD_PAT.match(line)
+      return ParagraphLeaf unless matched
+      1.upto(NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES) {|i| return NOT_PARAGRAPH_LEAF_TYPES[i] if matched[i] }
     end
 
     def read_lines(lines)
