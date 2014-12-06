@@ -64,11 +64,6 @@ module PseudoHiki
         new.concat(inline_parser.parse(line)) #leaf = self.new
       end
 
-      def self.assign_head_re(head, need_to_escape=true, reg_pat="(%s)")
-        head = Regexp.escape(head) if need_to_escape
-        self.head_re = Regexp.new('\\A'+reg_pat%[head])
-      end
-
       def head_re
         @@head_re[self.class]
       end
@@ -116,10 +111,6 @@ module PseudoHiki
     end
 
     class NestedBlockLeaf < BlockLeaf
-      def self.assign_head_re(head, need_to_escape)
-        super(head, need_to_escape, "(%s)+")
-      end
-
       def self.create(line)
         m = self.head_re.match(line)
         super(line).tap {|leaf| leaf.nominal_level = m[0].length }
