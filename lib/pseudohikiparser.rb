@@ -64,12 +64,12 @@ module PseudoHiki
     #
     #    hiki = <<HIKI
     #    !! heading
-    #    
+    #
     #    paragraph 1 that contains [[a link to a html file|http://www.example.org/example.html]]
-    #    
+    #
     #    paragraph 2 that contains [[a link to a pdf file|http://www.example.org/example.pdf]]
     #    HIKI
-    #    
+    #
     #    html_str = PseudoHiki::Format.to_html(hiki) do |html|
     #      html.traverse do |elm|
     #        if elm.kind_of? HtmlElement and elm.tagname == "a"
