@@ -9,8 +9,8 @@ module PseudoHiki
     ID_TAG_PAT = /\A\[([^\[\]]+)\]/o
 
     module LINE_PAT
-      VERBATIM_BEGIN = /\A(<<<\s*)/o
-      VERBATIM_END = /\A(>>>\s*)/o
+      VERBATIM_BEGIN = /\A<<<\s*/o
+      VERBATIM_END = /\A>>>\s*/o
       PLUGIN_BEGIN = /\{\{/o
       PLUGIN_END = /\}\}/o
     end
@@ -342,7 +342,7 @@ module PseudoHiki
        ['----\s*$', HrLeaf]
       ].each do |head, leaf|
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
-        head_pat = leaf.with_depth? ? "(#{escaped_head})+" : "(#{escaped_head})"
+        head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
         leaf.head_re = Regexp.new('\\A'+head_pat)
         head_pats.push "(#{escaped_head})"
         leaf_types.push leaf
