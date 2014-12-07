@@ -319,7 +319,7 @@ paragraph
 
 will be renderes as
 
-```
+```html
 <div class="class_name">
 <h2>A section with a class name
 </h2>
