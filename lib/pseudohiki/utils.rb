@@ -23,7 +23,7 @@ module PseudoHiki
       def visit(tree)
         if @condition.call(tree)
           @nodes.push tree
-        else 
+        else
           tree.each do |node|
             node.accept(self) if node.respond_to? :accept
           end
