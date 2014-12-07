@@ -15,15 +15,15 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
   end
 
   def test_block_head_re_when_verbatimleaf
-    assert_equal(/\A(\s)/o, VerbatimLeaf.new.head_re)
+    assert_equal(/\A\s/o, VerbatimLeaf.new.head_re)
   end
 
   def test_block_head_re_when_tableleaf
-    assert_equal(/\A(\|\|)/o, TableLeaf.new.head_re)
+    assert_equal(/\A\|\|/o, TableLeaf.new.head_re)
   end
 
   def test_block_head_re_when_commentoutleaf
-    assert_equal(/\A(\/\/)/o.to_s, CommentOutLeaf.new.head_re.to_s)
+    assert_equal(/\A\/\//o.to_s, CommentOutLeaf.new.head_re.to_s)
   end
 
   def test_block_head_re_when_commentoutleaf2
@@ -31,7 +31,7 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
   end
 
   def test_block_head_re_when_headingleaf
-    assert_equal(/\A(!)+/o, HeadingLeaf.new.head_re)
+    assert_equal(/\A!+/o, HeadingLeaf.new.head_re)
   end
 
   def test_leaf_create
