@@ -48,11 +48,11 @@ module PseudoHiki
       attr_accessor :nominal_level, :node_id
 
       def self.head_re=(head_regex)
-        @@head_re[self] = head_regex
+        @self_head_re = @@head_re[self] = head_regex
       end
 
       def self.head_re
-        @@head_re[self]
+        @self_head_re
       end
 
       def self.with_depth?
@@ -65,11 +65,11 @@ module PseudoHiki
       end
 
       def head_re
-        @@head_re[self.class]
+        @head_re ||= @@head_re[self.class]
       end
 
       def block
-        ParentNode[self.class]
+        @parent_node ||= ParentNode[self.class]
       end
 
       def push_block(stack)
