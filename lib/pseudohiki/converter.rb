@@ -48,7 +48,7 @@ module PseudoHiki
 
     def create_html_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, to_plain(toc_node), toc_node.node_id.upcase]
+        "%s[[%s|#%s]]"%['*'*toc_node.nominal_level, to_plain(toc_node).lstrip, toc_node.node_id.upcase]
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
