@@ -51,11 +51,10 @@ module PseudoHiki
 
     TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep, TableSep, DescSep])
 
-    def token_pat
-      TokenPat[self.class]
-    end
+    attr_reader :token_pat
 
     def initialize(str)
+      @token_pat = TokenPat[self.class]
       @tokens = split_into_tokens(str)
       super()
     end
