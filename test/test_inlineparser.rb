@@ -10,7 +10,7 @@ class TC_InlineParser < MiniTest::Unit::TestCase
 
   def test_inlineparser_compile_token_pat
     parser = InlineParser.new("")
-    assert_equal(/'''|\}\}|\|\||\{\{|``|\]\]|\[\[|==|''|\||:/,parser.token_pat)
+    assert_equal(/'''|\}\}|\|\||\{\{|``|\]\]|\[\[|==|''|\||:/, parser.instance_variable_get(:@token_pat))
   end
 
   def test_inlineparser_split_into_tokens
