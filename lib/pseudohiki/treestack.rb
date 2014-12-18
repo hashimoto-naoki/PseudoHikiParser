@@ -59,16 +59,13 @@ class TreeStack
     end
   end
 
-  attr_reader :node_end, :last_leaf
+  attr_reader :node_end, :last_leaf, :current_node
 
   def initialize(root_node=Node.new)
     @stack = [root_node]
+    @current_node = @stack[-1]
     @node_end = NodeEnd.new
     root_node.depth = 0
-  end
-
-  def current_node
-    @stack[-1]
   end
 
   def tree
@@ -81,25 +78,28 @@ class TreeStack
   end
 
   def pop
-    @stack.pop if @stack.length > 1
+    return unless @stack.length > 1
+    @current_node = @stack[-2]
+    @stack.pop
   end
   alias return_to_previous_node pop
 
   def current_depth
-    @stack[-1].depth
+    @current_node.depth
   end
 
   def push_as_child_node(node)
-    @stack[-1].push node
+    @current_node.push node
+    @current_node = node
     @stack.push node
   end
   
   def push_as_leaf(node)
-    @stack[-1].push node
+    @current_node.push node
   end
 
   def push_as_sibling(sibling_node=nil)
-    sibling_node ||= @stack[-1].class.new
+    sibling_node ||= @current_node.class.new
     pop if sibling_node.kind_of? NodeType
     push(sibling_node)
     sibling_node
@@ -107,7 +107,7 @@ class TreeStack
 
   def remove_current_node
     removed_node = self.pop
-    @stack[-1].pop
+    @current_node.pop
     removed_node
   end
 
