@@ -68,7 +68,7 @@ class TreeStack
   end
 
   def current_node
-    @stack.last
+    @stack[-1]
   end
 
   def tree
@@ -86,20 +86,20 @@ class TreeStack
   alias return_to_previous_node pop
 
   def current_depth
-    @stack.last.depth
+    @stack[-1].depth
   end
 
   def push_as_child_node(node)
-    @stack.last.push node
+    @stack[-1].push node
     @stack.push node
   end
   
   def push_as_leaf(node)
-    @stack.last.push node
+    @stack[-1].push node
   end
 
   def push_as_sibling(sibling_node=nil)
-    sibling_node ||= current_node.class.new
+    sibling_node ||= @stack[-1].class.new
     pop if sibling_node.kind_of? NodeType
     push(sibling_node)
     sibling_node
@@ -107,7 +107,7 @@ class TreeStack
 
   def remove_current_node
     removed_node = self.pop
-    self.current_node.pop
+    @stack[-1].pop
     removed_node
   end
 
