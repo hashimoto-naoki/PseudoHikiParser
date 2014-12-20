@@ -84,10 +84,6 @@ class TreeStack
   end
   alias return_to_previous_node pop
 
-  def current_depth
-    @current_node.depth
-  end
-
   def push_as_child_node(node)
     @current_node.push node
     @current_node = node
