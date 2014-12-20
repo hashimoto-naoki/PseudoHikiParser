@@ -18,7 +18,7 @@ class TreeStack
 
   module NodeType
     def push_self(stack)
-      @depth = stack.current_depth + 1
+      @depth = stack.current_node.depth + 1
       stack.push_as_child_node self
       nil
     end
@@ -26,7 +26,7 @@ class TreeStack
 
   module LeafType
     def push_self(stack)
-      @depth = stack.current_depth + 1
+      @depth = stack.current_node.depth + 1
       stack.push_as_leaf self
       self
     end
