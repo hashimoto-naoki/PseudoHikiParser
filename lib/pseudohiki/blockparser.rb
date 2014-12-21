@@ -137,8 +137,7 @@ module PseudoHiki
       end
 
       def decorator
-        return nil unless first
-        first.decorator
+        first.decorator if first
       end
 
       def push_self(stack)
