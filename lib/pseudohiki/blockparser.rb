@@ -132,7 +132,7 @@ module PseudoHiki
       attr_accessor :node_id
 
       def nominal_level
-        first.nominal_level if first
+        first.nominal_level if first # @cached_nominal_level ||= (first.nominal_level if first)
       end
 
       def decorator
