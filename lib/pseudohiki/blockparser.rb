@@ -132,8 +132,7 @@ module PseudoHiki
       attr_accessor :node_id
 
       def nominal_level
-        return nil unless first
-        first.nominal_level
+        first.nominal_level if first
       end
 
       def push_self(stack)
