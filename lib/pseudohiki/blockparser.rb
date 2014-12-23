@@ -365,10 +365,10 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
-      REGULAR_LEAF_TYPES.each {|head| return HEAD_TO_LEAF[head] if line.start_with?(head) }
       matched = IRREGULAR_HEAD_PAT.match(line)
-      return ParagraphLeaf unless matched
-      1.upto(NUMBER_OF_IRREGULAR_LEAF_TYPES) {|i| return IRREGULAR_LEAF_TYPES[i] if matched[i] }
+      1.upto(NUMBER_OF_IRREGULAR_LEAF_TYPES) {|i| return IRREGULAR_LEAF_TYPES[i] if matched[i] } if matched
+      REGULAR_LEAF_TYPES.each {|head| return HEAD_TO_LEAF[head] if line.start_with?(head) }
+      ParagraphLeaf
     end
 
     def read_lines(lines)
