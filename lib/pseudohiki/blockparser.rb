@@ -325,10 +325,10 @@ module PseudoHiki
     ParentNode[BlockNodeEnd] = BlockNodeEnd
 
     def self.assign_head_re
-      irregular_leafs = [BlockNodeEnd, DecoratorLeaf, VerbatimLeaf, HrLeaf]
+      irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
       head_pats, leaf_types = [], [:entire_matched_part]
       [['\r?\n?$', BlockNodeEnd],
-       ['\/\/@', DecoratorLeaf],
+       ['//@', DecoratorLeaf],
        [':', DescLeaf],
        ['\s', VerbatimLeaf],
        ['""', QuoteLeaf],
