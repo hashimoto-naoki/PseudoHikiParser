@@ -327,6 +327,7 @@ module PseudoHiki
     def self.assign_head_re
       irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
       head_pats, leaf_types = [], [:entire_matched_part]
+      regular_leaf_types, head_to_leaf = [], {}
       [['\r?\n?$', BlockNodeEnd],
        ['//@', DecoratorLeaf],
        [':', DescLeaf],
@@ -342,13 +343,15 @@ module PseudoHiki
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
         leaf.head_re = Regexp.new('\\A'+head_pat)
-        head_pats.push "(#{escaped_head})"
-        leaf_types.push leaf
+        head_pats.push "(#{escaped_head})" if irregular_leafs.include?(leaf)
+        regular_leaf_types.push head unless irregular_leafs.include?(leaf)
+        head_to_leaf[head] = leaf
+        leaf_types.push leaf if irregular_leafs.include?(leaf)
       end
-      return Regexp.new('\\A(?:'+head_pats.join('|')+')'), leaf_types, leaf_types.length - 1
+      return Regexp.new('\\A(?:'+head_pats.join('|')+')'), regular_leaf_types, head_to_leaf, leaf_types, leaf_types.length - 1
     end
 
-    LEAF_HEAD_PAT, NOT_PARAGRAPH_LEAF_TYPES, NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = assign_head_re
+    LEAF_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, NOT_PARAGRAPH_LEAF_TYPES, NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = assign_head_re
 
     def initialize
       root_node = BlockNode.new
@@ -363,6 +366,7 @@ module PseudoHiki
     end
 
     def select_leaf_type(line)
+      REGULAR_LEAF_TYPES.each {|head| return HEAD_TO_LEAF[head] if line.start_with?(head) }
       matched = LEAF_HEAD_PAT.match(line)
       return ParagraphLeaf unless matched
       1.upto(NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES) {|i| return NOT_PARAGRAPH_LEAF_TYPES[i] if matched[i] }
