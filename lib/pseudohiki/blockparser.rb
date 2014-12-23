@@ -326,7 +326,7 @@ module PseudoHiki
 
     def self.assign_head_re
       irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
-      head_pats, leaf_types = [], [:entire_matched_part]
+      irregular_head_pats, irregular_leaf_types = [], [:entire_matched_part]
       regular_leaf_types, head_to_leaf = [], {}
       [['\r?\n?$', BlockNodeEnd],
        ['//@', DecoratorLeaf],
@@ -343,12 +343,12 @@ module PseudoHiki
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
         leaf.head_re = Regexp.new('\\A'+head_pat)
-        head_pats.push "(#{escaped_head})" if irregular_leafs.include?(leaf)
+        irregular_head_pats.push "(#{escaped_head})" if irregular_leafs.include?(leaf)
         regular_leaf_types.push head unless irregular_leafs.include?(leaf)
         head_to_leaf[head] = leaf
-        leaf_types.push leaf if irregular_leafs.include?(leaf)
+        irregular_leaf_types.push leaf if irregular_leafs.include?(leaf)
       end
-      return Regexp.new('\\A(?:'+head_pats.join('|')+')'), regular_leaf_types, head_to_leaf, leaf_types, leaf_types.length - 1
+      return Regexp.new('\\A(?:'+irregular_head_pats.join('|')+')'), regular_leaf_types, head_to_leaf, irregular_leaf_types, irregular_leaf_types.length - 1
     end
 
     IRREGULAR_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, IRREGULAR_LEAF_TYPES, NUMBER_OF_IRREGULAR_LEAF_TYPES = assign_head_re
