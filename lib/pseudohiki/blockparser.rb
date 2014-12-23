@@ -25,7 +25,7 @@ module PseudoHiki
       return unless head.kind_of? String
       if m = ID_TAG_PAT.match(head)
         node.node_id = m[1]
-        leaf[0] = head.sub(ID_TAG_PAT, "")
+        leaf[0] = head.sub(ID_TAG_PAT, "".freeze)
       end
       node
     end
@@ -60,7 +60,7 @@ module PseudoHiki
       end
 
       def self.create(line, inline_parser=InlineParser)
-        line = line.sub(self.head_re, "") if self.head_re
+        line = line.sub(self.head_re, "".freeze) if self.head_re
         new.concat(inline_parser.parse(line)) #leaf = self.new
       end
 
@@ -96,7 +96,7 @@ module PseudoHiki
       include TreeStack::Mergeable
 
       def self.create(line)
-        line = line.sub(self.head_re, "") if self.head_re
+        line = line.sub(self.head_re, "".freeze) if self.head_re
         self.new.tap {|leaf| leaf.push line }
       end
 
@@ -147,7 +147,7 @@ module PseudoHiki
       def parse_leafs; end
 
       def in_link_tag?(preceding_str)
-        preceding_str[-2, 2] == "[[" or preceding_str[-1, 1] == "|"
+        preceding_str[-2, 2] == "[[".freeze or preceding_str[-1, 1] == "|".freeze
       end
 
       def tagfy_link(line)
@@ -161,7 +161,7 @@ module PseudoHiki
       end
 
       def create_leaf(line, blockparser)
-        return BlockElement::VerbatimLeaf.create("", true) if LINE_PAT::VERBATIM_BEGIN =~ line
+        return BlockElement::VerbatimLeaf.create("".freeze, true) if LINE_PAT::VERBATIM_BEGIN =~ line
         line = tagfy_link(line) if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
         blockparser.select_leaf_type(line).create(line)
       end
@@ -241,7 +241,7 @@ module PseudoHiki
       attr_accessor :in_block_tag
 
       def self.create(line, in_block_tag=nil)
-        line = line.sub(self.head_re, "") if self.head_re and not in_block_tag
+        line = line.sub(self.head_re, "".freeze) if self.head_re and not in_block_tag
         self.new.tap do |leaf|
           leaf.push line
           leaf.in_block_tag = in_block_tag
