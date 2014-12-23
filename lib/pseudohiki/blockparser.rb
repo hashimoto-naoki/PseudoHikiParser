@@ -328,15 +328,15 @@ module PseudoHiki
       irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
       irregular_head_pats, regular_leaf_types, head_to_leaf = [], [], {}
       [['\r?\n?$', BlockNodeEnd],
-       ['//@', DecoratorLeaf],
-       [':', DescLeaf],
        ['\s', VerbatimLeaf],
-       ['""', QuoteLeaf],
-       ['||', TableLeaf],
-       ['//', CommentOutLeaf],
-       ['!', HeadingLeaf],
        ['*', ListLeaf],
        ['#', EnumLeaf],
+       [':', DescLeaf],
+       ['!', HeadingLeaf],
+       ['""', QuoteLeaf],
+       ['||', TableLeaf],
+       ['//@', DecoratorLeaf],
+       ['//', CommentOutLeaf],
        ['----\s*$', HrLeaf]
       ].each do |head, leaf|
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
