@@ -351,7 +351,7 @@ module PseudoHiki
       return Regexp.new('\\A(?:'+head_pats.join('|')+')'), regular_leaf_types, head_to_leaf, leaf_types, leaf_types.length - 1
     end
 
-    LEAF_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, NOT_PARAGRAPH_LEAF_TYPES, NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES = assign_head_re
+    IRREGULAR_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, IRREGULAR_LEAF_TYPES, NUMBER_OF_IRREGULAR_LEAF_TYPES = assign_head_re
 
     def initialize
       root_node = BlockNode.new
@@ -367,9 +367,9 @@ module PseudoHiki
 
     def select_leaf_type(line)
       REGULAR_LEAF_TYPES.each {|head| return HEAD_TO_LEAF[head] if line.start_with?(head) }
-      matched = LEAF_HEAD_PAT.match(line)
+      matched = IRREGULAR_HEAD_PAT.match(line)
       return ParagraphLeaf unless matched
-      1.upto(NUMBER_OF_NOT_PARAGRAPH_LEAF_TYPES) {|i| return NOT_PARAGRAPH_LEAF_TYPES[i] if matched[i] }
+      1.upto(NUMBER_OF_IRREGULAR_LEAF_TYPES) {|i| return IRREGULAR_LEAF_TYPES[i] if matched[i] }
     end
 
     def read_lines(lines)
