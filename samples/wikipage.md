@@ -57,7 +57,7 @@ TEXT
 
 will return the following result to stdout:
 
-```html
+```
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -110,7 +110,7 @@ From version 0.0.0.9, command line options are renamed as follows:
 
 If you save the lines below as a ruby script and execute it:
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -127,7 +127,7 @@ puts html
 
 you will get the following output:
 
-```html
+```
 <div class="section h2">
 <h2> The first heading
 </h2>
@@ -176,7 +176,7 @@ If you add [name\_of\_id], just after the marks that denote heading or list type
 
 will be rendered as
 
-```html
+```
 <div class="section h2">
 <h2 id="HEADING_ID">heading
 </h2>
@@ -238,7 +238,7 @@ It's just in experimental stage.
 
 The following are a sample script and its output:
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohiki/markdownformat'
@@ -319,7 +319,7 @@ paragraph
 
 will be renderes as
 
-```html
+```
 <div class="class_name">
 <h2>A section with a class name
 </h2>
