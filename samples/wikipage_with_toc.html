@@ -26,11 +26,43 @@
 <li><a href="#INSTALLATION" title="toc_item: Installation">Installation
 </a></li>
 <li><a href="#USAGE" title="toc_item: Usage">Usage
+</a><ul>
+<li><a href="#SAMPLES" title="toc_item: Samples">Samples
 </a></li>
+<li><a href="#PSEUDOHIKI2HTML" title="toc_item: pseudohiki2html.rb">pseudohiki2html.rb
+</a></li>
+<li><a href="#PSEUDOHIKI-BLOCKPARSER" title="toc_item: class PseudoHiki::BlockParser">class PseudoHiki::BlockParser
+</a></li>
+<li><a href="#PSEUDOHIKI-FORMAT" title="toc_item: class PseudoHiki::Format">class PseudoHiki::Format
+</a></li>
+</ul>
+</li>
 <li><a href="#DEVELEPMENT_STATUS" title="toc_item: Development status of features from the original Hiki notation">Development status of features from the original Hiki notation
 </a></li>
 <li><a href="#ADDITIONAL_FEATURES" title="toc_item: Additional Features">Additional Features
+</a><ul>
+<li><a href="#ASSIGNING_IDS" title="toc_item: Assigning ids">Assigning ids
 </a></li>
+<li><a href="#ESCAPING_TAGS" title="toc_item: Escaping tags for inline decorations">Escaping tags for inline decorations
+</a></li>
+<li><a href="#EXPERIMENTAL" title="toc_item: Experimental">Experimental
+</a></li>
+<li><a href="#NOT_IMPLEMENTED" title="toc_item: Not Implemented Yet">Not Implemented Yet
+</a></li>
+</ul>
+</li>
+<li><a href="#VISITOR_CLASSES" title="toc_item: Visitor classes">Visitor classes
+</a><ul>
+<li><a href="#HTMLFORMATS" title="toc_item: HtmlFormat, XhtmlFormat">HtmlFormat, XhtmlFormat
+</a></li>
+<li><a href="#XHTML5FORMAT" title="toc_item: Xhtml5Format">Xhtml5Format
+</a></li>
+<li><a href="#PLAINTEXTFORMAT" title="toc_item: PlainTextFormat  ">PlainTextFormat  
+</a></li>
+<li><a href="#MARKDOWNFORMAT" title="toc_item: MarkDownFormat">MarkDownFormat
+</a></li>
+</ul>
+</li>
 </ul>
 <!-- end of toc -->
 </div>
@@ -39,10 +71,7 @@
 <h2 id="ABOUT"> About PseudoHikiParser
 </h2>
 <p>
-PseudoHikiParser is a converter of texts written in a <a href="http://hikiwiki.org/en/">Hiki</a> like notation, into html or other formats. 
-</p>
-<p>
-Currently, only a limited range of notations can be converted into HTML4 or XHTML1.0.
+PseudoHikiParser is a converter of texts written in a <a href="http://hikiwiki.org/en/">Hiki</a> like notation, into HTML or other formats. 
 </p>
 <p>
 I am writing this tool with following objectives in mind,
@@ -89,6 +118,12 @@ BSD 2-Clause License
 <h2 id="INSTALLATION"> Installation
 </h2>
 <pre>
+gem install pseudohikiparser
+</pre>
+<p>
+or if you also want to try out experimental features,
+</p>
+<pre>
 gem install pseudohikiparser --pre
 </pre>
 <!-- end of section h2 -->
@@ -97,27 +132,41 @@ gem install pseudohikiparser --pre
 <h2 id="USAGE"> Usage
 </h2>
 <div class="section h3">
-<h3> Samples
+<h3 id="SAMPLES"> Samples
 </h3>
+<ul>
+<li><a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt">A sample text</a> in Hiki notation
+</li>
+</ul>
 <p>
-<a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt">A sample text</a> in Hiki notation and <a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html">a result of conversion</a>, <a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html">another result of conversion</a> and <a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html">yet another result</a>.
+And results of conversion
 </p>
+<ul>
+<li><a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html">HTML 4.01</a>
+</li>
+<li><a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html">XHTML 1.0</a>
+</li>
+<li><a href="http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html">HTML5</a>
+</li>
+<li><a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.md">GFM</a>
+</li>
+</ul>
 <p>
 You will find those samples in <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples">develop branch</a>.
 </p>
 <!-- end of section h3 -->
 </div>
 <div class="section h3">
-<h3> pseudohiki2html.rb
+<h3 id="PSEUDOHIKI2HTML"> pseudohiki2html.rb
 </h3>
 <p>
-After the installation of PseudoHikiParser, you could use a command: <strong>pseudohiki2html.rb</strong>.
+<em>(Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.)</em>
 </p>
 <p>
-<em>Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.</em>
+After the installation of PseudoHikiParser, you can use a command: <strong>pseudohiki2html.rb</strong>.
 </p>
 <p>
-Typing the following lines at the command prompt:
+Type the following lines at the command prompt:
 </p>
 <pre>
 pseudohiki2html.rb &lt;&lt;TEXT
@@ -126,7 +175,7 @@ The first paragraph
 TEXT
 </pre>
 <p>
-will return the following result to stdout:
+And it will return the following result to stdout:
 </p>
 <pre>
 &lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
@@ -170,7 +219,7 @@ For more options, please try <code>pseudohiki2html.rb --help</code>
 <h4> Incompatible changes
 </h4>
 <p>
-From version 0.0.0.9, command line options are renamed as follows:
+From version 0.0.0.9.develop, command line options are renamed as follows:
 </p>
 <table>
 <tr><th>old name</th><th>new name</th><th>note
@@ -191,8 +240,11 @@ From version 0.0.0.9, command line options are renamed as follows:
 <!-- end of section h3 -->
 </div>
 <div class="section h3">
-<h3> module PseudoHiki
+<h3 id="PSEUDOHIKI-BLOCKPARSER"> class PseudoHiki::BlockParser
 </h3>
+<p>
+A class method PseudoHiki::BlockParser.parse composes a syntax tree from its input, and a visitor class converts the tree into a certain format.
+</p>
 <p>
 If you save the lines below as a ruby script and execute it:
 </p>
@@ -201,12 +253,12 @@ If you save the lines below as a ruby script and execute it:
 
 require 'pseudohikiparser'
 
-plain = &lt;&lt;TEXT
+hiki_text = &lt;&lt;TEXT
 !! The first heading
 The first paragraph
 TEXT
 
-tree = PseudoHiki::BlockParser.parse(plain.lines.to_a)
+tree = PseudoHiki::BlockParser.parse(hiki_text)
 html = PseudoHiki::HtmlFormat.format(tree)
 puts html
 </pre>
@@ -224,8 +276,50 @@ The first paragraph
 &lt;/div&gt;
 </pre>
 <p>
-Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, PseudoHiki::Xhtml5Format, PseudoHiki::PlainTextFormat.
+In the example above, HtmlFormat is a visitor class that converts the parsed text into HTML 4.01 format.
 </p>
+<p>
+Other than HtmlFormat, XhtmlFormat, Xhtml5Format, PlainTextFormat and MarkDownFormat are available.
+</p>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3 id="PSEUDOHIKI-FORMAT"> class PseudoHiki::Format
+</h3>
+<p>
+If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you can use following class methods of PseudoHiki::Format.
+</p>
+<table>
+<tr><th>Method name</th><th>Result of conversion
+</th></tr>
+<tr><td>to_html</td><td>HTML 4.01
+</td></tr>
+<tr><td>to_xhtml</td><td>XHTML 1.0
+</td></tr>
+<tr><td>to_html5</td><td>HTML 5
+</td></tr>
+<tr><td>to_plain</td><td>plain text
+</td></tr>
+<tr><td>to_markdown</td><td>Markdown
+</td></tr>
+<tr><td>to_gfm</td><td>Github Flavored Markdown
+</td></tr>
+</table>
+<p>
+For example, the script below returns the same result as the example of <a href="#PSEUDOHIKI-BLOCKPARSER">PseudoHiki::BlockParser</a>
+</p>
+<pre>
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+hiki_text = &lt;&lt;TEXT
+!! The first heading
+The first paragraph
+TEXT
+
+puts PseudoHiki::Format.to_html(hiki_text)
+</pre>
 <!-- end of section h3 -->
 </div>
 <!-- end of section h2 -->
@@ -279,11 +373,8 @@ Other than PseudoHiki::HtmlFormat, you can choose PseudoHiki::XhtmlFormat, Pseud
 <h2 id="ADDITIONAL_FEATURES"> Additional Features
 </h2>
 <div class="section h3">
-<h3> Already Implemented
+<h3 id="ASSIGNING_IDS"> Assigning ids
 </h3>
-<div class="section h4">
-<h4> Assigning ids
-</h4>
 <p>
 If you add [name_of_id], just after the marks that denote heading or list type items, it becomes the id attribute of resulting html elements. Below is an example.
 </p>
@@ -306,129 +397,11 @@ will be rendered as
 &lt;!-- end of section h2 --&gt;
 &lt;/div&gt;
 </pre>
-<!-- end of section h4 -->
-</div>
 <!-- end of section h3 -->
 </div>
 <div class="section h3">
-<h3> Partly Implemented
+<h3 id="ESCAPING_TAGS"> Escaping tags for inline decorations
 </h3>
-<div class="section h4">
-<h4> A visitor that removes markups and returns plain texts
-</h4>
-<p>
-The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb">PlainTextFormat</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>. Below are examples
-</p>
-<pre>
-:tel:03-xxxx-xxxx
-::03-yyyy-yyyy
-:fax:03-xxxx-xxxx
-</pre>
-<p>
-will be rendered as
-</p>
-<pre>
-tel:	03-xxxx-xxxx
-	03-yyyy-yyyy
-fax:	03-xxxx-xxxx
-</pre>
-<p>
-And
-</p>
-<pre>
-||cell 1-1||&gt;&gt;cell 1-2,3,4||cell 1-5
-||cell 2-1||^&gt;cell 2-2,3 3-2,3||cell 2-4||cell 2-5
-||cell 3-1||cell 3-4||cell 3-5
-||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
-</pre>
-<p>
-will be rendered as
-</p>
-<pre>
-cell 1-1	cell 1-2,3,4	==	==	cell 1-5
-cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
-cell 3-1	||	||	cell 3-4	cell 3-5
-cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
-</pre>
-<!-- end of section h4 -->
-</div>
-<div class="section h4">
-<h4> A visitor for HTML5
-</h4>
-<p>
-The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L239">Xhtml5Format</a> is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>.
-</p>
-<!-- end of section h4 -->
-</div>
-<div class="section h4">
-<h4> A visitor for (Git Flavored) Markdown
-</h4>
-<p>
-The visitor, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb">MarkDownFormat</a> too, is currently available only in the <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop/">develop branch</a>.
-</p>
-<p>
-It's just in experimental stage.
-</p>
-<p>
-The following are a sample script and its output:
-</p>
-<pre>
-#!/usr/bin/env ruby
-
-require 'pseudohiki/markdownformat'
-
-md = PseudoHiki::MarkDownFormat.create
-gfm = PseudoHiki::MarkDownFormat.create(gfm_style: true)
-
-hiki = &lt;&lt;TEXT
-!! The first heading
-
-The first paragraph
-
-||!header 1||!header 2
-||''cell 1''||cell2
-
-TEXT
-
-tree = PseudoHiki::BlockParser.parse(hiki)
-md_text = md.format(tree).to_s
-gfm_text = gfm.format(tree).to_s
-puts md_text
-puts &quot;====================&quot;
-puts gfm_text
-</pre>
-<p>
-(You will get the following output.)
-</p>
-<pre>
-## The first heading
-
-The first paragraph
-
-&lt;table&gt;
-&lt;tr&gt;&lt;th&gt;header 1&lt;/th&gt;&lt;th&gt;header 2&lt;/th&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;em&gt;cell 1&lt;/em&gt;&lt;/td&gt;&lt;td&gt;cell2&lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt;
-
-====================
-## The first heading
-
-The first paragraph
-
-|header 1|header 2|
-|--------|--------|
-|_cell 1_|cell2   |
-</pre>
-<!-- end of section h4 -->
-</div>
-<!-- end of section h3 -->
-</div>
-<div class="section h3">
-<h3> Experimental
-</h3>
-<div class="section h4">
-<h4> Escaping tags for inline decorations
-</h4>
 <p>
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 </p>
@@ -443,8 +416,14 @@ will be rendered as
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
 </pre>
-<!-- end of section h4 -->
+<!-- end of section h3 -->
 </div>
+<div class="section h3">
+<h3 id="EXPERIMENTAL"> Experimental
+</h3>
+<p>
+The following feature is just experimental and available only in <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop">develop branch</a>.
+</p>
 <div class="section h4">
 <h4> Decorator for blocks
 </h4>
@@ -478,8 +457,171 @@ paragraph
 <!-- end of section h3 -->
 </div>
 <div class="section h3">
-<h3> Not Implemented Yet
+<h3 id="NOT_IMPLEMENTED"> Not Implemented Yet
 </h3>
+<!-- end of section h3 -->
+</div>
+<!-- end of section h2 -->
+</div>
+<div class="section h2">
+<h2 id="VISITOR_CLASSES"> Visitor classes
+</h2>
+<p>
+Please note that some of the following classes are implemented partly or not tested well.
+</p>
+<div class="section h3">
+<h3 id="HTMLFORMATS"> <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8">HtmlFormat</a>, <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L263">XhtmlFormat</a>
+</h3>
+<p>
+Their class method (HtmlFormat|XhtmlFormat).format returns a tree of <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb">HtmlElement</a> objects, and you can traverse the tree as in the following example.
+</p>
+<pre>
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+hiki_text = &lt;&lt;HIKI
+!! heading
+
+paragraph 1 that contains [[a link to a html file|<a href="http://www.example.org/example.html">http://www.example.org/example.html</a>]]
+
+paragraph 2 that contains [[a link to a pdf file|<a href="http://www.example.org/example.pdf">http://www.example.org/example.pdf</a>]]
+HIKI
+
+html = HtmlFormat.format(hiki_text)
+
+html.traverse do |elm|
+  if elm.kind_of? HtmlElement and elm.tagname == &quot;a&quot;
+    elm[&quot;class&quot;] = &quot;pdf&quot; if /\.pdf\Z/o =~ elm[&quot;href&quot;]
+  end
+end
+
+puts html.to_s
+</pre>
+<p>
+will print
+</p>
+<pre>
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2&gt; heading
+&lt;/h2&gt;
+&lt;p&gt;
+paragraph 1 that contains &lt;a href=&quot;<a href="http://www.example.org/example.html&amp;quot;&amp;gt;a">http://www.example.org/example.html&quot;&gt;a</a> link to a html file&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;
+paragraph 2 that contains &lt;a class=&quot;pdf&quot; href=&quot;<a href="http://www.example.org/example.pdf&amp;quot;&amp;gt;a">http://www.example.org/example.pdf&quot;&gt;a</a> link to a pdf file&lt;/a&gt;
+&lt;/p&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+</pre>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3 id="XHTML5FORMAT"> <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L268">Xhtml5Format</a>
+</h3>
+<p>
+This visitor is for HTML5.
+</p>
+<p>
+Currently there aren't many differences with <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L263">XhtmlFormat</a> exept for the treatment of &lt;section&gt; elements.
+</p>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3 id="PLAINTEXTFORMAT"> <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb">PlainTextFormat</a>  
+</h3>
+<p>
+This visitor removes markups from its input and returns plain texts. Below are examples
+</p>
+<pre>
+:tel:03-xxxx-xxxx
+::03-yyyy-yyyy
+:fax:03-xxxx-xxxx
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+tel:	03-xxxx-xxxx
+	03-yyyy-yyyy
+fax:	03-xxxx-xxxx
+</pre>
+<p>
+And
+</p>
+<pre>
+||cell 1-1||&gt;&gt;cell 1-2,3,4||cell 1-5
+||cell 2-1||^&gt;cell 2-2,3 3-2,3||cell 2-4||cell 2-5
+||cell 3-1||cell 3-4||cell 3-5
+||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+cell 1-1	cell 1-2,3,4	==	==	cell 1-5
+cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
+cell 3-1	||	||	cell 3-4	cell 3-5
+cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
+</pre>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3 id="MARKDOWNFORMAT"> <a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb">MarkDownFormat</a>
+</h3>
+<p>
+This visitor is for (Git Flavored) Markdown and just in experimental stage.
+</p>
+<p>
+The following are a sample script and its output:
+</p>
+<pre>
+#!/usr/bin/env ruby
+
+require 'pseudohiki/markdownformat'
+
+md = PseudoHiki::MarkDownFormat.create
+gfm = PseudoHiki::MarkDownFormat.create(gfm_style: true)
+
+hiki = &lt;&lt;TEXT
+!! The first heading
+
+The first paragraph
+
+||!header 1||!header 2
+||''cell 1''||cell2
+
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(hiki)
+md_text = md.format(tree).to_s
+gfm_text = gfm.format(tree).to_s
+puts md_text
+puts &quot;--------------------&quot;
+puts gfm_text
+</pre>
+<p>
+(You will get the following output.)
+</p>
+<pre>
+## The first heading
+
+The first paragraph
+
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;header 1&lt;/th&gt;&lt;th&gt;header 2&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;em&gt;cell 1&lt;/em&gt;&lt;/td&gt;&lt;td&gt;cell2&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+--------------------
+## The first heading
+
+The first paragraph
+
+|header 1|header 2|
+|--------|--------|
+|_cell 1_|cell2   |
+</pre>
 <!-- end of section h3 -->
 </div>
 <!-- end of section h2 -->

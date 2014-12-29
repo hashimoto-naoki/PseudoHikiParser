@@ -68,7 +68,7 @@ TEXT
 
 And it will return the following result to stdout:
 
-```html
+```
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -123,7 +123,7 @@ A class method PseudoHiki::BlockParser.parse composes a syntax tree from its inp
 
 If you save the lines below as a ruby script and execute it:
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -140,7 +140,7 @@ puts html
 
 you will get the following output:
 
-```html
+```
 <div class="section h2">
 <h2> The first heading
 </h2>
@@ -170,7 +170,7 @@ If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you c
 
 For example, the script below returns the same result as the example of [PseudoHiki::BlockParser](#PSEUDOHIKI-BLOCKPARSER)
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -217,7 +217,7 @@ If you add [name\_of\_id], just after the marks that denote heading or list type
 
 will be rendered as
 
-```html
+```
 <div class="section h2">
 <h2 id="HEADING_ID">heading
 </h2>
@@ -264,7 +264,7 @@ paragraph
 
 will be renderes as
 
-```html
+```
 <div class="class_name">
 <h2>A section with a class name
 </h2>
@@ -285,7 +285,7 @@ Please note that some of the following classes are implemented partly or not tes
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -311,7 +311,7 @@ puts html.to_s
 
 will print
 
-```html
+```
 <div class="section h2">
 <h2> heading
 </h2>
@@ -373,7 +373,7 @@ This visitor is for (Git Flavored) Markdown and just in experimental stage.
 
 The following are a sample script and its output:
 
-```ruby
+```
 #!/usr/bin/env ruby
 
 require 'pseudohiki/markdownformat'
