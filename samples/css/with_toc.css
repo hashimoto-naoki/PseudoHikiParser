@@ -28,11 +28,30 @@ h1 {
     padding-right: 1em;
 }
 
+#toc li ul li {
+    margin-left: 0em;
+    margin-right: -1em;
+    padding-left: 0%;
+    padding-right: 1em;
+    list-style-type: none;
+}
+
 #toc a {
     text-decoration: none;
     display: block;
     background: #cccccc;
-    padding: 0.2em 0.2em 0.2em 0.4em;
+    padding: 0.4em 0.2em 0.4em 0.4em;
+    margin-bottom: 1px;
+}
+
+#toc > ul > li {
+    margin-top: 3px;
+}
+
+#toc li ul li a {
+    text-decoration: none;
+    display: block;
+    background: #eeeeee;
     margin-bottom: 1px;
 }
 
@@ -85,4 +104,19 @@ h1 {
     border-width: 1px;
     font-size: 120%;
     padding: 0.1em 0.3em 0.1em 0.3em;
+}
+
+table {
+    border-style: solid;
+    border-width: 1px;
+    border-collapse: collapse;
+}
+
+td, th {
+    border-style: solid;
+    border-width: 1px;
+}
+
+td {
+    padding: 0.2em 0.4em 0.2em 0.4em;
 }
