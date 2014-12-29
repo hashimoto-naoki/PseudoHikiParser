@@ -168,7 +168,7 @@ If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you c
 |to\_markdown|Markdown                |
 |to\_gfm     |Github Flavored Markdown|
 
-For example, the script below returns the same result as the example of [PseudoHiki::BlockParser](#pseudohiki-blockparser)
+For example, the script below returns the same result as the example of [PseudoHiki::BlockParser](#PSEUDOHIKI-BLOCKPARSER)
 
 ```ruby
 #!/usr/bin/env ruby
