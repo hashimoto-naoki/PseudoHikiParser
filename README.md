@@ -42,7 +42,7 @@ And results of conversion
 * [HTML5](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html)
 * [GFM](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.md)
 
-You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
+You will find these samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
 
 ### pseudohiki2html.rb
 
