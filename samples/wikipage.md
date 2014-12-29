@@ -285,7 +285,7 @@ Please note that some of the following classes are implemented partly or not tes
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
-```
+```ruby
 #!/usr/bin/env ruby
 
 require 'pseudohikiparser'
@@ -311,7 +311,7 @@ puts html.to_s
 
 will print
 
-```
+```html
 <div class="section h2">
 <h2> heading
 </h2>
