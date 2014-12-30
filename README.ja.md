@@ -1,0 +1,435 @@
+PseudoHikiParser
+================
+
+PseudoHikiParserは[Hiki](http://hikiwiki.org/en/)に似た記法で書かれたテキストをHTMLその他のファイル形式に変換するコンバータです。
+
+このツールは次の目的を念頭において作成中です。
+
+* オリジナルのHiki記法にはない特徴を付け加える
+  * より行指向を徹底する
+  * 見出しのような要素にid属性を付けられるようにする
+* HTML以外のファイル形式をサポートする
+  * 実装にあたってVisitorパターンを採用したため、新たなファイル形式を追加するのに必要なのは(願わくは)Visitorクラスを用意することだけです。
+
+なお、オリジナルのHiki記法との互換性はなくなります。
+
+## ライセンス
+
+2条項BSDライセンスです。
+
+## インストール
+
+```
+gem install pseudohikiparser
+```
+
+もし実験的な機能も試してみたければ、
+
+```
+gem install pseudohikiparser --pre
+```
+
+## 使い方
+
+### サンプル
+
+* Hiki記法で書かれた[テキストのサンプル](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.txt)
+
+その変換結果:
+
+* [HTML 4.01](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.html)
+* [XHTML 1.0](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_with_toc.html)
+* [HTML5](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html)
+* [GFM](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.md)
+
+このサンプルは[develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples)に置いてあります。
+
+### pseudohiki2html.rb
+
+_(pseudohiki2html.rbは現時点ではPseudoHikiParserの利用例として提供されており、現段階ではオプションも継続的に変更されることにご注意ください。)_
+
+インストールが終わると**pseudohiki2html.rb**というコマンドが使えるようになります。
+
+コマンドラインで次のように入力すると
+
+```
+pseudohiki2html.rb <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+```
+
+下のような結果が返ってくるはずです。
+
+```html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta content="en" http-equiv="Content-Language">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="text/javascript" http-equiv="Content-Script-Type">
+<title>-</title>
+<link href="default.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="section h2">
+<h2> The first heading
+</h2>
+<p>
+The first paragraph
+</p>
+<!-- end of section h2 -->
+</div>
+</body>
+</html>
+```
+
+`--output`オプションを使ってファイル名を指定した場合は
+
+```
+pseudohiki2html.rb --output first_example.html <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+```
+
+で、結果がfirst\_example.htmlに保存されます。
+
+その他のオプションについては`pseudohiki2html.rb --help`でご参照ください。
+
+#### 非互換な変更
+
+version 0.0.0.9.developから、コマンドラインのオプション名を以下の通り変更しています。
+
+|元の名前           |新しい名前            |注記                                                         |
+|---------------|-----------------|-----------------------------------------------------------|
+|-f             |-F               |'-f' is now used as the short version of '--format-version'|
+|-h             |-f               |'-h' is now used as the short version of '--help'          |
+|--html\_version|--format-version |other formats than html should be supported                |
+|--encoding     |--format-encoding|'--encoding' is now used as the long version of '-E' option|
+|-              |--encoding       |now same as '-E' option of MRI                             |
+
+### PseudoHiki::BlockParserクラス
+
+PseudoHiki::BlockParserのクラスメソッド parseは入力から構文木を生成し、Visitorクラスでその木を別の形式に変換します。
+
+以下の内容をファイルに保存・実行すると
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+hiki_text = <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(hiki_text)
+html = PseudoHiki::HtmlFormat.format(tree)
+puts html
+```
+
+次のように出力されます。
+
+```html
+<div class="section h2">
+<h2> The first heading
+</h2>
+<p>
+The first paragraph
+</p>
+<!-- end of section h2 -->
+</div>
+```
+
+この例では、HtmlFormatがVisitorクラスで、構文木をHTML4.01形式に変換しています。
+
+HtmlFormat以外にはXhtmlFormat、Xhtml5Format、PlainTextFormat、MarkDownFormatが用意されています。
+
+### PseudoHiki::Formatクラス
+
+PseudoHiki::BlockParser.parseで作られた構文木を使い回す必要がなければ、以下のPseudoHiki::Formatのクラスメソッドも利用可能です。
+
+|メソッド名       |変換結果                    |
+|------------|------------------------|
+|to\_html    |HTML 4.01               |
+|to\_xhtml   |XHTML 1.0               |
+|to\_html5   |HTML 5                  |
+|to\_plain   |修飾なしのテキスト               |
+|to\_markdown|Markdown                |
+|to\_gfm     |Github Flavored Markdown|
+
+例えば次のスクリプトは[PseudoHiki::BlockParserクラス](#PSEUDOHIKI_BLOCKPARSER)の例と同じ結果を返します。
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+hiki_text = <<TEXT
+!! The first heading
+The first paragraph
+TEXT
+
+puts PseudoHiki::Format.to_html(hiki_text)
+```
+
+## オリジナルの[Hiki記法](http://rabbit-shocker.org/en/hiki.html)にある機能の実装状況
+
+* パラグラフ - 使いものになる
+* リンク
+  * WikiNames - 未サポート(実装予定なし)
+  * ページへのリンク - これも未サポート
+  * 任意のURLへのリンク - 一応使えるはず
+* 整形済みテキスト - 使いものになる
+* 文字の修飾 - 一部をサポート
+  * インライン修飾用タグのエスケープ手段は実験的なもの
+  * バッククォートタグ(``)による等幅表示の記法は\<tt\>要素ではなく\<code\>要素に変換される
+* 見出し - 使いものになる
+* 水平線 - 使いものになる
+* 箇条書き - 使いものになる
+* 引用 - 使いものになる
+* 用語解説 - 使いものになる
+* 表 - 使いものになる
+* コメント行 - 使いものになる
+* プラグイン - 未サポート (オリジナルのHikiとは非互換になる予定)
+
+## オリジナルのHiki記法にはない特徴
+
+### id属性の付与
+
+下の例のように、見出しもしくはリストを示す記号の直後に[name\_of\_id]を付けると、その値が変換後のHTML要素のid属性になります。
+
+```
+!![heading_id]heading
+
+*[list_id]list
+```
+
+は次のように変換されます。
+
+```html
+<div class="section h2">
+<h2 id="HEADING_ID">heading
+</h2>
+<ul>
+<li id="LIST_ID">list
+</li>
+</ul>
+<!-- end of section h2 -->
+</div>
+```
+
+### インライン修飾用タグのエスケープ
+
+_(これは実験的な機能ですのでご注意ください。)_
+
+インライン修飾用のタグはプラグイン用のタグに入れることでエスケープできます。
+
+```
+For example, {{''}} and {{==}} can be escaped.
+And {{ {}} and {{} }} should be rendered as two left curly braces and two right curly braces respectively.
+```
+
+は次のように変換されます。
+
+```
+For example, '' or == can be escaped.
+And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+```
+
+### リンク用タグの入れ子
+
+リンク用タグが他のリンク用タグの中に入れ子になっている場合、外側のタグは画像へのurlを指定していても常にリンクとして扱われます。
+
+そのため下の例のように、サムネイル画像からリンクを張ることも可能です。
+
+```
+[[[[thumbnail of an image|http://www.example.org/image_thumb.png]]|http://www.example.org/image.png]]
+```
+
+は次のように変換されます。
+
+```html
+<a href="http://www.example.org/image.png"><img alt="thumbnail of an image" src="http://www.example.org/image_thumb.png">
+</a></p>
+```
+
+### 実験的な機能
+
+以下の機能は実験的なもので、[developブランチ](https://github.com/nico-hn/PseudoHikiParser/tree/develop)でのみ利用可能です。
+
+#### ブロック用のデコレータ
+
+'//@'で始まる行を使って、その後に続くブロックに属性を付与することができます。
+
+例えば
+
+```
+//@class[class_name]
+!!A section with a class name
+
+paragraph
+```
+
+は次のように変換されます。
+
+```html
+<div class="class_name">
+<h2>A section with a class name
+</h2>
+<p>
+paragraph
+</p>
+<!-- end of class_name -->
+</div>
+```
+
+### 未実装の機能
+
+## Visitorクラス
+
+以下のクラスのうちの一部は、部分的にしか実装されていないかテストが十分ではないことにご注意ください。
+
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L263)
+
+これらのクラスのクラスメソッド(HtmlFormat|XhtmlFormat).formatは[HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb)オブジェクトを木にしたものを返すため、以下の例のように後から手を加えることができます。
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'pseudohikiparser'
+
+hiki_text = <<HIKI
+!! heading
+
+paragraph 1 that contains [[a link to a html file|http://www.example.org/example.html]]
+
+paragraph 2 that contains [[a link to a pdf file|http://www.example.org/example.pdf]]
+HIKI
+
+html = HtmlFormat.format(hiki_text)
+
+html.traverse do |elm|
+  if elm.kind_of? HtmlElement and elm.tagname == "a"
+    elm["class"] = "pdf" if /\.pdf\Z/o =~ elm["href"]
+  end
+end
+
+puts html.to_s
+```
+
+は次のように出力します。
+
+```html
+<div class="section h2">
+<h2> heading
+</h2>
+<p>
+paragraph 1 that contains <a href="http://www.example.org/example.html">a link to a html file</a>
+</p>
+<p>
+paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pdf">a link to a pdf file</a>
+</p>
+<!-- end of section h2 -->
+</div>
+```
+
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L268)
+
+HTML5への変換用のVisitorクラスです。
+
+現時点では\<section\>要素の扱い以外に[XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L263)との違いは余りありません。
+
+### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
+
+Hiki記法のマークアップを除去するためのVisitorクラスで、使用例は以下の通りです。
+
+```
+:tel:03-xxxx-xxxx
+::03-yyyy-yyyy
+:fax:03-xxxx-xxxx
+```
+
+will be rendered as
+
+```
+tel:	03-xxxx-xxxx
+	03-yyyy-yyyy
+fax:	03-xxxx-xxxx
+```
+
+また
+
+```
+||cell 1-1||>>cell 1-2,3,4||cell 1-5
+||cell 2-1||^>cell 2-2,3 3-2,3||cell 2-4||cell 2-5
+||cell 3-1||cell 3-4||cell 3-5
+||cell 4-1||cell 4-2||cell 4-3||cell 4-4||cell 4-5
+```
+
+は次のように変換されます。
+
+```
+cell 1-1	cell 1-2,3,4	==	==	cell 1-5
+cell 2-1	cell 2-2,3 3-2,3	==	cell 2-4	cell 2-5
+cell 3-1	||	||	cell 3-4	cell 3-5
+cell 4-1	cell 4-2	cell 4-3	cell 4-4	cell 4-5
+```
+
+### [MarkDownFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/markdownformat.rb)
+
+(Git Flavored) Markdownへの変換用のVisitorクラスですが、まだ実験段階です。
+
+以下がサンプルのスクリプトとその出力結果です。
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'pseudohiki/markdownformat'
+
+md = PseudoHiki::MarkDownFormat.create
+gfm = PseudoHiki::MarkDownFormat.create(gfm_style: true)
+
+hiki = <<TEXT
+!! The first heading
+
+The first paragraph
+
+||!header 1||!header 2
+||''cell 1''||cell2
+
+TEXT
+
+tree = PseudoHiki::BlockParser.parse(hiki)
+md_text = md.format(tree).to_s
+gfm_text = gfm.format(tree).to_s
+puts md_text
+puts "--------------------"
+puts gfm_text
+```
+
+(出力結果)
+
+```
+## The first heading
+
+The first paragraph
+
+<table>
+<tr><th>header 1</th><th>header 2</th></tr>
+<tr><td><em>cell 1</em></td><td>cell2</td></tr>
+</table>
+
+--------------------
+## The first heading
+
+The first paragraph
+
+|header 1|header 2|
+|--------|--------|
+|_cell 1_|cell2   |
+```
+

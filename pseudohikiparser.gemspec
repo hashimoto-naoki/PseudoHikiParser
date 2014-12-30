@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
   
   spec.files         = [
                         "README.md",
+                        "README.ja.md",
                         "LICENSE",
                         "lib/pseudohikiparser.rb",
                         "lib/pseudohiki/treestack.rb",
