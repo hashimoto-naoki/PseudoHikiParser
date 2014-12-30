@@ -192,7 +192,7 @@ puts PseudoHiki::Format.to_html(hiki_text)
   * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
-  * Means of escaping tags for inline decorations is only experimetal.
+  * Means of escaping tags for inline decorations is just experimetal.
   * The notation for inline literals by backquote tags(``) is converted into not \<tt\> element but \<code\> element.
 * Headings - Usable
 * Horizontal lines - Usable
@@ -230,6 +230,8 @@ will be rendered as
 ```
 
 ### Escaping tags for inline decorations
+
+_(Please note that this is just an experimental feature.)_
 
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 
