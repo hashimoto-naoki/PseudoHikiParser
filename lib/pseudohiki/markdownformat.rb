@@ -140,6 +140,7 @@ module PseudoHiki
 
     class LinkNodeFormatter < self
       def visit(tree)
+        not_from_thumbnail = tree.first.class != LinkNode
         tree = tree.dup
         element = create_self_element
         caption = get_caption(tree)
@@ -149,7 +150,7 @@ module PseudoHiki
           raise NoMethodError unless tree.empty?
           STDERR.puts "No uri is specified for #{caption}"
         end
-        element.push "!" if ImageSuffix =~ ref
+        element.push "!" if ImageSuffix =~ ref and not_from_thumbnail
         element.push "[#{(caption||tree).join}](#{tree.join})"
         element
       end
