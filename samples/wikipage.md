@@ -247,7 +247,7 @@ And {{ and }} sould be rendered as two left curly braces and two right curly bra
 
 ### Nesting of link tags
 
-If a link tag is nested inside another link tag, the outer tag is always teated as a link even when its url is for an image.
+If a link tag is nested inside another link tag, the outer tag is always treated as a link even when its url is for an image.
 
 So you can make a link from a thumbnail as in the following example.
 
