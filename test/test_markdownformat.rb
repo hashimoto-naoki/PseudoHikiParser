@@ -68,6 +68,13 @@ IMAGE
     assert_equal("A test for a link to ![an image](image.png)\n#{$/}", @formatter.format(tree).to_s)
   end
 
+  def test_link_from_image
+    text = "[[[[thumbnail of an image|http://www.example.org/image_thumb.png]]|http://www.example.org/image.png]]"
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal("[![thumbnail of an image](http://www.example.org/image_thumb.png)](http://www.example.org/image.png)#{$/}", @formatter.format(tree).to_s)
+  end
+
   def test_em
     text = "string with ''emphasis'' "
     tree = BlockParser.parse(text.lines.to_a)
