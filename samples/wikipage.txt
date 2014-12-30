@@ -121,7 +121,7 @@ From version 0.0.0.9.develop, command line options are renamed as follows:
 ||--encoding||--format-encoding||'--encoding' is now used as the long version of '-E' option
 ||-||--encoding||now same as '-E' option of MRI
 
-!!![pseudohiki-blockparser] class PseudoHiki::BlockParser
+!!![pseudohiki_blockparser] class PseudoHiki::BlockParser
 
 A class method PseudoHiki::BlockParser.parse composes a syntax tree from its input, and a visitor class converts the tree into a certain format.
 
@@ -161,7 +161,7 @@ In the example above, HtmlFormat is a visitor class that converts the parsed tex
 
 Other than HtmlFormat, XhtmlFormat, Xhtml5Format, PlainTextFormat and MarkDownFormat are available.
 
-!!![pseudohiki-format] class PseudoHiki::Format
+!!![pseudohiki_format] class PseudoHiki::Format
 
 If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you can use following class methods of PseudoHiki::Format.
 
@@ -173,7 +173,7 @@ If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you c
 ||to_markdown||Markdown
 ||to_gfm||Github Flavored Markdown
 
-For example, the script below returns the same result as the example of [[PseudoHiki::BlockParser|#PSEUDOHIKI-BLOCKPARSER]]
+For example, the script below returns the same result as the example of [[PseudoHiki::BlockParser|#PSEUDOHIKI_BLOCKPARSER]]
 
 //@code[ruby]
 <<<
