@@ -49,7 +49,7 @@ And results of conversion
 * [HTML5](http://htmlpreview.github.com/?https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage_html5_with_toc.html)
 * [GFM](https://github.com/nico-hn/PseudoHikiParser/blob/develop/samples/wikipage.md)
 
-You will find those samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
+You will find these samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
 
 ### pseudohiki2html.rb
 
@@ -243,6 +243,23 @@ will be rendered as
 ```
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+```
+
+### Nesting of link tags
+
+If a link tag is nested inside another link tag, the outer tag is always teated as a link even when its url is for an image.
+
+So you can make a link from a thumbnail as in the following example.
+
+```
+[[[[thumbnail of an image|http://www.example.org/image_thumb.png]]|http://www.example.org/image.png]]
+```
+
+will be rendered as
+
+```html
+<a href="http://www.example.org/image.png"><img alt="thumbnail of an image" src="http://www.example.org/image_thumb.png">
+</a></p>
 ```
 
 ### Experimental

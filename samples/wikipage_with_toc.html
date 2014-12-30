@@ -45,6 +45,8 @@
 </a></li>
 <li><a href="#ESCAPING_TAGS" title="toc_item: Escaping tags for inline decorations">Escaping tags for inline decorations
 </a></li>
+<li><a href="#NESTING_LINK_TAGS" title="toc_item: Nesting of link tags">Nesting of link tags
+</a></li>
 <li><a href="#EXPERIMENTAL" title="toc_item: Experimental">Experimental
 </a></li>
 <li><a href="#NOT_IMPLEMENTED" title="toc_item: Not Implemented Yet">Not Implemented Yet
@@ -152,7 +154,7 @@ And results of conversion
 </li>
 </ul>
 <p>
-You will find those samples in <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples">develop branch</a>.
+You will find these samples in <a href="https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples">develop branch</a>.
 </p>
 <!-- end of section h3 -->
 </div>
@@ -415,6 +417,27 @@ will be rendered as
 <pre>
 For example, '' or == can be escaped.
 And {{ and }} sould be rendered as two left curly braces and two right curly braces respectively.
+</pre>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3 id="NESTING_LINK_TAGS"> Nesting of link tags
+</h3>
+<p>
+If a link tag is nested inside another link tag, the outer tag is always teated as a link even when its url is for an image.
+</p>
+<p>
+So you can make a link from a thumbnail as in the following example.
+</p>
+<pre>
+[[[[thumbnail of an image|<a href="http://www.example.org/image_thumb.png">http://www.example.org/image_thumb.png</a>]]|<a href="http://www.example.org/image.png">http://www.example.org/image.png</a>]]
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+&lt;a href=&quot;<a href="http://www.example.org/image.png&amp;quot;&amp;gt;&amp;lt;img">http://www.example.org/image.png&quot;&gt;&lt;img</a> alt=&quot;thumbnail of an image&quot; src=&quot;<a href="http://www.example.org/image_thumb.png&amp;quot;&amp;gt;">http://www.example.org/image_thumb.png&quot;&gt;</a>
+&lt;/a&gt;&lt;/p&gt;
 </pre>
 <!-- end of section h3 -->
 </div>
