@@ -192,7 +192,7 @@ puts PseudoHiki::Format.to_html(hiki_text)
   * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
-  * Means of escaping tags for inline decorations is only experimetal.
+  * Means of escaping tags for inline decorations is just experimetal.
   * The notation for inline literals by backquote tags(``) is converted into not \<tt\> element but \<code\> element.
 * Headings - Usable
 * Horizontal lines - Usable
@@ -231,6 +231,8 @@ will be rendered as
 
 ### Escaping tags for inline decorations
 
+_(Please note that this is just an experimental feature.)_
+
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 
 ```
@@ -247,7 +249,7 @@ And {{ and }} sould be rendered as two left curly braces and two right curly bra
 
 ### Nesting of link tags
 
-If a link tag is nested inside another link tag, the outer tag is always teated as a link even when its url is for an image.
+If a link tag is nested inside another link tag, the outer tag is always treated as a link even when its url is for an image.
 
 So you can make a link from a thumbnail as in the following example.
 

@@ -346,7 +346,7 @@ puts PseudoHiki::Format.to_html(hiki_text)
 </li>
 <li> Text decoration - Partly supported
 <ul>
-<li> Means of escaping tags for inline decorations is only experimetal.
+<li> Means of escaping tags for inline decorations is just experimetal.
 </li>
 <li> The notation for inline literals by backquote tags(``) is converted into not &lt;tt&gt; element but &lt;code&gt; element.
 </li>
@@ -405,6 +405,9 @@ will be rendered as
 <h3 id="ESCAPING_TAGS"> Escaping tags for inline decorations
 </h3>
 <p>
+<em>(Please note that this is just an experimental feature.)</em>
+</p>
+<p>
 Tags for inline decorations are escaped when they are enclosed in plugin tags:
 </p>
 <pre>
@@ -424,7 +427,7 @@ And {{ and }} sould be rendered as two left curly braces and two right curly bra
 <h3 id="NESTING_LINK_TAGS"> Nesting of link tags
 </h3>
 <p>
-If a link tag is nested inside another link tag, the outer tag is always teated as a link even when its url is for an image.
+If a link tag is nested inside another link tag, the outer tag is always treated as a link even when its url is for an image.
 </p>
 <p>
 So you can make a link from a thumbnail as in the following example.
