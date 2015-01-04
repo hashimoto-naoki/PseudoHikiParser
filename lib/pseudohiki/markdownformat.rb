@@ -14,6 +14,8 @@ module PseudoHiki
     include BlockParser::BlockElement
 
     Formatters = {}
+    GFM_STRIPPED_CHARS = " -&+$,/:;=?@\"{}#|^~[]`\\*()%.!'"
+    GFM_STRIPPED_CHARS_PAT = Regexp.union(/\s+/o, /[#{Regexp.escape(GFM_STRIPPED_CHARS)}]/o)
 
     def self.format(tree, options={ :strict_mode=> false, :gfm_style => false })
       if Formatters.empty?
@@ -23,6 +25,12 @@ module PseudoHiki
 
       Formatters[options] ||= create(options)
       Formatters[options].format(tree)
+    end
+
+    def self.convert_to_gfm_id_format(heading)
+      heading.gsub(GFM_STRIPPED_CHARS_PAT) do |char|
+        /\A\s+\Z/o =~ char ? '-'.freeze : ''.freeze
+      end.downcase
     end
 
     def initialize(formatter={}, options={ :strict_mode=> false, :gfm_style => false })
