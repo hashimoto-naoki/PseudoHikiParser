@@ -10,16 +10,19 @@ class TC_InlineParser < MiniTest::Unit::TestCase
 
   def test_inlineparser_compile_token_pat
     parser = InlineParser.new("")
-    assert_equal(/'''|\}\}|\|\||\{\{|``|\]\]|\[\[|==|''|\||:/, parser.instance_variable_get(:@token_pat))
+    assert_equal(/'''|\}\}|\|\||\{\{|``|\]\]|\[\[|==|''|\||:/, InlineParser::TokenPat[parser.class])
   end
 
   def test_inlineparser_split_into_tokens
     parser = InlineParser.new("")
-    tokens = parser.split_into_tokens("As a test case, '''this part''' must be in <strong>.")
+    tokens = PseudoHiki.split_into_tokens("As a test case, '''this part''' must be in <strong>.",
+                                          InlineParser::TokenPat[parser.class])
     assert_equal(["As a test case, ","'''","this part","'''"," must be in <strong>."],tokens)
-    tokens = parser.split_into_tokens("As another {{test case}}, '''this part''' must be in <strong>.")
+    tokens = PseudoHiki.split_into_tokens("As another {{test case}}, '''this part''' must be in <strong>.",
+                                          InlineParser::TokenPat[parser.class])
     assert_equal(["As another ","{{","test case","}}", ", ","'''","this part","'''"," must be in <strong>."],tokens)
-    tokens = parser.split_into_tokens("As another ''test case'', '''this part''' must be in <strong>.")
+    tokens = PseudoHiki.split_into_tokens("As another ''test case'', '''this part''' must be in <strong>.",
+                                          InlineParser::TokenPat[parser.class])
     assert_equal(["As another ","''","test case","''", ", ","'''","this part","'''"," must be in <strong>."],tokens)
   end
 
