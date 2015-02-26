@@ -20,6 +20,17 @@ module PseudoHiki
     Regexp.new(tokens.join("|"))
   end
 
+  def self.split_into_tokens(str, token_pat)
+    tokens = []
+    while m = token_pat.match(str)
+      tokens.push m.pre_match unless m.pre_match.empty?
+      tokens.push m[0]
+      str = m.post_match
+    end
+    tokens.push str unless str.empty?
+    tokens
+  end
+
   class InlineParser < TreeStack
     module InlineElement
       class InlineNode < InlineParser::Node; end
@@ -52,8 +63,7 @@ module PseudoHiki
     TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep, TableSep, DescSep])
 
     def initialize(str)
-      @token_pat = TokenPat[self.class]
-      @tokens = split_into_tokens(str)
+      @tokens = PseudoHiki.split_into_tokens(str, TokenPat[self.class])
       super()
     end
 
@@ -73,17 +83,6 @@ module PseudoHiki
       return nil unless node_in_ancestors?(TAIL[token])
       convert_last_node_into_leaf until current_node.class == TAIL[token]
       self.pop
-    end
-
-    def split_into_tokens(str)
-      tokens = []
-      while m = @token_pat.match(str)
-        tokens.push m.pre_match unless m.pre_match.empty?
-        tokens.push m[0]
-        str = m.post_match
-      end
-      tokens.push str unless str.empty?
-      tokens
     end
 
     def parse
