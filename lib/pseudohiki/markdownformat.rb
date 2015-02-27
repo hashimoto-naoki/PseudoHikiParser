@@ -329,11 +329,9 @@ module PseudoHiki
         rows.each_with_index do |row, i|
           row.each do |cell|
             return false if cell.rowspan > 1 or cell.colspan > 1
-            if i == 0
-              return false unless cell.cell_type == "th"
-            else
-              return false if cell.cell_type == "th"
-            end
+            #A table head row should be at the beginning and composed of <th> elements,
+            #and other rows should not include <th> elements
+            return false unless (i == 0) == (cell.cell_type == "th")
           end
         end
         true
