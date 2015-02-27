@@ -54,7 +54,7 @@ module PseudoHiki
      [StrongNode, "'''", "'''"],
      [DelNode, "==", "=="],
      [LiteralNode, "``", "``"],
-     [PluginNode, "{{","}}"]].each do |type, head, tail|
+     [PluginNode, "{{", "}}"]].each do |type, head, tail|
       HEAD[head] = type
       TAIL[tail] = type
       NodeTypeToHead[type] = head
