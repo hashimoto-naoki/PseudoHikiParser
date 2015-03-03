@@ -275,9 +275,9 @@ module PseudoHiki
 
     def set_encoding(given_opt)
       return nil unless String.new.respond_to? :encoding
-      external, internal = given_opt.split(/:/o)
-      Encoding.default_external = external if external
-      Encoding.default_internal = internal if internal
+      external, internal = given_opt.split(/:/o, 2)
+      Encoding.default_external = external if external and not external.empty?
+      Encoding.default_internal = internal if internal and not internal.empty?
     end
 
     def parse_command_line_options
