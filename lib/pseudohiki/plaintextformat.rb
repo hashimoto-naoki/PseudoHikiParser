@@ -163,21 +163,27 @@ ERROR_TEXT
         rows.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = rows.length - 1
+        each_empty_cell_index(max_row, max_col, rows, table) do |r, c, cur_row|
+          table[r][c] = cur_row.shift
+          fill_expand(table, r, c, table[r][c])
+        end
+        format_table(table, tree)
+      end
+
+      def each_empty_cell_index(max_row, max_col, rows, table)
         cur_row = nil
         each_cell_index(max_row, max_col) do |r, c|
           cur_row = rows.shift if c == 0
           next if table[r][c]
           begin
             raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
-            table[r][c] = cur_row.shift
-            fill_expand(table, r, c, table[r][c])
+            yield r, c, cur_row
           rescue
             raise if @options.strict_mode
             STDERR.puts ERROR_MESSAGE%[table[r].inspect]
             next
           end
         end
-        format_table(table, tree)
       end
 
       def deep_copy_tree(tree)
