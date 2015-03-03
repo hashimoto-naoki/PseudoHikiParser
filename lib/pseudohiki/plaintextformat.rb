@@ -159,18 +159,18 @@ ERROR_TEXT
 
       def visit(tree)
         table = create_self_element(tree)
-        rows = deep_copy_tree(tree)
         tree.length.times { table.push create_self_element(tree) }
         max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = tree.length - 1
-        each_empty_cell_index(max_row, max_col, rows, table) do |r, c, cur_row|
+        each_empty_cell_index(max_row, max_col, tree, table) do |r, c, cur_row|
           table[r][c] = cur_row.shift
           fill_expand(table, r, c, table[r][c])
         end
         format_table(table, tree)
       end
 
-      def each_empty_cell_index(max_row, max_col, rows, table)
+      def each_empty_cell_index(max_row, max_col, tree, table)
+        rows = deep_copy_tree(tree)
         cur_row = nil
         each_cell_index(max_row, max_col) do |r, c|
           cur_row = rows.shift if c == 0
