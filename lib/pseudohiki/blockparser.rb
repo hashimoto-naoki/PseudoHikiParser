@@ -44,11 +44,10 @@ module PseudoHiki
     end
 
     class BlockLeaf < BlockStack::Leaf
-      @@head_re = {}
       attr_accessor :nominal_level, :node_id, :decorator
 
       def self.head_re=(head_regex)
-        @self_head_re = @@head_re[self] = head_regex
+        @self_head_re = head_regex
       end
 
       def self.head_re
@@ -65,7 +64,7 @@ module PseudoHiki
       end
 
       def head_re
-        @head_re ||= @@head_re[self.class]
+        @head_re ||= self.class.head_re
       end
 
       def block
