@@ -534,5 +534,27 @@ TEXT
 
     assert_equal([[[" heading\n"]], [[" subheading\n"]]], headings)
   end
+
+  def test_prepare_id_conv_table
+    text = <<TEXT
+!![main-heading] heading
+
+paragraph
+
+!!![sub-heading] subheading
+
+another paragraph
+TEXT
+
+    expected_table = {
+      "main-heading" => "heading",
+      "sub-heading" => "subheading"
+    }
+
+    tree = BlockParser.parse(text)
+    id_conv_table = @gfm_formatter.prepare_id_conv_table(tree)
+
+    assert_equal(expected_table, id_conv_table)
+  end
 end
 
