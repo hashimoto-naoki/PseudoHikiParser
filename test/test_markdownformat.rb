@@ -44,6 +44,15 @@ TEXT
     assert_equal(gfm_text, MarkDownFormat.format(tree, :gfm_style => true))
   end
 
+  def test_self_convert_to_gfm_id_format
+    heading_with_non_ascii_chars = "class PseudoHiki::BlockParser"
+    heading_with_multiple_spaces = "Development status of features from the original Hiki notation"
+    gfm_id_with_non_ascii_chars = MarkDownFormat.convert_to_gfm_id_format(heading_with_non_ascii_chars)
+    gfm_id_with_multiple_spaces = MarkDownFormat.convert_to_gfm_id_format(heading_with_multiple_spaces)
+    assert_equal("class-pseudohikiblockparser", gfm_id_with_non_ascii_chars)
+    assert_equal("development-status-of-features-from-the-original-hiki-notation", gfm_id_with_multiple_spaces)
+  end
+
   def test_plain
     text = <<TEXT
 test string
@@ -567,6 +576,73 @@ TEXT
     tree = BlockParser.parse(text.lines.to_a)
     assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
     assert_equal(md_text, @formatter.format(tree).to_s)
+  end
+
+  def test_collect_headings
+    text = <<TEXT
+!![main-heading] heading
+
+paragraph
+
+!!![sub-heading] subheading
+
+another paragraph
+TEXT
+
+    tree = BlockParser.parse(text)
+    headings = @gfm_formatter.collect_headings(tree)
+
+    assert_equal([[[" heading\n"]], [[" subheading\n"]]], headings)
+  end
+
+  def test_prepare_id_conv_table
+    text = <<TEXT
+!![main-heading] heading
+
+paragraph
+
+!!![sub-heading] subheading
+
+another paragraph
+TEXT
+
+    expected_table = {
+      "main-heading" => "heading",
+      "sub-heading" => "subheading"
+    }
+
+    tree = BlockParser.parse(text)
+    id_conv_table = @gfm_formatter.prepare_id_conv_table(tree)
+
+    assert_equal(expected_table, id_conv_table)
+  end
+
+  def test_gfm_style_in_page_anchor
+    text = <<TEXT
+!![main_heading] Main Heading
+
+a paragraph
+
+!!![sub-heading] SubHeading
+
+a link to [[main heading|#main_heading]]
+TEXT
+
+    expected_text = <<TEXT
+## Main Heading
+
+a paragraph
+
+### SubHeading
+
+a link to [main heading](#main-heading)
+
+TEXT
+
+    tree = BlockParser.parse(text)
+    gfm_text = @gfm_formatter.format(tree)
+
+    assert_equal(expected_text, gfm_text)
   end
 end
 

@@ -4,6 +4,7 @@ require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
 require 'pseudohiki/plaintextformat'
+require 'pseudohiki/utils'
 require 'htmlelement'
 require 'ostruct'
 
@@ -14,6 +15,8 @@ module PseudoHiki
     include BlockParser::BlockElement
 
     Formatters = {}
+    GFM_STRIPPED_CHARS = " -&+$,/:;=?@\"{}#|^~[]`\\*()%.!'"
+    GFM_STRIPPED_CHARS_PAT = Regexp.union(/\s+/o, /[#{Regexp.escape(GFM_STRIPPED_CHARS)}]/o)
 
     def self.format(tree, options={ :strict_mode=> false, :gfm_style => false })
       if Formatters.empty?
@@ -23,6 +26,12 @@ module PseudoHiki
 
       Formatters[options] ||= create(options)
       Formatters[options].format(tree)
+    end
+
+    def self.convert_to_gfm_id_format(heading)
+      heading.gsub(GFM_STRIPPED_CHARS_PAT) do |char|
+        /\A\s+\Z/o =~ char ? '-'.freeze : ''.freeze
+      end.downcase
     end
 
     def initialize(formatter={}, options={ :strict_mode=> false, :gfm_style => false })
@@ -60,6 +69,7 @@ module PseudoHiki
 
     def format(tree)
       formatter = get_plain
+      @formatter[LinkNode].id_conv_table = prepare_id_conv_table(tree) if @options.gfm_style
       tree.accept(formatter).join
     end
 
@@ -76,6 +86,23 @@ module PseudoHiki
 
     def remove_trailing_newlines_in_html_element(element)
       element.to_s.gsub(/([^>])\r?\n/, "\\1") << $/
+    end
+
+    def collect_headings(tree)
+      PseudoHiki::Utils::NodeCollector.select(tree) do |node|
+        node.kind_of? PseudoHiki::BlockParser::HeadingLeaf
+      end
+    end
+
+    def prepare_id_conv_table(tree)
+      {}.tap do |table|
+        collect_headings(tree).each do |heading|
+          if node_id = heading.node_id
+            heading_text = PlainTextFormat.format(heading).strip
+            table[node_id] = MarkDownFormat.convert_to_gfm_id_format(heading_text)
+          end
+        end
+      end
     end
 
     def self.create(options={ :strict_mode => false })
@@ -139,6 +166,8 @@ module PseudoHiki
     end
 
     class LinkNodeFormatter < self
+      attr_writer :id_conv_table
+
       def visit(tree)
         not_from_thumbnail = tree.first.class != LinkNode
         tree = tree.dup
@@ -151,7 +180,8 @@ module PseudoHiki
           STDERR.puts "No uri is specified for #{caption}"
         end
         element.push "!" if ImageSuffix =~ ref and not_from_thumbnail
-        element.push "[#{(caption||tree).join}](#{tree.join})"
+        link = format_link(tree)
+        element.push "[#{(caption||tree).join}](#{link})"
         element
       end
 
@@ -161,6 +191,16 @@ module PseudoHiki
         caption_part = tree.shift(link_sep_index)
         tree.shift
         caption_part.map {|element| visited_result(element) }
+      end
+
+      def format_link(tree)
+        link = tree.join
+        return link unless @id_conv_table
+        if /\A#/o =~ link and gfm_link = @id_conv_table[link[1..-1]]
+          "#".concat gfm_link
+        else
+          link
+        end
       end
     end
 
