@@ -4,6 +4,7 @@ require 'pseudohiki/inlineparser'
 require 'pseudohiki/blockparser'
 require 'pseudohiki/htmlformat'
 require 'pseudohiki/plaintextformat'
+require 'pseudohiki/utils'
 require 'htmlelement'
 require 'ostruct'
 
@@ -84,6 +85,12 @@ module PseudoHiki
 
     def remove_trailing_newlines_in_html_element(element)
       element.to_s.gsub(/([^>])\r?\n/, "\\1") << $/
+    end
+
+    def collect_headings(tree)
+      PseudoHiki::Utils::NodeCollector.select(tree) do |node|
+        node.kind_of? PseudoHiki::BlockParser::HeadingLeaf
+      end
     end
 
     def self.create(options={ :strict_mode => false })
