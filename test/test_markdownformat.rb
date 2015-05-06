@@ -577,5 +577,22 @@ TEXT
     assert_equal(gfm_text, @gfm_formatter.format(tree).to_s)
     assert_equal(md_text, @formatter.format(tree).to_s)
   end
+
+  def test_collect_headings
+    text = <<TEXT
+!![main-heading] heading
+
+paragraph
+
+!!![sub-heading] subheading
+
+another paragraph
+TEXT
+
+    tree = BlockParser.parse(text)
+    headings = @gfm_formatter.collect_headings(tree)
+
+    assert_equal([[[" heading\n"]], [[" subheading\n"]]], headings)
+  end
 end
 
