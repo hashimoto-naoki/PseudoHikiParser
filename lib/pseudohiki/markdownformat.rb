@@ -93,6 +93,17 @@ module PseudoHiki
       end
     end
 
+    def prepare_id_conv_table(tree)
+      {}.tap do |table|
+        collect_headings(tree).each do |heading|
+          if node_id = heading.node_id
+            heading_text = PlainTextFormat.format(heading).strip
+            table[node_id] = MarkDownFormat.convert_to_gfm_id_format(heading_text)
+          end
+        end
+      end
+    end
+
     def self.create(options={ :strict_mode => false })
       formatter = {}
       main_formatter = self.new(formatter, options)
