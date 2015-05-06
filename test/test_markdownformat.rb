@@ -616,5 +616,33 @@ TEXT
 
     assert_equal(expected_table, id_conv_table)
   end
+
+  def test_gfm_style_in_page_anchor
+    text = <<TEXT
+!![main_heading] Main Heading
+
+a paragraph
+
+!!![sub-heading] SubHeading
+
+a link to [[main heading|#main_heading]]
+TEXT
+
+    expected_text = <<TEXT
+## Main Heading
+
+a paragraph
+
+### SubHeading
+
+a link to [main heading](#main-heading)
+
+TEXT
+
+    tree = BlockParser.parse(text)
+    gfm_text = @gfm_formatter.format(tree)
+
+    assert_equal(expected_text, gfm_text)
+  end
 end
 
