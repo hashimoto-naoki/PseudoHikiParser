@@ -33,7 +33,7 @@ TEXT
 the first paragraph with <em>inline</em> <code>tags</code>
 </p>
 <p>
-the second paragraph with <del>block</del> <a href="#id">inline</a> tags
+the second paragraph with <del>block</del> <a href="#ID">inline</a> tags
 </p>
 <!-- end of section h2 -->
 </div>
