@@ -164,8 +164,9 @@ module PseudoHiki
           htmlelement[ALT] = caption.join if caption
         else
           htmlelement = create_self_element
-          htmlelement[HREF] = tree.join
-          htmlelement.push caption||tree.join
+          url = tree.join
+          htmlelement[HREF] = url.start_with?("#".freeze) ? url.upcase : url
+          htmlelement.push caption||url
         end
         htmlelement
       end
