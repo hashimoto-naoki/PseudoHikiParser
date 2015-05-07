@@ -173,7 +173,7 @@ If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you c
 ||to_markdown||Markdown
 ||to_gfm||Github Flavored Markdown
 
-For example, the script below returns the same result as the example of [[PseudoHiki::BlockParser|#PSEUDOHIKI_BLOCKPARSER]]
+For example, the script below returns the same result as the example of [[PseudoHiki::BlockParser|#pseudohiki_blockparser]]
 
 //@code[ruby]
 <<<
