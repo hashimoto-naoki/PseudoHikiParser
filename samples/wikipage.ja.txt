@@ -168,7 +168,7 @@ PseudoHiki::BlockParser.parseで作られた構文木を使い回す必要がな
 ||to_markdown||Markdown
 ||to_gfm||Github Flavored Markdown
 
-例えば次のスクリプトは[[PseudoHiki::BlockParserクラス|#PSEUDOHIKI_BLOCKPARSER]]の例と同じ結果を返します。
+例えば次のスクリプトは[[PseudoHiki::BlockParserクラス|#pseudohiki_blockparser]]の例と同じ結果を返します。
 
 //@code[ruby]
 <<<
