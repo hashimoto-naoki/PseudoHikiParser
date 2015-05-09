@@ -353,7 +353,7 @@ Hiki記法のマークアップを除去するためのVisitorクラスで、使
 :fax:03-xxxx-xxxx
 ```
 
-will be rendered as
+は次のように変換されます。
 
 ```
 tel:	03-xxxx-xxxx
