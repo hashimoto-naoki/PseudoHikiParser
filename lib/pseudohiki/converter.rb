@@ -60,8 +60,21 @@ module PseudoHiki
       end
     end
 
+    def gfm_id(heading_node)
+      MarkDownFormat.convert_to_gfm_id_format(to_plain(heading_node).strip)
+    end
+
+    def create_gfm_table_of_contents(tree)
+      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        "%s[[%s|#%s]]#{$/}"%['*'*toc_node.nominal_level, to_plain(toc_node).strip, gfm_id(toc_node)]
+      end
+
+      @options.formatter.format(BlockParser.parse(toc_lines))
+    end
+
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
+      return create_gfm_table_of_contents(tree) if @options[:html_version].version == "gfm"
       return create_plain_table_of_contents(tree) unless @options.html_template
       create_html_table_of_contents(tree)
     end
