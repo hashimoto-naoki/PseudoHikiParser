@@ -194,17 +194,17 @@ TEXT
     toc = PageComposer.new(options).create_table_of_contents(@parsed_tree)
     assert_equal("", toc)
 
-    toc_in_plain_text = <<TEXT
-  * Heading1
-  * Heading2
-    * Heading2-1
+    toc_in_gfm_text = <<TEXT
+  * [Heading1](#heading1)
+  * [Heading2](#heading2)
+    * [Heading2-1](#heading21)
 TEXT
 
     set_argv("-fg -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
     options.set_options_from_command_line
     toc = PageComposer.new(options).create_table_of_contents(@parsed_tree)
-    assert_equal(toc_in_plain_text, toc)
+    assert_equal(toc_in_gfm_text, toc)
 
     toc_in_html = <<TEXT
 <ul>
@@ -293,12 +293,12 @@ paragraph
 </html>
 HTML
 
-    expected_plain_text = <<TEXT
+    expected_gfm_text = <<TEXT
 ## table of contents
 
-  * Heading1
-  * Heading2
-    * Heading2-1
+  * [Heading1](#heading1)
+  * [Heading2](#heading2)
+    * [Heading2-1](#heading21)
 
 # Title
 
@@ -329,8 +329,8 @@ TEXT
     options = OptionManager.new
     options.set_options_from_command_line
 
-    composed_plain_text = PageComposer.new(options).compose_html(@input_lines).join
-    assert_equal(expected_plain_text, composed_plain_text)
+    composed_gfm_text = PageComposer.new(options).compose_html(@input_lines).join
+    assert_equal(expected_gfm_text, composed_gfm_text)
   end
 
   def test_output_in_gfm_with_toc
@@ -355,8 +355,8 @@ output = <<GFM
 
 ## Table of Contents
 
-  * The first heading
-  * The second heading
+  * [The first heading](#the-first-heading)
+  * [The second heading](#the-second-heading)
 
 ## The first heading
 
