@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
                         "lib/pseudohiki/sinatra_helpers.rb",
                         "lib/pseudohiki/version.rb",
                         "lib/pseudohiki/converter.rb",
+                        "lib/pseudohiki/utils.rb",
                         "lib/pseudohiki/htmlplugin.rb",
                         "lib/htmlelement.rb",
                         "lib/htmlelement/htmltemplate.rb"
