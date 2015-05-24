@@ -759,6 +759,78 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_sectioning_node
+        text = <<TEXT
+! Main title
+
+//@begin[header]
+!! first title in header
+
+paragraph
+
+!! second title in header
+
+paragraph2
+
+//@end[header]
+
+!! first subtitle in main part
+
+paragraph3
+
+//@begin[#footer]
+
+paragraph4
+
+//@end[#footer]
+
+TEXT
+
+    expected_html = <<HTML
+<div class="section h1">
+<h1> Main title
+</h1>
+<div class="header">
+<div class="section h2">
+<h2> first title in header
+</h2>
+<p>
+paragraph
+</p>
+<!-- end of section h2 -->
+</div>
+<div class="section h2">
+<h2> second title in header
+</h2>
+<p>
+paragraph2
+</p>
+<!-- end of section h2 -->
+</div>
+<!-- end of header -->
+</div>
+<div class="section h2">
+<h2> first subtitle in main part
+</h2>
+<p>
+paragraph3
+</p>
+<div class="section" id="footer">
+<p>
+paragraph4
+</p>
+<!-- end of footer -->
+</div>
+<!-- end of section h2 -->
+</div>
+<!-- end of section h1 -->
+</div>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_html, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_comment_out_followed_by_a_verbatim_block
     text = <<TEXT
 the first paragraph
