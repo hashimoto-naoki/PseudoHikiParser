@@ -119,6 +119,7 @@ module PseudoHiki
       [EnumNode, "ol"],
       [TableLeaf, "tr"],
       [VerbatimNode, "pre"],
+      [SectioningNode, "section"],
       [CommentOutNode, nil],
       [HeadingNode, "section"],
       [DescLeaf, DT],
@@ -207,6 +208,37 @@ module PseudoHiki
             @generator.create(LINK, url, HREF => url).to_s
           end
           element.push contents
+        end
+      end
+    end
+
+    class << Formatter[SectioningNode]
+      ID_MARK = "#"
+
+      alias :orig_create_self_element :create_self_element
+
+      def section_with_id(tree, node_id)
+        orig_create_self_element(tree).tap do |element|
+          element[ID] = node_id[1..-1] # remove the first charactor from node_id
+        end
+      end
+
+      def section_for_class(tree, node_id)
+        if HtmlElement::Html5Tags.include? node_id
+          @generator.create(node_id)
+        else
+          orig_create_self_element(tree).tap do |element|
+            element[CLASS] ? element[CLASS] += " ".concat(node_id) : element[CLASS] = node_id
+          end
+        end
+      end
+
+      def create_self_element(tree)
+        node_id = tree.node_id
+        if node_id.start_with? ID_MARK
+          section_with_id(tree, node_id)
+        else
+          section_for_class(tree, node_id)
         end
       end
     end
