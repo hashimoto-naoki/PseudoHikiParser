@@ -340,6 +340,44 @@ TEXT
     assert_equal('class_name', tree[0][3].decorator["class"].id)
   end
 
+  def test_sectioning_node
+    text = <<TEXT
+! Main title
+
+//@begin[header]
+!! first title in header
+
+paragraph
+
+!! second title in header
+
+paragraph2
+
+//@end[header]
+
+!! first subtitle in main part
+
+paragraph3
+
+TEXT
+
+    expected_tree = [[[[" Main title\n"]],
+                      [
+                       [[[" first title in header\n"]],
+                        [[["paragraph\n"]]]],
+                       [[[" second title in header\n"]],
+                        [[["paragraph2\n"]]]]
+                      ],
+                      [[[" first subtitle in main part\n"]],
+                       [[["paragraph3\n"]]]]]]
+
+
+    tree = PseudoHiki::BlockParser.parse(text)
+    assert_equal(expected_tree, tree)
+    assert_kind_of(PseudoHiki::BlockParser::BlockElement::SectioningNode, tree[0][1])
+    assert_equal("header", tree[0][1].node_id)
+  end
+
   def test_comment_out_followed_by_a_verbatim_block
     text = <<TEXT
 the first paragraph
