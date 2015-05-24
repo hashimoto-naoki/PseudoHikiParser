@@ -37,6 +37,8 @@ module PseudoHiki
     end
 
     class BlockStack < TreeStack
+      attr_reader :stack
+
       def pop_with_breaker(breaker=nil)
         self.current_node.parse_leafs(breaker)
         pop
@@ -192,11 +194,11 @@ module PseudoHiki
 
     module BlockElement
       {
-        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf DecoratorLeaf),
+        BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf DecoratorLeaf SectioningNodeEnd),
         NonNestedBlockLeaf => %w(QuoteLeaf ParagraphLeaf),
         NestedBlockLeaf => %w(HeadingLeaf),
         ListTypeLeaf => %w(ListLeaf EnumLeaf),
-        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode DecoratorNode),
+        BlockNode => %w(DescNode VerbatimNode TableNode CommentOutNode HrNode DecoratorNode SectioningNode),
         NonNestedBlockNode => %w(QuoteNode ParagraphNode),
         NestedBlockNode => %w(HeadingNode),
         ListTypeBlockNode => %w(ListNode EnumNode),
@@ -253,6 +255,43 @@ module PseudoHiki
         return super if breaker.kind_of?(BlockElement::DecoratorLeaf)
         parse_leafs(breaker)
         @stack.current_node.breakable?(breaker)
+      end
+    end
+
+    class BlockElement::DecoratorLeaf
+      def push_sectioning_node(stack, node_class)
+        node = node_class.new
+        m = BlockElement::DecoratorNode::DECORATOR_PAT.match(self.join)
+        node.node_id = m[2]
+        stack.push(node)
+      end
+
+      def push_self(stack)
+        decorator_type = self[0][0]
+        if decorator_type.start_with? "begin[".freeze
+          push_sectioning_node(stack, BlockElement::SectioningNode)
+        elsif decorator_type.start_with? "end[".freeze
+          push_sectioning_node(stack, BlockElement::SectioningNodeEnd)
+        else
+          super
+        end
+      end
+    end
+
+    class BlockElement::SectioningNode
+      def breakable?(breaker)
+        false
+      end
+    end
+
+    class BlockElement::SectioningNodeEnd
+      def push_self(stack)
+        n = stack.stack.rindex do |node|
+          node.kind_of? BlockElement::SectioningNode and node.node_id == self.node_id
+        end
+        if n
+          stack.pop until stack.stack.length == n
+        end
       end
     end
 
