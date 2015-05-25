@@ -286,7 +286,7 @@ For example,
 paragraph
 >>>
 
-will be renderes as
+will be rendered as
 
 //@code[html]
 <<<
