@@ -281,7 +281,7 @@ For example,
 paragraph
 ```
 
-will be renderes as
+will be rendered as
 
 ```
 <div class="class_name">
