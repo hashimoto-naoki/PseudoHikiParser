@@ -294,6 +294,80 @@ paragraph
 </div>
 ```
 
+#### Defining sections (As of version 0.0.3.develop, this feature is not included in the rubygems package.)
+
+When a certain part of a document is enclosed by `//@begin[section\_name]` and `//@end[section\_name]`, HtmlFormat and its subclasses will convert the tags into \<div\> or \<section\> elements with id or class attributes.
+
+```
+!! title
+
+paragraph 0
+
+//@begin[main-part]
+
+!!! main part subtitle 1
+
+paragraph 1
+
+!!! main part subtitle 2
+
+paragraph 2
+
+//@end[main-part]
+
+//@begin[additional-part]
+
+!!! additional part subtitle
+
+paragraph 3
+
+//@end[additional-part]
+
+```
+
+will be rendered as
+
+```html
+<div class="section h2">
+<h2> title
+</h2>
+<p>
+paragraph 0
+</p>
+<div class="section main-part">
+<div class="section h3">
+<h3> main part subtitle 1
+</h3>
+<p>
+paragraph 1
+</p>
+<!-- end of section h3 -->
+</div>
+<div class="section h3">
+<h3> main part subtitle 2
+</h3>
+<p>
+paragraph 2
+</p>
+<!-- end of section h3 -->
+</div>
+<!-- end of section main-part -->
+</div>
+<div class="section additional-part">
+<div class="section h3">
+<h3> additional part subtitle
+</h3>
+<p>
+paragraph 3
+</p>
+<!-- end of section h3 -->
+</div>
+<!-- end of section additional-part -->
+</div>
+<!-- end of section h2 -->
+</div>
+```
+
 ### Not Implemented Yet
 
 ## Visitor classes

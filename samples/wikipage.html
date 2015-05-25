@@ -423,6 +423,83 @@ paragraph
 </pre>
 <!-- end of section h4 -->
 </div>
+<div class="section h4">
+<h4> Defining sections (As of version 0.0.3.develop, this feature is not included in the rubygems package.)
+</h4>
+<p>
+When a certain part of a document is enclosed by <code>//@begin[section_name]</code> and <code>//@end[section_name]</code>, HtmlFormat and its subclasses will convert the tags into &lt;div&gt; or &lt;section&gt; elements with id or class attributes.
+</p>
+<pre>
+!! title
+
+paragraph 0
+
+//@begin[main-part]
+
+!!! main part subtitle 1
+
+paragraph 1
+
+!!! main part subtitle 2
+
+paragraph 2
+
+//@end[main-part]
+
+//@begin[additional-part]
+
+!!! additional part subtitle
+
+paragraph 3
+
+//@end[additional-part]
+
+</pre>
+<p>
+will be rendered as
+</p>
+<pre>
+&lt;div class=&quot;section h2&quot;&gt;
+&lt;h2&gt; title
+&lt;/h2&gt;
+&lt;p&gt;
+paragraph 0
+&lt;/p&gt;
+&lt;div class=&quot;section main-part&quot;&gt;
+&lt;div class=&quot;section h3&quot;&gt;
+&lt;h3&gt; main part subtitle 1
+&lt;/h3&gt;
+&lt;p&gt;
+paragraph 1
+&lt;/p&gt;
+&lt;!-- end of section h3 --&gt;
+&lt;/div&gt;
+&lt;div class=&quot;section h3&quot;&gt;
+&lt;h3&gt; main part subtitle 2
+&lt;/h3&gt;
+&lt;p&gt;
+paragraph 2
+&lt;/p&gt;
+&lt;!-- end of section h3 --&gt;
+&lt;/div&gt;
+&lt;!-- end of section main-part --&gt;
+&lt;/div&gt;
+&lt;div class=&quot;section additional-part&quot;&gt;
+&lt;div class=&quot;section h3&quot;&gt;
+&lt;h3&gt; additional part subtitle
+&lt;/h3&gt;
+&lt;p&gt;
+paragraph 3
+&lt;/p&gt;
+&lt;!-- end of section h3 --&gt;
+&lt;/div&gt;
+&lt;!-- end of section additional-part --&gt;
+&lt;/div&gt;
+&lt;!-- end of section h2 --&gt;
+&lt;/div&gt;
+</pre>
+<!-- end of section h4 -->
+</div>
 <!-- end of section h3 -->
 </div>
 <div class="section h3">
