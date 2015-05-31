@@ -252,7 +252,7 @@ module PseudoHiki
         super(tree).tap do |element|
           heading_level = "h#{tree.first.nominal_level}"
           element[CLASS] ||= heading_level
-          element[CLASS] +=  SPACE + heading_level unless element[CLASS] == heading_level
+          element[CLASS] += SPACE + heading_level unless element[CLASS] == heading_level
         end
       end
     end
