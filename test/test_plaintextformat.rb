@@ -265,4 +265,89 @@ TEXT
     assert_equal(expected_text_in_verbose_mode, PlainTextFormat.format(tree, { :verbose_mode => true }).to_s)
     assert_equal(expected_text, PlainTextFormat.format(tree, { :verbose_mode => false }).to_s)
   end
+
+  def test_without_sectioning_node
+        text = <<TEXT
+! Main title
+
+!! first title in header
+
+paragraph
+
+!! second title in header
+
+paragraph2
+
+!! first subtitle in main part
+
+paragraph3
+
+paragraph4
+
+TEXT
+
+    expected_text = <<HTML
+ Main title
+ first title in header
+paragraph
+
+ second title in header
+paragraph2
+
+ first subtitle in main part
+paragraph3
+
+paragraph4
+
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, PlainTextFormat.format(tree, { :verbose_mode => false }).to_s)
+  end
+
+  def test_sectioning_node
+        text = <<TEXT
+! Main title
+
+//@begin[header]
+!! first title in header
+
+paragraph
+
+!! second title in header
+
+paragraph2
+
+//@end[header]
+
+!! first subtitle in main part
+
+paragraph3
+
+//@begin[#footer]
+
+paragraph4
+
+//@end[#footer]
+
+TEXT
+
+    expected_text = <<HTML
+ Main title
+ first title in header
+paragraph
+
+ second title in header
+paragraph2
+
+ first subtitle in main part
+paragraph3
+
+paragraph4
+
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_text, PlainTextFormat.format(tree, { :verbose_mode => false }).to_s)
+  end
 end
