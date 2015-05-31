@@ -299,11 +299,8 @@ module PseudoHiki
         n = stack.stack.rindex do |node|
           node.kind_of? BlockElement::SectioningNode and node.node_id == self.node_id
         end
-        if n
-          stack.pop until stack.stack.length == n
-        else
-          raise UnmatchedSectioningTagError
-        end
+        raise UnmatchedSectioningTagError unless n
+        stack.pop until stack.stack.length == n
       rescue UnmatchedSectioningTagError => e
         STDERR.puts "#{e}: The start tag for '#{self.node_id}' is not found."
         #FIXME: The handling of this error should be changed appropriately.
