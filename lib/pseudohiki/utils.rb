@@ -15,7 +15,7 @@ module PseudoHiki
         collector.nodes
       end
 
-      def initialize (&condition)
+      def initialize(&condition)
         @nodes = []
         @condition = condition
       end
