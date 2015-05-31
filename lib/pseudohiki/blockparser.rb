@@ -43,6 +43,11 @@ module PseudoHiki
         self.current_node.parse_leafs(breaker)
         pop
       end
+
+      def current_heading_level
+        i = @stack.rindex {|node| node.kind_of? BlockElement::HeadingNode }
+        @stack[i].nominal_level || 0
+      end
     end
 
     class BlockLeaf < BlockStack::Leaf
@@ -259,16 +264,11 @@ module PseudoHiki
     end
 
     class BlockElement::DecoratorLeaf
-      def current_heading_level(stack)
-        i = stack.stack.rindex {|node| node.kind_of? BlockElement::HeadingNode }
-        stack.stack[i].nominal_level || 0
-      end
-
       def push_sectioning_node(stack, node_class)
         node = node_class.new
         m = BlockElement::DecoratorNode::DECORATOR_PAT.match(self.join)
         node.node_id = m[2]
-        node.under_heading_level = current_heading_level(stack) if node.kind_of? BlockElement::SectioningNode
+        node.under_heading_level = stack.current_heading_level if node.kind_of? BlockElement::SectioningNode
         stack.push(node)
       end
 
