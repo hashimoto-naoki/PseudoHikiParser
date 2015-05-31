@@ -288,11 +288,7 @@ module PseudoHiki
       attr_accessor :under_heading_level
 
       def breakable?(breaker)
-        if breaker.kind_of? BlockElement::HeadingLeaf and @under_heading_level >= breaker.nominal_level
-          true
-        else
-          false
-        end
+        breaker.kind_of? BlockElement::HeadingLeaf and @under_heading_level >= breaker.nominal_level
       end
     end
 
