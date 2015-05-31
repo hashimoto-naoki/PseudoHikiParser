@@ -284,6 +284,8 @@ module PseudoHiki
       end
     end
 
+    class UnmatchedSectioningTagError < StandardError; end
+
     class BlockElement::SectioningNode
       attr_accessor :under_heading_level
 
@@ -299,7 +301,12 @@ module PseudoHiki
         end
         if n
           stack.pop until stack.stack.length == n
+        else
+          raise UnmatchedSectioningTagError
         end
+      rescue UnmatchedSectioningTagError => e
+        STDERR.puts "#{e}: The start tag for '#{self.node_id}' is not found."
+        #FIXME: The handling of this error should be changed appropriately.
       end
     end
 
