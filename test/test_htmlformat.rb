@@ -979,6 +979,86 @@ HTML
     assert_equal(expected_html, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_sectioning_node_when_end_tag_is_wrongly_placed
+        text = <<TEXT
+!! First part
+
+paragraph1
+
+//@begin[first_sub_part]
+!!! first title in first sub-part
+
+paragraph2
+
+!!! second title in first sub-part
+
+paragraph3
+
+//you should put //@end[first_sub_part] here.
+
+!! Second part
+
+paragraph4
+
+
+//@end[first_sub_part] this end tag is wrongly placed.
+
+//@begin[#footer]
+
+paragraph5
+
+//@end[#footer]
+
+TEXT
+
+    expected_html = <<HTML
+<div class=\"section h2\">
+<h2> First part
+</h2>
+<p>
+paragraph1
+</p>
+<div class=\"section first_sub_part\">
+<div class=\"section h3\">
+<h3> first title in first sub-part
+</h3>
+<p>
+paragraph2
+</p>
+<!-- end of section h3 -->
+</div>
+<div class=\"section h3\">
+<h3> second title in first sub-part
+</h3>
+<p>
+paragraph3
+</p>
+<!-- end of section h3 -->
+</div>
+<!-- end of section first_sub_part -->
+</div>
+<!-- end of section h2 -->
+</div>
+<div class=\"section h2\">
+<h2> Second part
+</h2>
+<p>
+paragraph4
+</p>
+<div class=\"section\" id=\"footer\">
+<p>
+paragraph5
+</p>
+<!-- end of footer -->
+</div>
+<!-- end of section h2 -->
+</div>
+HTML
+
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(expected_html, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_comment_out_followed_by_a_verbatim_block
     text = <<TEXT
 the first paragraph
