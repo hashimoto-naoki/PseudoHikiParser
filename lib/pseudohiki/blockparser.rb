@@ -259,10 +259,16 @@ module PseudoHiki
     end
 
     class BlockElement::DecoratorLeaf
+      def current_heading_level(stack)
+        i = stack.stack.rindex {|node| node.kind_of? BlockElement::HeadingNode }
+        stack.stack[i].nominal_level || 0
+      end
+
       def push_sectioning_node(stack, node_class)
         node = node_class.new
         m = BlockElement::DecoratorNode::DECORATOR_PAT.match(self.join)
         node.node_id = m[2]
+        node.under_heading_level = current_heading_level(stack) if node.kind_of? BlockElement::SectioningNode
         stack.push(node)
       end
 
@@ -279,8 +285,14 @@ module PseudoHiki
     end
 
     class BlockElement::SectioningNode
+      attr_accessor :under_heading_level
+
       def breakable?(breaker)
-        false
+        if breaker.kind_of? BlockElement::HeadingLeaf and @under_heading_level >= breaker.nominal_level
+          true
+        else
+          false
+        end
       end
     end
 
