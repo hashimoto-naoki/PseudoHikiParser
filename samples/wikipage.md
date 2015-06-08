@@ -374,7 +374,7 @@ paragraph 3
 
 Please note that some of the following classes are implemented partly or not tested well.
 
-### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L263)
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
@@ -418,11 +418,11 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 </div>
 ```
 
-### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L268)
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L301)
 
 This visitor is for HTML5.
 
-Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L263) exept for the treatment of \<section\> elements.
+Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296) exept for the treatment of \<section\> elements.
 
 ### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
 
