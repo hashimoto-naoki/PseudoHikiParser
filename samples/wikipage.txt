@@ -433,7 +433,7 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 
 This visitor is for HTML5.
 
-Currently there aren't many differences with [[XhtmlFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296]] exept for the treatment of <section> elements.
+Currently there aren't many differences with [[XhtmlFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296]] except for the handling of <section> elements.
 
 !!![plaintextformat] [[PlainTextFormat|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb]]  
 
