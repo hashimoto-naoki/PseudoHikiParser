@@ -95,13 +95,7 @@ module PseudoHiki
         tree = tree.dup
         element = Node.new
         caption = get_caption(tree)
-        begin
-          ref = tree.last.join
-        rescue NoMethodError
-          raise NoMethodError unless tree.empty?
-          STDERR.puts "No uri is specified for #{caption}"
-        end
-        if ImageSuffix =~ ref
+        if ImageSuffix =~ ref_tail(tree, caption)
           element.push (caption||tree).join
         else
           element.push caption||tree.join
@@ -116,6 +110,13 @@ module PseudoHiki
         caption_part = tree.shift(link_sep_index)
         tree.shift
         caption_part.map {|element| visited_result(element) }
+      end
+
+      def ref_tail(tree, caption)
+        tree.last.join
+      rescue NoMethodError
+        raise NoMethodError unless tree.empty?
+        STDERR.puts "No uri is specified for #{caption}"
       end
     end
 
