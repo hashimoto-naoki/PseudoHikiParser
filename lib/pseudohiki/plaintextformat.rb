@@ -105,7 +105,7 @@ module PseudoHiki
           element.push (caption||tree).join
         else
           element.push caption||tree.join
-          element.push " (#{tree.join('')})" if @options.verbose_mode and caption
+          element.push " (#{tree.join})" if @options.verbose_mode and caption
         end
         element
       end
