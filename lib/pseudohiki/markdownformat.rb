@@ -173,13 +173,9 @@ module PseudoHiki
         tree = tree.dup
         element = create_self_element
         caption = get_caption(tree)
-        begin
-          ref = tree.last.join
-        rescue NoMethodError
-          raise NoMethodError unless tree.empty?
-          STDERR.puts "No uri is specified for #{caption}"
+        if ImageSuffix =~ ref_tail(tree, caption) and not_from_thumbnail
+          element.push "!"
         end
-        element.push "!" if ImageSuffix =~ ref and not_from_thumbnail
         link = format_link(tree)
         element.push "[#{(caption||tree).join}](#{link})"
         element
@@ -201,6 +197,13 @@ module PseudoHiki
         else
           link
         end
+      end
+
+      def ref_tail(tree, caption)
+        tree.last.join
+      rescue NoMethodError
+        raise NoMethodError unless tree.empty?
+        STDERR.puts "No uri is specified for #{caption}"
       end
     end
 
