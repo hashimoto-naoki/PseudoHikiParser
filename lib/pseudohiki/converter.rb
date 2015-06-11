@@ -250,7 +250,7 @@ module PseudoHiki
     def base
       base_dir = self[:base]
       if base_dir and base_dir !~ /[\/\\]\.*$/o
-        base_dir = File.join(base_dir,".")
+        base_dir = File.join(base_dir, ".")
         base_dir = "file:///"+base_dir if base_dir !~ /^\./o and win32?
       end
       base_dir
@@ -408,7 +408,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
 
     def read_input_filename(filename)
       @input_file_dir, @input_file_name = File.split(File.expand_path(filename))
-      @input_file_basename = File.basename(@input_file_name,".*")
+      @input_file_basename = File.basename(@input_file_name, ".*")
     end
 
     def output_filename

@@ -326,7 +326,7 @@ module PseudoHiki
         cell_width = calculate_cell_width(table)
         header_delimiter = cell_width.map {|width| "-" * width }
         cell_formats = cell_width.map {|width| "%-#{width}s" }
-        table[1,0] = [header_delimiter]
+        table[1, 0] = [header_delimiter]
         table.map do |row|
           formatted_row = row.zip(cell_formats).map do |cell, format|
             format%[cell]
