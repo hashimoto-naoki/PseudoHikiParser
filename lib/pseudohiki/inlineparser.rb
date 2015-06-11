@@ -60,7 +60,7 @@ module PseudoHiki
       NodeTypeToHead[type] = head
     end
 
-    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys,TAIL.keys,[LinkSep, TableSep, DescSep])
+    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys, TAIL.keys, [LinkSep, TableSep, DescSep])
 
     def initialize(str)
       @tokens = PseudoHiki.split_into_tokens(str, TokenPat[self.class])

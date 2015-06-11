@@ -78,7 +78,7 @@ class HtmlElement
   end
 
   def HtmlElement.urldecode(str)
-    utf = str.gsub(/%\w\w/) {|ch| [ch[-2,2]].pack('H*') }.toutf8
+    utf = str.gsub(/%\w\w/) {|ch| [ch[-2, 2]].pack('H*') }.toutf8
     return utf.tosjis if $KCODE =~ /^s/io
     return utf.toeuc if $KCODE =~ /^e/io
     utf
@@ -135,8 +135,8 @@ class HtmlElement
   end
   
   def format_attributes
-    @attributes.collect do |attr,value|
-      ' %s="%s"'%[attr,HtmlElement.escape(value.to_s)]
+    @attributes.collect do |attr, value|
+      ' %s="%s"'%[attr, HtmlElement.escape(value.to_s)]
     end.sort.join
   end
   private :format_attributes
