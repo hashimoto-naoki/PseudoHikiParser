@@ -9,7 +9,7 @@ module PseudoHiki
   class HtmlFormat
     class << Formatter[PluginNode]
       def visit(leaf)
-        escape_inline_tags(leaf) { HtmlPlugin.new(@element_name,leaf.join).apply }
+        escape_inline_tags(leaf) { HtmlPlugin.new(@element_name, leaf.join).apply }
       end
     end
   end
@@ -34,8 +34,8 @@ module PseudoHiki
       if PLUGIN_PAT =~ data
         @plugin_name = $1
         @with_paren = true if $2.chomp == "("
-        result = data.chomp.sub(PLUGIN_PAT,"")
-        result[-1,1] = "" if @with_paren
+        result = data.chomp.sub(PLUGIN_PAT, "")
+        result[-1, 1] = "" if @with_paren
       else
         @plugin_name = data.chomp
         result = ""
@@ -43,7 +43,7 @@ module PseudoHiki
       result
     end
 
-    def initialize(tag_type,parsed_data)
+    def initialize(tag_type, parsed_data)
       @tag_type = tag_type
       @plugin_name = nil
       @with_paren = nil
@@ -66,14 +66,14 @@ module PseudoHiki
     #  end
 
     def anchor
-      name, anchor_mark = @data.split(/,\s*/o,2)
+      name, anchor_mark = @data.split(/,\s*/o, 2)
       anchor_mark = "_" if (anchor_mark.nil? or anchor_mark.empty?)
       HtmlElement.create("a", anchor_mark,
                          "name" => name,
                          "href" => "#"+name)
     end
 
-    def HtmlPlugin.add_chemical_formula(chemical_formula="CO2",en_word="carbon dioxide")
+    def HtmlPlugin.add_chemical_formula(chemical_formula="CO2", en_word="carbon dioxide")
       eval(<<-End)
       def #{chemical_formula.downcase}
         #(display=":cf",second_display=nil)
@@ -130,7 +130,7 @@ module PseudoHiki
       @data.scan(/\A(\d+)([^\d].*)/o) do |data|
         weight, molecule = data
         if self.respond_to? molecule
-          return "<sup>#{weight}</sup>" + HtmlPlugin.new("",molecule).apply
+          return "<sup>#{weight}</sup>" + HtmlPlugin.new("", molecule).apply
         else
           return "<sup>#{weight}</sup>" + molecule
         end
@@ -147,19 +147,19 @@ module PseudoHiki
 end
 
 if $0 == __FILE__
-  p HtmlPlugin.new("div","html(
+  p HtmlPlugin.new("div", "html(
 <ul>
 <li>list
 <li>list
 </ul>)").apply
-  p HtmlPlugin.new("div","inline(
+  p HtmlPlugin.new("div", "inline(
 *list
 *list
 )").apply
 
-p HtmlPlugin.new("div","co2").apply
-p HtmlPlugin.new("div","co2 :en").apply
-p HtmlPlugin.new("div","cb(3km)").apply
-p HtmlPlugin.new("div","per m").apply
-p HtmlPlugin.new("div","iso 18co2").apply
+p HtmlPlugin.new("div", "co2").apply
+p HtmlPlugin.new("div", "co2 :en").apply
+p HtmlPlugin.new("div", "cb(3km)").apply
+p HtmlPlugin.new("div", "per m").apply
+p HtmlPlugin.new("div", "iso 18co2").apply
 end
