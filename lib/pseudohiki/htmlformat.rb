@@ -136,13 +136,7 @@ module PseudoHiki
         not_from_thumbnail = tree.first.class != LinkNode
         tree = tree.dup
         caption = get_caption(tree)
-        begin
-          ref = tree.last.join
-        rescue NoMethodError
-          raise NoMethodError unless tree.empty?
-          STDERR.puts "No uri is specified for #{caption}"
-        end
-        if ImageSuffix =~ ref and not_from_thumbnail
+        if ImageSuffix =~ ref_tail(tree, caption) and not_from_thumbnail
           htmlelement = ImgFormat.create_self_element
           htmlelement[SRC] = tree.join
           htmlelement[ALT] = caption.join if caption
@@ -159,6 +153,13 @@ module PseudoHiki
         first_part, second_part = split_into_parts(tree, [LinkSep])
         return nil unless second_part
         first_part.map {|token| visited_result(token) }
+      end
+
+      def ref_tail(tree, caption)
+        tree.last.join
+      rescue NoMethodError
+        raise NoMethodError unless tree.empty?
+        STDERR.puts "No uri is specified for #{caption}"
       end
     end
 
