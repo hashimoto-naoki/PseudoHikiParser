@@ -411,9 +411,7 @@ module PseudoHiki
     class ListNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          if /\A\*/o =~ element.first.join
-            element.push $/
-          end
+          element.push $/ if /\A\*/o =~ element.first.join
         end
       end
     end
@@ -421,9 +419,7 @@ module PseudoHiki
     class EnumNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          if /\A\d/o =~ element.first.join
-            element.push $/
-          end
+          element.push $/ if /\A\d/o =~ element.first.join
         end
       end
     end
