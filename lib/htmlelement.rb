@@ -66,7 +66,7 @@ class HtmlElement
       attributes["class"] = tagname
       tagname = "div"
     end
-    self.new(tagname, content, attributes)
+    new(tagname, content, attributes)
   end
 
   def HtmlElement.comment(content)
@@ -101,7 +101,7 @@ class HtmlElement
     str.gsub(CharEntityPat) {|ent| DECODE[ent]}
   end
 
-  TagFormats = self.assign_tagformats
+  TagFormats = assign_tagformats
 
   def initialize(tagname, content=nil, attributes={})
     @parent = nil
@@ -144,7 +144,7 @@ class HtmlElement
   def add_end_comment_for_div_or_section
     if @tagname == "div" or @tagname == "section" and @end_comment_not_added
       id_or_class = self["id"]||self["class"]
-      self.push HtmlElement.comment("end of #{id_or_class}") if id_or_class
+      push HtmlElement.comment("end of #{id_or_class}") if id_or_class
       @end_comment_not_added = false
     end
   end
@@ -166,20 +166,20 @@ class XhtmlElement < HtmlElement
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/)+"#{$/}"
 
-  ELEMENTS_FORMAT = self.superclass::ELEMENTS_FORMAT.dup
+  ELEMENTS_FORMAT = superclass::ELEMENTS_FORMAT.dup
   ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
   ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%s%s />#{$/}"
 
-  TagFormats = self.assign_tagformats
+  TagFormats = assign_tagformats
 end
 
 class Xhtml5Element < XhtmlElement
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html>'.split(/\r?\n/o).join($/)+"#{$/}"
 
-  ELEMENT_TYPES = self.superclass::ELEMENT_TYPES.dup
-  ELEMENT_TYPES[:BLOCK] = self.superclass::ELEMENT_TYPES[:BLOCK] + self.superclass::Html5Tags
+  ELEMENT_TYPES = superclass::ELEMENT_TYPES.dup
+  ELEMENT_TYPES[:BLOCK] = superclass::ELEMENT_TYPES[:BLOCK] + superclass::Html5Tags
   Html5Tags = %w(main)
 
-  TagFormats = self.assign_tagformats
+  TagFormats = assign_tagformats
 end
