@@ -40,7 +40,7 @@ module PseudoHiki
     end
 
     def self.format(tree)
-      formatter = self.get_plain
+      formatter = get_plain
       tree.accept(formatter)
     end
 
@@ -108,10 +108,10 @@ module PseudoHiki
       [DescLeaf, DT],
       [TableCellNode, nil],
       [HeadingLeaf, "h"], #Until here is for BlockParser
-    ].each {|node_class, element| Formatter[node_class] = self.new(element) }
+    ].each {|node_class, element| Formatter[node_class] = new(element) }
 
     #for InlineParser
-    ImgFormat = self.new("img")
+    ImgFormat = new("img")
     #for BlockParser
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
