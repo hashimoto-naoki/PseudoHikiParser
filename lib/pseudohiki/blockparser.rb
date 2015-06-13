@@ -266,7 +266,7 @@ module PseudoHiki
     class BlockElement::DecoratorLeaf
       def push_sectioning_node(stack, node_class)
         node = node_class.new
-        m = BlockElement::DecoratorNode::DECORATOR_PAT.match(self.join)
+        m = BlockElement::DecoratorNode::DECORATOR_PAT.match(join)
         node.node_id = m[2]
         node.under_heading_level = stack.current_heading_level if node.kind_of? BlockElement::SectioningNode
         stack.push(node)
