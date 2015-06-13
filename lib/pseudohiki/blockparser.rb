@@ -31,7 +31,7 @@ module PseudoHiki
     end
 
     def self.parse(lines)
-      parser = self.new
+      parser = new
       parser.read_lines(lines)
       parser.stack.tree
     end
@@ -40,7 +40,7 @@ module PseudoHiki
       attr_reader :stack
 
       def pop_with_breaker(breaker=nil)
-        self.current_node.parse_leafs(breaker)
+        current_node.parse_leafs(breaker)
         pop
       end
 
@@ -66,7 +66,7 @@ module PseudoHiki
       end
 
       def self.create(line, inline_parser=InlineParser)
-        line = line.sub(self.head_re, "".freeze) if self.head_re
+        line = line.sub(head_re, "".freeze) if head_re
         new.concat(inline_parser.parse(line)) #leaf = self.new
       end
 
@@ -92,9 +92,9 @@ module PseudoHiki
       end
 
       def parse_leafs(breaker)
-        parsed = InlineParser.parse(self.join)
-        self.clear
-        self.concat(parsed)
+        parsed = InlineParser.parse(join)
+        clear
+        concat(parsed)
       end
     end
 
@@ -102,8 +102,8 @@ module PseudoHiki
       include TreeStack::Mergeable
 
       def self.create(line)
-        line = line.sub(self.head_re, "".freeze) if self.head_re
-        self.new.tap {|leaf| leaf.push line }
+        line = line.sub(head_re, "".freeze) if head_re
+        new.tap {|leaf| leaf.push line }
       end
 
       def push_self(stack)
@@ -118,7 +118,7 @@ module PseudoHiki
 
     class NestedBlockLeaf < BlockLeaf
       def self.create(line)
-        m = self.head_re.match(line)
+        m = head_re.match(line)
         super(line).tap {|leaf| leaf.nominal_level = m[0].length }
       end
 
@@ -179,7 +179,7 @@ module PseudoHiki
 
     class NonNestedBlockNode < BlockNode
       def parse_leafs(breaker)
-        self.each {|leaf| leaf.parse_leafs(breaker) }
+        each {|leaf| leaf.parse_leafs(breaker) }
       end
     end
 
@@ -297,12 +297,12 @@ module PseudoHiki
     class BlockElement::SectioningNodeEnd
       def push_self(stack)
         n = stack.stack.rindex do |node|
-          node.kind_of? BlockElement::SectioningNode and node.node_id == self.node_id
+          node.kind_of? BlockElement::SectioningNode and node.node_id == node_id
         end
         raise UnmatchedSectioningTagError unless n
         stack.pop until stack.stack.length == n
       rescue UnmatchedSectioningTagError => e
-        STDERR.puts "#{e}: The start tag for '#{self.node_id}' is not found."
+        STDERR.puts "#{e}: The start tag for '#{node_id}' is not found."
         #FIXME: The handling of this error should be changed appropriately.
       end
     end
@@ -323,8 +323,8 @@ module PseudoHiki
       attr_accessor :in_block_tag
 
       def self.create(line, in_block_tag=nil)
-        line = line.sub(self.head_re, "".freeze) if self.head_re and not in_block_tag
-        self.new.tap do |leaf|
+        line = line.sub(head_re, "".freeze) if head_re and not in_block_tag
+        new.tap do |leaf|
           leaf.push line
           leaf.in_block_tag = in_block_tag
         end
