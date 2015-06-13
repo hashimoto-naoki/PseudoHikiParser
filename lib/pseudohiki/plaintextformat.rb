@@ -164,8 +164,9 @@ ERROR_TEXT
         max_col = tree.map {|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = tree.length - 1
         each_empty_cell_index(max_row, max_col, tree, table) do |r, c, cur_row|
-          table[r][c] = cur_row.shift
-          fill_expand(table, r, c, table[r][c])
+          cur_cell = cur_row.shift
+          table[r][c] = visited_result(cur_cell).join.lstrip.chomp
+          fill_expand(table, r, c, cur_cell)
         end
         format_table(table, tree)
       end
@@ -207,11 +208,9 @@ ERROR_TEXT
         max_col = initial_col + cur_cell.colspan - 1
         each_cell_index(max_row, max_col,
                         initial_row, initial_col) do |r, c|
-          if initial_row == r and initial_col == c
-            table[r][c] = visited_result(cur_cell).join.lstrip.chomp
-            next
+          unless initial_row == r and initial_col == c
+            table[r][c] = initial_row == r ? col_expand : row_expand
           end
-          table[r][c] = initial_row == r ? col_expand : row_expand
         end
       end
     end
