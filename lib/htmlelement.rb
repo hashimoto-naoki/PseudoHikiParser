@@ -36,7 +36,7 @@ class HtmlElement
 
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
-  
+
   Html5Tags = %w(article section hgroup aside nav menu header footer figure details legend)
 
   ELEMENT_TYPES = {
@@ -45,7 +45,7 @@ class HtmlElement
     :LIST_ITEM_TYPE_BLOCK => %w(li col),
     :EMPTY_BLOCK => %w(img meta link base input hr)
   }
-  
+
   ELEMENTS_FORMAT = {
     :INLINE => "<%s%s>%s</%s>",
     :BLOCK => "<%s%s>#{$/}%s</%s>#{$/}",
@@ -133,7 +133,7 @@ class HtmlElement
   def [](attribute)
     @attributes[attribute]
   end
-  
+
   def format_attributes
     @attributes.collect do |attr, value|
       ' %s="%s"'%[attr, HtmlElement.escape(value.to_s)]
@@ -160,7 +160,7 @@ class HtmlElement
     @children.traverse(&block)
   end
 end
-  
+
 class XhtmlElement < HtmlElement
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
