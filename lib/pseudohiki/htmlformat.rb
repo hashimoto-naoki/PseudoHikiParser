@@ -135,15 +135,14 @@ module PseudoHiki
     class << Formatter[LinkNode]
       def visit(tree)
         not_from_thumbnail = tree.first.class != LinkNode
-        tree = tree.dup
-        caption = get_caption(tree)
-        if ImageSuffix =~ ref_tail(tree, caption) and not_from_thumbnail
+        caption, ref = caption_and_ref(tree)
+        if ImageSuffix =~ ref_tail(ref, caption) and not_from_thumbnail
           htmlelement = ImgFormat.create_self_element
-          htmlelement[SRC] = tree.join
+          htmlelement[SRC] = ref.join
           htmlelement[ALT] = caption.join if caption
         else
           htmlelement = create_self_element
-          url = tree.join
+          url = ref.join
           htmlelement[HREF] = url.start_with?("#".freeze) ? url.upcase : url
           htmlelement.push caption||url
         end
