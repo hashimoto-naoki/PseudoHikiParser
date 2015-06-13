@@ -261,7 +261,7 @@ module PseudoHiki
     end
 
     def read_template_file
-      File.read(File.expand_path(self[:template]), :encoding => self.charset)
+      File.read(File.expand_path(self[:template]), :encoding => charset)
     end
 
     def set_html_version(version)
@@ -298,7 +298,7 @@ module PseudoHiki
 USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         opt.on("-f [html_version]", "--format-version [=format_version]",
                "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version].version})") do |version|
-          self.set_html_version(version)
+          set_html_version(version)
         end
 
         opt.on("-l [lang]", "--lang [=lang]",
@@ -308,12 +308,12 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
 
         opt.on("-e [encoding]", "--format-encoding [=encoding]",
                "Available options: utf8, euc-jp, sjis, latin1 (default: #{self[:encoding]})") do |given_opt|
-          self.set_html_encoding(given_opt)
+          set_html_encoding(given_opt)
         end
 
         opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
                "Specify the default external and internal character encodings (same as the option of MRI") do |given_opt|
-          self.set_encoding(given_opt)
+          set_encoding(given_opt)
         end
 
         #use '-w' to avoid the conflict with the short option for '[-t]emplate'
@@ -345,7 +345,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
         opt.on("-o [output]", "--output [=output]",
                "Output to the specified file. If no file is given, \"[input_file_basename].html\" will be used.(default: STDOUT)") do |output|
           self[:output] = File.expand_path(output) if value_given?(output)
-          self.need_output_file = true
+          @need_output_file = true
         end
 
         opt.on("-F", "--force",
@@ -370,11 +370,11 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     def check_argv
       case ARGV.length
       when 0
-        if self.need_output_file and not self[:output]
+        if @need_output_file and not self[:output]
           raise "You must specify a file name for output"
         end
       when 1
-        self.read_input_filename(ARGV[0])
+        read_input_filename(ARGV[0])
       end
     end
 
@@ -396,13 +396,13 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     end
 
     def create_html_template_with_current_options
-      return [] unless self.html_template
-      html = self.html_template.new
-      html.charset = self.charset
+      return [] unless html_template
+      html = html_template.new
+      html.charset = charset
       html.language = self[:lang]
       html.default_css = self[:css] if self[:css]
-      html.base = self.base if self[:base]
-      html.title = self.title
+      html.base = base if self[:base]
+      html.title = title
       html
     end
 
@@ -412,7 +412,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     end
 
     def output_filename
-      return nil unless self.need_output_file
+      return nil unless @need_output_file
       if self[:output]
         File.expand_path(self[:output])
       else
@@ -421,8 +421,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
     end
 
     def open_output
-      if self.output_filename
-        open(self.output_filename, "w") {|f| yield f }
+      if output_filename
+        open(output_filename, "w") {|f| yield f }
       else
         yield STDOUT
       end
