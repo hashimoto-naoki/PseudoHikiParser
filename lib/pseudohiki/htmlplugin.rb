@@ -30,7 +30,7 @@ module PseudoHiki
     NUMBER_RE = /(\d+)/
 
     def parse(data)
-      result = nil
+      result = "".freeze
       if PLUGIN_PAT =~ data
         @plugin_name = $1
         @with_paren = true if $2.chomp == "("
@@ -38,7 +38,6 @@ module PseudoHiki
         result[-1, 1] = "" if @with_paren
       else
         @plugin_name = data.chomp
-        result = ""
       end
       result
     end
