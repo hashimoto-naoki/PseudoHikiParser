@@ -34,7 +34,7 @@ class TreeStack
     def merge(leaf)
       raise NotLeafError unless leaf.kind_of? Leaf
       return nil unless leaf.kind_of? Mergeable
-      self.concat(leaf)
+      concat(leaf)
     end
   end
 
@@ -48,7 +48,7 @@ class TreeStack
     include LeafType
 
     def self.create(content=nil)
-      self.new.tap {|leaf| leaf.push content if content }
+      new.tap {|leaf| leaf.push content if content }
     end
   end
 
@@ -102,7 +102,7 @@ class TreeStack
   end
 
   def remove_current_node
-    removed_node = self.pop
+    removed_node = pop
     @current_node.pop
     removed_node
   end
