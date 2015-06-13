@@ -71,6 +71,7 @@ module PseudoHiki
 
     def split_into_parts(tree, separator)
       chunks = []
+      tree = tree.dup
       while sep_index = tree.index(separator)
         chunks.push tree.shift(sep_index)
         tree.shift
