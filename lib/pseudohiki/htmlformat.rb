@@ -210,7 +210,6 @@ module PseudoHiki
 
     class << Formatter[DescLeaf]
       def visit(tree)
-        tree = tree.dup
         element = @generator::Children.new
         dt_part, dd_part = split_into_parts(tree, DescSep)
         dt = super(dt_part)
