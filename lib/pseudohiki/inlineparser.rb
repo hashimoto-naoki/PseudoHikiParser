@@ -70,8 +70,8 @@ module PseudoHiki
     def convert_last_node_into_leaf
       last_node = remove_current_node
       tag_head = NodeTypeToHead[last_node.class]
-      self.push InlineLeaf.create(tag_head)
-      last_node.each {|leaf| self.push_as_leaf leaf }
+      push InlineLeaf.create(tag_head)
+      last_node.each {|leaf| push_as_leaf leaf }
     end
 
     def node_in_ancestors?(node_class)
@@ -79,17 +79,17 @@ module PseudoHiki
     end
 
     def treated_as_node_end(token)
-      return self.pop if current_node.class == TAIL[token]
+      return pop if current_node.class == TAIL[token]
       return nil unless node_in_ancestors?(TAIL[token])
       convert_last_node_into_leaf until current_node.class == TAIL[token]
-      self.pop
+      pop
     end
 
     def parse
       while token = @tokens.shift
         next if TAIL[token] and treated_as_node_end(token)
-        next if HEAD[token] and self.push HEAD[token].new
-        self.push InlineLeaf.create(token)
+        next if HEAD[token] and push HEAD[token].new
+        push InlineLeaf.create(token)
       end
       self
     end
@@ -134,19 +134,19 @@ module PseudoHiki
       end
 
       def push(token)
-        return super(token) unless self.empty?
+        return super(token) unless empty?
         super(parse_first_token(token))
       end
     end
 
     def treated_as_node_end(token)
       return super(token) unless token == TableSep
-      self.pop
-      self.push TableCellNode.new
+      pop
+      push TableCellNode.new
     end
 
     def parse
-      self.push TableCellNode.new
+      push TableCellNode.new
       super
     end
   end
