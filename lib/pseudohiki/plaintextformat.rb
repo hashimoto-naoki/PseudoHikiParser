@@ -29,7 +29,6 @@ module PseudoHiki
 
     def initialize(formatter={}, options={ :verbose_mode => false })
       @formatter = formatter
-      options_given_via_block = nil
       if block_given?
         options_given_via_block = yield
         options.merge!(options_given_via_block)
