@@ -69,15 +69,15 @@ class HtmlElement
     new(tagname, content, attributes)
   end
 
-  def HtmlElement.comment(content)
+  def self.comment(content)
     "<!-- #{content} -->#{$/}"
   end
 
-  def HtmlElement.urlencode(str)
+  def self.urlencode(str)
     str.toutf8.gsub(/[^\w\.\-]/o) {|utf8_char| utf8_char.unpack("C*").map {|b| '%%%02X'%[b] }.join }
   end
 
-  def HtmlElement.urldecode(str)
+  def self.urldecode(str)
     utf = str.gsub(/%\w\w/) {|ch| [ch[-2, 2]].pack('H*') }.toutf8
     return utf.tosjis if $KCODE =~ /^s/io
     return utf.toeuc if $KCODE =~ /^e/io
@@ -93,11 +93,11 @@ class HtmlElement
     tagformats
   end
 
-  def HtmlElement.escape(str)
+  def self.escape(str)
     str.gsub(/[&"<>]/o) {|pat| ESC[pat] }
   end
 
-  def HtmlElement.decode(str)
+  def self.decode(str)
     str.gsub(CharEntityPat) {|ent| DECODE[ent] }
   end
 
