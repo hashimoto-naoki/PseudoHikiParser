@@ -27,7 +27,7 @@ module PseudoHiki
       Formatters[options].format(tree)
     end
 
-    def initialize(formatter={}, options = { :verbose_mode=> false })
+    def initialize(formatter={}, options={ :verbose_mode => false })
       @formatter = formatter
       options_given_via_block = nil
       if block_given?
@@ -42,7 +42,7 @@ module PseudoHiki
     end
 
     def visited_result(node)
-      visitor = @formatter[node.class]||@formatter[PlainNode]
+      visitor = @formatter[node.class] || @formatter[PlainNode]
       node.accept(visitor)
     end
 
@@ -65,7 +65,7 @@ module PseudoHiki
       tree.accept(formatter).join
     end
 
-    def self.create(options = { :verbose_mode => false })
+    def self.create(options={ :verbose_mode => false })
       formatter = {}
       main_formatter = self.new(formatter, options)
       formatter.default = main_formatter
@@ -96,9 +96,9 @@ module PseudoHiki
         element = Node.new
         caption = get_caption(tree)
         if ImageSuffix =~ ref_tail(tree, caption)
-          element.push (caption||tree).join
+          element.push (caption || tree).join
         else
-          element.push caption||tree.join
+          element.push caption || tree.join
           element.push " (#{tree.join})" if @options.verbose_mode and caption
         end
         element
@@ -161,7 +161,7 @@ ERROR_TEXT
       def visit(tree)
         table = create_self_element(tree)
         tree.length.times { table.push create_self_element(tree) }
-        max_col = tree.map{|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
+        max_col = tree.map {|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = tree.length - 1
         each_empty_cell_index(max_row, max_col, tree, table) do |r, c, cur_row|
           table[r][c] = cur_row.shift
@@ -221,7 +221,7 @@ ERROR_TEXT
     end
 
     def format_table(table, tree)
-      table.map {|row| row.join("\t")+$/ }.join
+      table.map {|row| row.join("\t") + $/ }.join
     end
 
     class CommentOutNodeFormatter < self
@@ -230,13 +230,13 @@ ERROR_TEXT
 
     class ParagraphNodeFormatter < self
       def visit(tree)
-        super(tree).join+$/
+        super(tree).join + $/
       end
     end
 
     class PluginNodeFormatter < self
       def visit(tree)
-        str =tree.join
+        str = tree.join
         return str.strip * 2 if str == " {" or str == "} "
         super(tree)
       end
