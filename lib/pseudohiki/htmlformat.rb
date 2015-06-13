@@ -156,6 +156,12 @@ module PseudoHiki
         first_part.map {|token| visited_result(token) }
       end
 
+      def caption_and_ref(tree)
+        caption, ref = split_into_parts(tree, [LinkSep])
+        caption = ref ? caption.map {|token| visited_result(token) } : nil
+        return caption, ref||tree
+      end
+
       def ref_tail(tree, caption)
         tree.last.join
       rescue NoMethodError
