@@ -166,12 +166,6 @@ module PseudoHiki
         htmlelement
       end
 
-      def get_caption(tree)
-        first_part, second_part = split_into_parts(tree, [LinkSep])
-        return nil unless second_part
-        first_part.map {|token| visited_result(token) }
-      end
-
       def caption_and_ref(tree)
         caption, ref = split_into_parts(tree, [LinkSep])
         caption = ref ? caption.map {|token| visited_result(token) } : nil
