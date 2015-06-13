@@ -354,15 +354,17 @@ module PseudoHiki
         return format_gfm_table(table) if @options.gfm_conformant
 
         if @options.gfm_style == :force
-          begin
-            raise NotConformantStyleError.new("The table is not conformant to GFM style. The first row will be treated as a header row.")
-          rescue
-            STDERR.puts "The table is not conformant to GFM style. The first row will be treated as a header row."
-          end
-          return format_gfm_table(table)
+          warning_for_non_comformant_style
+          format_gfm_table(table)
+        else
+          format_html_table(tree)
         end
+      end
 
-        format_html_table(tree)
+      def warning_for_non_comformant_style
+        raise NotConformantStyleError.new("The table is not conformant to GFM style. The first row will be treated as a header row.")
+      rescue
+        STDERR.puts "The table is not conformant to GFM style. The first row will be treated as a header row."
       end
 
       def calculate_cell_width(table)
