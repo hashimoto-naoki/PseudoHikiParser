@@ -399,13 +399,9 @@ module PseudoHiki
         preceding_str[-2, 2] == "[[".freeze or preceding_str[-1, 1] == "|".freeze
       end
 
-      def self.tagfy_link(line)
-        line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
-      end
-
       def self.link(line)
         if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
-          tagfy_link(line)
+          line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
         else
           line
         end
