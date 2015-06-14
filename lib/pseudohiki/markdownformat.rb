@@ -237,7 +237,7 @@ module PseudoHiki
 
     class PluginNodeFormatter < self
       def visit(tree)
-        str =tree.join
+        str = tree.join
         return str.strip * 2 if str == " {" or str == "} "
         super(tree)
       end
@@ -339,7 +339,7 @@ module PseudoHiki
             format%[cell]
           end
           "|#{formatted_row.join("|") }|#{$/}"
-        end.join+$/
+        end.join + $/
       end
 
       def format_html_table(tree)
