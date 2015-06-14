@@ -69,7 +69,7 @@ module PseudoHiki
       anchor_mark = "_" if (anchor_mark.nil? or anchor_mark.empty?)
       HtmlElement.create("a", anchor_mark,
                          "name" => name,
-                         "href" => "#"+name)
+                         "href" => "#" + name)
     end
 
     def HtmlPlugin.add_chemical_formula(chemical_formula="CO2", en_word="carbon dioxide")
