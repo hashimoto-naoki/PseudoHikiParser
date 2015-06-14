@@ -309,6 +309,10 @@ module PseudoHiki
 
     IRREGULAR_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, IRREGULAR_LEAF_TYPES, NUMBER_OF_IRREGULAR_LEAF_TYPES = assign_head_re
 
+    module NotAutoLinkURL
+      def self.link(line) line; end
+    end
+
     module AutoLinkURL
       def self.in_link_tag?(preceding_str)
         preceding_str[-2, 2] == "[[".freeze or preceding_str[-1, 1] == "|".freeze
