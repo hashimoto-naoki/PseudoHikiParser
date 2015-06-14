@@ -16,7 +16,7 @@ module PseudoHiki
     HREF, SRC, ALT, ID, CLASS, ROWSPAN, COLSPAN = %w(href src alt id class rowspan colspan)
     #for BlockParser
     DT, DD, LI = %w(dt dd li)
-    DescSep = [InlineParser::DescSep]
+    DescSep, LinkSep = [InlineParser::DescSep], [InlineParser::LinkSep]
 
     Formatter = {}
 
@@ -150,7 +150,7 @@ module PseudoHiki
       end
 
       def caption_and_ref(tree)
-        caption, ref = split_into_parts(tree, [LinkSep])
+        caption, ref = split_into_parts(tree, LinkSep)
         caption = ref ? caption.map {|token| visited_result(token) } : nil
         return caption, ref||tree
       end
