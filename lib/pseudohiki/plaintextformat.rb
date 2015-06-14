@@ -180,15 +180,18 @@ ERROR_TEXT
         each_cell_index(max_row, max_col) do |r, c|
           cur_row = rows.shift if c == 0
           next if table[r][c]
-          begin
-            raise MalFormedTableError.new(ERROR_MESSAGE%[table[r].inspect]) if cur_row.empty?
+          if cur_row.empty?
+            warning_for_malformed_row(table[r])
+          else
             yield r, c, cur_row
-          rescue
-            raise if @options.strict_mode
-            STDERR.puts ERROR_MESSAGE%[table[r].inspect]
-            next
           end
         end
+      end
+
+      def warning_for_malformed_row(row)
+        message = ERROR_MESSAGE%[row.inspect]
+        raise MalFormedTableError.new(message) if @options.strict_mode
+        STDERR.puts ERROR_MESSAGE%[row.inspect]
       end
 
       def deep_copy_tree(tree)
