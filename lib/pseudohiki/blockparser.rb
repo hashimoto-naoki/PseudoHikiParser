@@ -145,14 +145,6 @@ module PseudoHiki
 
       def parse_leafs; end
 
-      def in_link_tag?(preceding_str)
-        preceding_str[-2, 2] == "[[".freeze or preceding_str[-1, 1] == "|".freeze
-      end
-
-      def tagfy_link(line)
-        line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
-      end
-
       def add_leaf(line, blockparser)
         leaf = create_leaf(line, blockparser)
         blockparser.stack.pop while blockparser.breakable?(leaf)
