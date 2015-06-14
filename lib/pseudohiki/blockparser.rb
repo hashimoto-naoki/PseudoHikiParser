@@ -17,7 +17,7 @@ module PseudoHiki
 
     ParentNode = {}
 
-    attr_reader :stack
+    attr_reader :stack, :auto_linker
 
     def self.assign_node_id(leaf, node)
 #      return unless tree[0].kind_of? Array ** block_leaf:[inline_node:[token or inline_node]]
@@ -172,7 +172,7 @@ module PseudoHiki
 
       def create_leaf(line, blockparser)
         return BlockElement::VerbatimLeaf.create("".freeze, true) if LinePat::VERBATIM_BEGIN =~ line
-        line = tagfy_link(line) if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
+        line = blockparser.auto_linker.link(line)
         blockparser.select_leaf_type(line).create(line)
       end
     end
@@ -420,12 +420,13 @@ module PseudoHiki
       end
     end
 
-    def initialize
+    def initialize(auto_linker=AutoLinkURL)
       root_node = BlockNode.new
       def root_node.breakable?(breaker)
         false
       end
       @stack = BlockStack.new(root_node)
+      @auto_linker = auto_linker
     end
 
     def breakable?(breaker)
