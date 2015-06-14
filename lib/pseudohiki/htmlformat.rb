@@ -230,7 +230,7 @@ module PseudoHiki
 
     class << Formatter[HeadingLeaf]
       def create_self_element(tree)
-        @generator.create(@element_name+tree.nominal_level.to_s).tap do |element|
+        @generator.create(@element_name + tree.nominal_level.to_s).tap do |element|
           element[ID] = tree.node_id.upcase if tree.node_id
         end
       end
