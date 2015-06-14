@@ -251,7 +251,7 @@ module PseudoHiki
       base_dir = self[:base]
       if base_dir and base_dir !~ /[\/\\]\.*$/o
         base_dir = File.join(base_dir, ".")
-        base_dir = "file:///"+base_dir if base_dir !~ /^\./o and win32?
+        base_dir = "file:///" + base_dir if base_dir !~ /^\./o and win32?
       end
       base_dir
     end
