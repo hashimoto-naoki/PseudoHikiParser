@@ -317,6 +317,24 @@ module PseudoHiki
 
     IRREGULAR_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, IRREGULAR_LEAF_TYPES, NUMBER_OF_IRREGULAR_LEAF_TYPES = assign_head_re
 
+    module AutoLinkURL
+      def self.in_link_tag?(preceding_str)
+        preceding_str[-2, 2] == "[[".freeze or preceding_str[-1, 1] == "|".freeze
+      end
+
+      def self.tagfy_link(line)
+        line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
+      end
+
+      def self.link(line)
+        if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
+          tagfy_link(line)
+        else
+          line
+        end
+      end
+    end
+
     def initialize
       root_node = BlockNode.new
       def root_node.breakable?(breaker)
