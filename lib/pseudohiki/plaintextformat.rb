@@ -139,14 +139,10 @@ module PseudoHiki
 
     class DescLeafFormatter < self
       def visit(tree)
-        tree = tree.dup
         element = create_self_element(tree)
-        dt_sep_index = tree.index(DescSep)
-        if dt_sep_index
-          push_visited_results(element, tree.shift(dt_sep_index))
-          tree.shift
-        end
-        dd = tree.map {|token| visited_result(token) }.join.lstrip
+        dt_part, dd_part = split_into_parts(tree, DescSep)
+        push_visited_results(element, dt_part) if dt_part
+        dd = dd_part.map {|token| visited_result(token) }.join.lstrip
         unless dd.empty?
           element.push element.empty? ? "\t" : ":\t"
           element.push dd
