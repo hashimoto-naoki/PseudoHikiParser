@@ -64,6 +64,17 @@ module PseudoHiki
       tree.accept(formatter).join
     end
 
+    def split_into_parts(tree, separator)
+      tree = tree.dup
+      first_part = nil
+      sep_index = tree.index(separator)
+      if sep_index
+        first_part = tree.shift(sep_index)
+        tree.shift
+      end
+      return first_part, tree
+    end
+
     def self.create(options={ :verbose_mode => false })
       formatter = {}
       main_formatter = self.new(formatter, options)
