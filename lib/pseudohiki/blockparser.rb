@@ -314,8 +314,10 @@ module PseudoHiki
     end
 
     module AutoLinkURL
+      OPEN_TAG, LINK_SEP = "[[", "|"
+
       def self.in_link_tag?(preceding_str)
-        preceding_str[-2, 2] == "[[".freeze or preceding_str[-1, 1] == "|".freeze
+        preceding_str.end_with?(OPEN_TAG) or preceding_str.end_with?(LINK_SEP)
       end
 
       def self.link(line)
