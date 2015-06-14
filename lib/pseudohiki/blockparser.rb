@@ -8,7 +8,7 @@ module PseudoHiki
     URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
     ID_TAG_PAT = /\A\[([^\[\]]+)\]/o
 
-    module LINE_PAT
+    module LinePat
       VERBATIM_BEGIN = /\A<<<\s*/o
       VERBATIM_END = /\A>>>\s*/o
       PLUGIN_BEGIN = /\{\{/o
@@ -171,7 +171,7 @@ module PseudoHiki
       end
 
       def create_leaf(line, blockparser)
-        return BlockElement::VerbatimLeaf.create("".freeze, true) if LINE_PAT::VERBATIM_BEGIN =~ line
+        return BlockElement::VerbatimLeaf.create("".freeze, true) if LinePat::VERBATIM_BEGIN =~ line
         line = tagfy_link(line) if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
         blockparser.select_leaf_type(line).create(line)
       end
@@ -228,7 +228,7 @@ module PseudoHiki
       attr_accessor :in_block_tag
 
       def add_leaf(line, blockparser)
-        return @stack.pop_with_breaker if LINE_PAT::VERBATIM_END =~ line
+        return @stack.pop_with_breaker if LinePat::VERBATIM_END =~ line
         return super(line, blockparser) unless @in_block_tag
         line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line and not @in_block_tag
         @stack.push BlockElement::VerbatimLeaf.create(line, @in_block_tag)
