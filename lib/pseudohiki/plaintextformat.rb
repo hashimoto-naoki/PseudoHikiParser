@@ -102,24 +102,21 @@ module PseudoHiki
 
     class LinkNodeFormatter < self
       def visit(tree)
-        tree = tree.dup
         element = Node.new
-        caption = get_caption(tree)
-        if ImageSuffix =~ ref_tail(tree, caption)
-          element.push (caption || tree).join
+        caption, ref = get_caption(tree)
+        if ImageSuffix =~ ref_tail(ref, caption)
+          element.push (caption || ref).join
         else
-          element.push caption || tree.join
-          element.push " (#{tree.join})" if @options.verbose_mode and caption
+          element.push caption || ref.join
+          element.push " (#{ref.join})" if @options.verbose_mode and caption
         end
         element
       end
 
       def get_caption(tree)
-        link_sep_index = tree.find_index([LinkSep])
-        return nil unless link_sep_index
-        caption_part = tree.shift(link_sep_index)
-        tree.shift
-        caption_part.map {|element| visited_result(element) }
+        caption, ref_part = split_into_parts(tree, [LinkSep])
+        caption = caption.map {|element| visited_result(element) } if caption
+        return caption, ref_part
       end
 
       def ref_tail(tree, caption)
