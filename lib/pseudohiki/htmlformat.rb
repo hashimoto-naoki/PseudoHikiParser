@@ -83,7 +83,7 @@ module PseudoHiki
     def decorate(htmlelement, tree)
       each_decorator(htmlelement, tree) do |element, decorator|
         element[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
-        if id_item = decorator[ID]||decorator[:id]
+        if id_item = decorator[ID] || decorator[:id]
           element[ID] = HtmlElement.escape(id_item.id).upcase
         end
       end
