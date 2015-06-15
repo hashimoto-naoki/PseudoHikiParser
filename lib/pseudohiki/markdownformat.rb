@@ -110,8 +110,6 @@ module PseudoHiki
       main_formatter = self.new(formatter, options)
       formatter.default = main_formatter
 
-#      formatter[PlainNode] = PlainNodeFormatter.new(formatter, options)
-#      formatter[InlineNode] = InlineNodeFormatter.new(formatter, options)
       formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
       formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
       formatter[EmNode] = EmNodeFormatter.new(formatter, options)
@@ -119,26 +117,16 @@ module PseudoHiki
       formatter[DelNode] = DelNodeFormatter.new(formatter, options)
       formatter[LiteralNode] = LiteralNodeFormatter.new(formatter, options)
       formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
-#      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
-#      formatter[TableCellNode] = TableCellNodeFormatter.new(formatter, options)
       formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
-#      formatter[QuoteLeaf] = QuoteLeafFormatter.new(formatter, options)
-#      formatter[TableLeaf] = TableLeafFormatter.new(formatter, options)
       formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
       formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, options)
-#      formatter[ParagraphLeaf] = ParagraphLeafFormatter.new(formatter, options)
       formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
-#      formatter[BlockNodeEnd] = BlockNodeEndFormatter.new(formatter, options)
-#      formatter[ListLeaf] = ListLeafFormatter.new(formatter, options)
-#      formatter[EnumLeaf] = EnumLeafFormatter.new(formatter, options)
       formatter[DescNode] = DescNodeFormatter.new(formatter, options)
       formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
       formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
       formatter[TableNode] = TableNodeFormatter.new(formatter, options)
-#      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
       formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
       formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
-#      formatter[HrNode] = HrNodeFormatter.new(formatter, options)
       formatter[ListNode] = ListNodeFormatter.new(formatter, options)
       formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
       formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
@@ -148,9 +136,6 @@ module PseudoHiki
     end
 
 ## Definitions of subclasses of MarkDownFormat begins here.
-
-#    class PlainNodeFormatter < self; end
-#    class InlineNodeFormatter < self; end
 
     class InlineLeafFormatter < self
       def visit(leaf)
@@ -243,17 +228,11 @@ module PseudoHiki
       end
     end
 
-#    class DescLeafFormatter < self; end
-#    class TableCellNodeFormatter < self; end
-
     class VerbatimLeafFormatter < InlineLeafFormatter
       def visit(leaf)
         leaf.join
       end
     end
-
-#    class QuoteLeafFormatter < self; end
-#    class TableLeafFormatter < self; end
 
     class CommentOutLeafFormatter < self
       def visit(tree); ""; end
@@ -264,7 +243,6 @@ module PseudoHiki
         super(tree).tap {|element| element.push $/ }
       end
     end
-#    class ParagraphLeafFormatter < self; end
 
     class HrLeafFormatter < self
       def visit(tree)
@@ -272,9 +250,6 @@ module PseudoHiki
       end
     end
 
-#    class BlockNodeEndFormatter < self; end
-#    class ListLeafFormatter < self; end
-#    class EnumLeafFormatter < self; end
     class DescNodeFormatter < self
       def visit(tree)
         desc_list = HtmlElement.create("dl").tap do |element|
@@ -390,8 +365,6 @@ module PseudoHiki
       end
     end
 
-#    class CommentOutNodeFormatter < self; end
-
     class HeadingNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
@@ -407,8 +380,6 @@ module PseudoHiki
         super(tree).tap {|element| element.push $/ }
       end
     end
-
-#    class HrNodeFormatter < self; end
 
     class ListNodeFormatter < self
       def visit(tree)
