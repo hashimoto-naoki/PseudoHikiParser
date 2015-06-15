@@ -51,7 +51,7 @@ module PseudoHiki
     end
 
     def visited_result(element)
-      visitor = @formatter[element.class]||@formatter[PlainNode]
+      visitor = @formatter[element.class] || @formatter[PlainNode]
       element.accept(visitor)
     end
 
@@ -161,7 +161,7 @@ module PseudoHiki
           htmlelement = create_self_element
           url = ref.join
           htmlelement[HREF] = url.start_with?("#".freeze) ? url.upcase : url
-          htmlelement.push caption||url
+          htmlelement.push caption || url
         end
         htmlelement
       end
@@ -169,7 +169,7 @@ module PseudoHiki
       def caption_and_ref(tree)
         caption, ref = split_into_parts(tree, LinkSep)
         caption = ref ? caption.map {|token| visited_result(token) } : nil
-        return caption, ref||tree
+        return caption, ref || tree
       end
 
       def ref_tail(tree, caption)
