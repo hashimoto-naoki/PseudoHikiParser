@@ -143,7 +143,7 @@ class HtmlElement
 
   def add_end_comment_for_div_or_section
     if @tagname == "div" or @tagname == "section" and @end_comment_not_added
-      id_or_class = self["id"]||self["class"]
+      id_or_class = self["id"] || self["class"]
       push HtmlElement.comment("end of #{id_or_class}") if id_or_class
       @end_comment_not_added = false
     end

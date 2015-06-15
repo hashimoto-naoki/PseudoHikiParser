@@ -49,7 +49,7 @@ module PseudoHiki
     end
 
     def visited_result(node)
-      visitor = @formatter[node.class]||@formatter[PlainNode]
+      visitor = @formatter[node.class] || @formatter[PlainNode]
       node.accept(visitor)
     end
 
@@ -177,7 +177,7 @@ module PseudoHiki
           element.push "!"
         end
         link = format_link(tree)
-        element.push "[#{(caption||tree).join}](#{link})"
+        element.push "[#{(caption || tree).join}](#{link})"
         element
       end
 

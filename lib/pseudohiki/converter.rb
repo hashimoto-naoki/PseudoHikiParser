@@ -147,7 +147,7 @@ module PseudoHiki
       else
         html = @options.create_html_template_with_current_options
         html.head.push create_style(@options[:embed_css]) if @options[:embed_css]
-        html.push main||body
+        html.push main || body
       end
 
       html
@@ -201,7 +201,7 @@ module PseudoHiki
     end
 
     def initialize(options=nil)
-      @options = options||{
+      @options = options || {
         :html_version => VERSIONS[0],
         :lang => 'en',
         :encoding => 'utf8',
@@ -257,7 +257,7 @@ module PseudoHiki
     end
 
     def title
-      self[:title]||@default_title||"-"
+      self[:title] || @default_title || "-"
     end
 
     def read_template_file
