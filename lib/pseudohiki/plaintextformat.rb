@@ -92,7 +92,7 @@ module PseudoHiki
       main_formatter
     end
 
-## Definitions of subclasses of PlainTextFormat begins here.
+    ## Definitions of subclasses of PlainTextFormat begins here.
 
     class InlineLeafFormatter < self
       def visit(leaf)
