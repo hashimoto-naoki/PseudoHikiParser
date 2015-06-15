@@ -295,7 +295,7 @@ module PseudoHiki
         stack.pop until stack.stack.length == n
       rescue UnmatchedSectioningTagError => e
         STDERR.puts "#{e}: The start tag for '#{node_id}' is not found."
-        #FIXME: The handling of this error should be changed appropriately.
+        # FIXME: The handling of this error should be changed appropriately.
       end
     end
 

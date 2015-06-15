@@ -220,7 +220,7 @@ module PseudoHiki
 
       def section_with_id(tree, node_id)
         orig_create_self_element(tree).tap do |element|
-          element[ID] = node_id[1..-1] #remove the first charactor from node_id
+          element[ID] = node_id[1..-1] # remove the first charactor from node_id
         end
       end
 
