@@ -67,7 +67,7 @@ module PseudoHiki
 
       def self.create(line, inline_parser=InlineParser)
         line = line.sub(head_re, "".freeze) if head_re
-        new.concat(inline_parser.parse(line)) #leaf = self.new
+        new.concat(inline_parser.parse(line)) # leaf = self.new
       end
 
       def head_re

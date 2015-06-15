@@ -35,7 +35,7 @@ module PseudoHiki
     module InlineElement
       class InlineNode < InlineParser::Node; end
       class InlineLeaf < InlineParser::Leaf; end
-      #  class LinkSepLeaf < InlineLeaf; end
+      # class LinkSepLeaf < InlineLeaf; end
 
       PseudoHiki.subclass_of(InlineNode, binding,
                              %w(LinkNode EmNode StrongNode DelNode PlainNode LiteralNode PluginNode))
@@ -95,7 +95,7 @@ module PseudoHiki
     end
 
     def self.parse(str)
-      new(str).parse.tree #parser = new(str)
+      new(str).parse.tree # parser = new(str)
     end
   end
 
@@ -120,7 +120,7 @@ module PseudoHiki
 
     class InlineElement::TableCellNode
       def parse_cellspan(token_str)
-        return token_str if m = MODIFIED_CELL_PAT.match(token_str) and m[0].empty? #if token.kind_of? String
+        return token_str if m = MODIFIED_CELL_PAT.match(token_str) and m[0].empty? # if token.kind_of? String
         cell_modifiers = m[0]
         @cell_type = TH if cell_modifiers[0].chr == TH_PAT
         @rowspan = cell_modifiers.count(ROW_EXPANDER) + 1
