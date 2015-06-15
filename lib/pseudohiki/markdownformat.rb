@@ -135,7 +135,7 @@ module PseudoHiki
       main_formatter
     end
 
-## Definitions of subclasses of MarkDownFormat begins here.
+    ## Definitions of subclasses of MarkDownFormat begins here.
 
     class InlineLeafFormatter < self
       def visit(leaf)
@@ -356,8 +356,8 @@ module PseudoHiki
         rows.each_with_index do |row, i|
           row.each do |cell|
             return false if cell.rowspan > 1 or cell.colspan > 1
-            #A table head row should be at the beginning and composed of <th> elements,
-            #and other rows should not include <th> elements
+            # A table head row should be at the beginning and composed of <th>
+            # elements, and other rows should not include <th> elements
             return false unless (i == 0) == (cell.cell_type == "th")
           end
         end
