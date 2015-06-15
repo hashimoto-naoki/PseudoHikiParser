@@ -5,7 +5,7 @@ require 'pseudohiki/inlineparser'
 
 module PseudoHiki
   class BlockParser
-    URI_RE = /(?:(?:https?|ftp|file):|mailto:)[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ #borrowed from hikidoc
+    URI_RE = /(?:https?|ftp|file|mailto):[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ # borrowed from hikidoc
     ID_TAG_PAT = /\A\[([^\[\]]+)\]/o
 
     module LinePat
