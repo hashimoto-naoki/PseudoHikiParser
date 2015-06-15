@@ -244,7 +244,7 @@ module PseudoHiki
           m = DECORATOR_PAT.match(leaf.join)
           return nil unless m
           item = DecoratorItem.new(*(m.to_a))
-          decorator[item.type||:id] = item
+          decorator[item.type || :id] = item
         end
       end
 
