@@ -89,7 +89,7 @@ class TreeStack
     @current_node = node
     @stack.push node
   end
-  
+
   def push_as_leaf(node)
     @current_node.push node
   end
