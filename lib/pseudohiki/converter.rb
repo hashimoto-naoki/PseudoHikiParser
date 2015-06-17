@@ -316,7 +316,7 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
           set_encoding(given_opt)
         end
 
-        #use '-w' to avoid the conflict with the short option for '[-t]emplate'
+        # use '-w' to avoid the conflict with the short option for '[-t]emplate'
         opt.on("-w [(window) title]", "--title [=title]",
                "Set the value of the <title> element (default: the basename of the input file)") do |title|
           self[:title] = title if value_given?(title)

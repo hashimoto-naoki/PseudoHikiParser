@@ -10,11 +10,11 @@ module PseudoHiki
     include BlockParser::BlockElement
     include TableRowParser::InlineElement
 
-    #for InlineParser
+    # for InlineParser
     LINK, LITERAL, PLUGIN = %w(a code span)
     BLANK, SPACE = "", " "
     HREF, SRC, ALT, ID, CLASS, ROWSPAN, COLSPAN = %w(href src alt id class rowspan colspan)
-    #for BlockParser
+    # for BlockParser
     DT, DD, LI = %w(dt dd li)
     DescSep, LinkSep = [InlineParser::DescSep], [InlineParser::LinkSep]
 
@@ -94,7 +94,7 @@ module PseudoHiki
       [PluginNode, PLUGIN],
       [LinkNode, LINK],
       [InlineLeaf, nil],
-      [PlainNode, nil], #Until here is for InlineParser
+      [PlainNode, nil], # Until here is for InlineParser
       [DescNode, "dl"],
       [QuoteNode, "blockquote"],
       [TableNode, "table"],
@@ -108,16 +108,16 @@ module PseudoHiki
       [HeadingNode, "section"],
       [DescLeaf, DT],
       [TableCellNode, nil],
-      [HeadingLeaf, "h"], #Until here is for BlockParser
+      [HeadingLeaf, "h"], # Until here is for BlockParser
     ].each {|node_class, element| Formatter[node_class] = new(element) }
 
-    #for InlineParser
+    # for InlineParser
     ImgFormat = new("img")
-    #for BlockParser
+    # for BlockParser
     Formatter[ListWrapNode] = ListLeafNodeFormatter.new(LI)
     Formatter[EnumWrapNode] = ListLeafNodeFormatter.new(LI)
 
-    #for InlineParser
+    # for InlineParser
 
     class << Formatter[PluginNode]
       def visit(tree)
@@ -175,7 +175,7 @@ module PseudoHiki
       end
     end
 
-    #for BlockParser
+    # for BlockParser
 
     class << Formatter[VerbatimNode]
       def visit(tree)
