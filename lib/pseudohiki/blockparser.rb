@@ -359,12 +359,11 @@ module PseudoHiki
      [HrLeaf, HrNode],
      [ListLeaf, ListNode],
      [EnumLeaf, EnumNode],
+     [BlockNodeEnd, BlockNodeEnd], # special case
      [DecoratorLeaf, DecoratorNode]
     ].each do |leaf, node|
       ParentNode[leaf] = node
     end
-
-    ParentNode[BlockNodeEnd] = BlockNodeEnd
 
     HEAD_TO_LEAF = {
       '\r?\n?$' => BlockNodeEnd,
