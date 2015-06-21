@@ -282,20 +282,21 @@ module PseudoHiki
 
     ParentNode[BlockNodeEnd] = BlockNodeEnd
 
+    HEAD_TO_LEAF_TABLE = [['\r?\n?$', BlockNodeEnd],
+                          ['\s', VerbatimLeaf],
+                          ['*', ListLeaf],
+                          ['#', EnumLeaf],
+                          [':', DescLeaf],
+                          ['!', HeadingLeaf],
+                          ['""', QuoteLeaf],
+                          ['||', TableLeaf],
+                          ['//', CommentOutLeaf],
+                          ['----\s*$', HrLeaf]]
+
     def self.assign_head_re
       irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
       irregular_head_pats, regular_leaf_types, head_to_leaf = [], [], {}
-      [['\r?\n?$', BlockNodeEnd],
-       ['\s', VerbatimLeaf],
-       ['*', ListLeaf],
-       ['#', EnumLeaf],
-       [':', DescLeaf],
-       ['!', HeadingLeaf],
-       ['""', QuoteLeaf],
-       ['||', TableLeaf],
-       ['//', CommentOutLeaf],
-       ['----\s*$', HrLeaf]
-      ].each do |head, leaf|
+      HEAD_TO_LEAF_TABLE.each do |head, leaf|
         escaped_head = irregular_leafs.include?(leaf) ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
         leaf.head_re = Regexp.new('\\A' + head_pat)

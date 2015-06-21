@@ -48,7 +48,7 @@ module PseudoHiki
     TAIL = {}
     NodeTypeToHead = {}
     TokenPat = {}
-    
+
     [[LinkNode, "[[", "]]"],
      [EmNode, "''", "''"],
      [StrongNode, "'''", "'''"],
