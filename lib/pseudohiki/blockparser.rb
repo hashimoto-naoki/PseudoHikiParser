@@ -381,7 +381,6 @@ module PseudoHiki
     IRREGULAR_LEAFS = [:entire_matched_part, BlockNodeEnd, VerbatimLeaf, HrLeaf]
 
     def self.assign_head_re
-      irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
       irregular_head_pats, regular_leaf_types, head_to_leaf = [], [], {}
       HEAD_TO_LEAF_TABLE.each do |head, leaf|
         escaped_head = IRREGULAR_LEAFS.include?(leaf) ? head : Regexp.escape(head)
@@ -391,11 +390,10 @@ module PseudoHiki
         irregular_head_pats.push "(#{escaped_head})" if IRREGULAR_LEAFS.include?(leaf)
         regular_leaf_types.push head unless IRREGULAR_LEAFS.include?(leaf)
       end
-      irregular_leaf_types = [:entire_matched_part].concat(IRREGULAR_LEAFS)
-      return Regexp.new('\\A(?:' + irregular_head_pats.join('|') + ')'), regular_leaf_types, head_to_leaf, irregular_leaf_types, IRREGULAR_LEAFS.length
+      return Regexp.new('\\A(?:' + irregular_head_pats.join('|') + ')'), regular_leaf_types, head_to_leaf, IRREGULAR_LEAFS.length
     end
 
-    IRREGULAR_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, IRREGULAR_LEAF_TYPES, NUMBER_OF_IRREGULAR_LEAF_TYPES = assign_head_re
+    IRREGULAR_HEAD_PAT, REGULAR_LEAF_TYPES, HEAD_TO_LEAF, NUMBER_OF_IRREGULAR_LEAF_TYPES = assign_head_re
 
     module NotAutoLinkURL
       def self.link(line) line; end
