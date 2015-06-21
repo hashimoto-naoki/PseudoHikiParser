@@ -380,22 +380,22 @@ module PseudoHiki
 
     IRREGULAR_LEAFS = [:entire_matched_part, BlockNodeEnd, VerbatimLeaf, HrLeaf]
     NUMBER_OF_IRREGULAR_LEAFS = IRREGULAR_LEAFS.length - 1
+    HEAD_TO_LEAF = HEAD_TO_LEAF_TABLE.inject({}) {|h, kv| h[kv[0]] = kv[1]; h }
 
     def self.assign_head_re
-      irregular_head_pats, regular_heads, head_to_leaf = [], [], {}
+      irregular_head_pats, regular_heads = [], []
       HEAD_TO_LEAF_TABLE.each do |head, leaf|
         leaf_is_irregular = IRREGULAR_LEAFS.include?(leaf)
         escaped_head = leaf_is_irregular ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
         leaf.head_re = /\A#{head_pat}/
-        head_to_leaf[head] = leaf
         irregular_head_pats.push "(#{escaped_head})" if leaf_is_irregular
         regular_heads.push head unless leaf_is_irregular
       end
-      return /\A(?:#{irregular_head_pats.join('|')})/, regular_heads, head_to_leaf
+      return /\A(?:#{irregular_head_pats.join('|')})/, regular_heads
     end
 
-    IRREGULAR_HEAD_PAT, REGULAR_HEADS, HEAD_TO_LEAF = assign_head_re
+    IRREGULAR_HEAD_PAT, REGULAR_HEADS = assign_head_re
 
     module NotAutoLinkURL
       def self.link(line) line; end
