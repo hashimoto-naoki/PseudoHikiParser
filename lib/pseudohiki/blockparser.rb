@@ -275,12 +275,11 @@ module PseudoHiki
      [ParagraphLeaf, ParagraphNode],
      [HrLeaf, HrNode],
      [ListLeaf, ListNode],
-     [EnumLeaf, EnumNode]
+     [EnumLeaf, EnumNode],
+     [BlockNodeEnd, BlockNodeEnd] # special case
     ].each do |leaf, node|
       ParentNode[leaf] = node
     end
-
-    ParentNode[BlockNodeEnd] = BlockNodeEnd
 
     HEAD_TO_LEAF_TABLE = [['\r?\n?$', BlockNodeEnd],
                           ['\s', VerbatimLeaf],
