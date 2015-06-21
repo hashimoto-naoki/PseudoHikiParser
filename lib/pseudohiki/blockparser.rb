@@ -379,6 +379,7 @@ module PseudoHiki
                           ['----\s*$', HrLeaf]]
 
     IRREGULAR_LEAFS = [:entire_matched_part, BlockNodeEnd, VerbatimLeaf, HrLeaf]
+    NUMBER_OF_IRREGULAR_LEAFS = IRREGULAR_LEAFS.length - 1
 
     def self.assign_head_re
       irregular_head_pats, regular_heads, head_to_leaf = [], [], {}
@@ -391,10 +392,10 @@ module PseudoHiki
         irregular_head_pats.push "(#{escaped_head})" if leaf_is_irregular
         regular_heads.push head unless leaf_is_irregular
       end
-      return /\A(?:#{irregular_head_pats.join('|')})/, regular_heads, head_to_leaf, IRREGULAR_LEAFS.length
+      return /\A(?:#{irregular_head_pats.join('|')})/, regular_heads, head_to_leaf
     end
 
-    IRREGULAR_HEAD_PAT, REGULAR_HEADS, HEAD_TO_LEAF, NUMBER_OF_IRREGULAR_LEAFS = assign_head_re
+    IRREGULAR_HEAD_PAT, REGULAR_HEADS, HEAD_TO_LEAF = assign_head_re
 
     module NotAutoLinkURL
       def self.link(line) line; end
