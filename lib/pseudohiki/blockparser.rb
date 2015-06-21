@@ -366,25 +366,26 @@ module PseudoHiki
 
     ParentNode[BlockNodeEnd] = BlockNodeEnd
 
-    HEAD_TO_LEAF_TABLE = [['\r?\n?$', BlockNodeEnd],
-                          ['\s', VerbatimLeaf],
-                          ['*', ListLeaf],
-                          ['#', EnumLeaf],
-                          [':', DescLeaf],
-                          ['!', HeadingLeaf],
-                          ['""', QuoteLeaf],
-                          ['||', TableLeaf],
-                          ['//@', DecoratorLeaf],
-                          ['//', CommentOutLeaf],
-                          ['----\s*$', HrLeaf]]
+    HEAD_TO_LEAF = {
+      '\r?\n?$' => BlockNodeEnd,
+      '\s' => VerbatimLeaf,
+      '*' => ListLeaf,
+      '#' => EnumLeaf,
+      ':' => DescLeaf,
+      '!' => HeadingLeaf,
+      '""' => QuoteLeaf,
+      '||' => TableLeaf,
+      '//@' => DecoratorLeaf,
+      '//' => CommentOutLeaf,
+      '----\s*$' => HrLeaf
+    }
 
     IRREGULAR_LEAFS = [:entire_matched_part, BlockNodeEnd, VerbatimLeaf, HrLeaf]
     NUMBER_OF_IRREGULAR_LEAFS = IRREGULAR_LEAFS.length - 1
-    HEAD_TO_LEAF = HEAD_TO_LEAF_TABLE.inject({}) {|h, kv| h[kv[0]] = kv[1]; h }
 
     def self.assign_head_re
       irregular_head_pats, regular_heads = [], []
-      HEAD_TO_LEAF_TABLE.each do |head, leaf|
+      HEAD_TO_LEAF.each do |head, leaf|
         leaf_is_irregular = IRREGULAR_LEAFS.include?(leaf)
         escaped_head = leaf_is_irregular ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
