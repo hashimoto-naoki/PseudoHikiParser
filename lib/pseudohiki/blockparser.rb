@@ -365,7 +365,7 @@ module PseudoHiki
       ParentNode[leaf] = node
     end
 
-    HEAD_TO_LEAF_TABLE = [['\r?\n?$', BlockNodeEnd],
+    head_to_leaf_table = [['\r?\n?$', BlockNodeEnd],
                           ['\s', VerbatimLeaf],
                           ['*', ListLeaf],
                           ['#', EnumLeaf],
@@ -379,11 +379,11 @@ module PseudoHiki
 
     IRREGULAR_LEAFS = [:entire_matched_part, BlockNodeEnd, VerbatimLeaf, HrLeaf]
     NUMBER_OF_IRREGULAR_LEAFS = IRREGULAR_LEAFS.length - 1
-    HEAD_TO_LEAF = HEAD_TO_LEAF_TABLE.inject({}) {|h, kv| h[kv[0]] = kv[1]; h }
+    HEAD_TO_LEAF = head_to_leaf_table.inject({}) {|h, kv| h[kv[0]] = kv[1]; h }
 
-    def self.assign_head_re
+    def self.assign_head_re(head_to_leaf_table)
       irregular_head_pats, regular_heads = [], []
-      HEAD_TO_LEAF_TABLE.each do |head, leaf|
+      head_to_leaf_table.each do |head, leaf|
         leaf_is_irregular = IRREGULAR_LEAFS.include?(leaf)
         escaped_head = leaf_is_irregular ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
@@ -394,7 +394,7 @@ module PseudoHiki
       return /\A(?:#{irregular_head_pats.join('|')})/, regular_heads
     end
 
-    IRREGULAR_HEAD_PAT, REGULAR_HEADS = assign_head_re
+    IRREGULAR_HEAD_PAT, REGULAR_HEADS = assign_head_re(head_to_leaf_table)
 
     module NotAutoLinkURL
       def self.link(line) line; end
