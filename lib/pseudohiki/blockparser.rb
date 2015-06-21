@@ -293,6 +293,8 @@ module PseudoHiki
                           ['//', CommentOutLeaf],
                           ['----\s*$', HrLeaf]]
 
+    IRREGULAR_LEAFS = [:entire_matched_part, BlockNodeEnd, VerbatimLeaf, HrLeaf]
+
     def self.assign_head_re
       irregular_leafs = [BlockNodeEnd, VerbatimLeaf, HrLeaf]
       irregular_head_pats, regular_leaf_types, head_to_leaf = [], [], {}
@@ -345,7 +347,7 @@ module PseudoHiki
 
     def select_leaf_type(line)
       matched = IRREGULAR_HEAD_PAT.match(line)
-      1.upto(NUMBER_OF_IRREGULAR_LEAF_TYPES) {|i| return IRREGULAR_LEAF_TYPES[i] if matched[i] } if matched
+      1.upto(NUMBER_OF_IRREGULAR_LEAF_TYPES) {|i| return IRREGULAR_LEAFS[i] if matched[i] } if matched
       REGULAR_LEAF_TYPES.each {|head| return HEAD_TO_LEAF[head] if line.start_with?(head) }
       ParagraphLeaf
     end
