@@ -383,12 +383,13 @@ module PseudoHiki
     def self.assign_head_re
       irregular_head_pats, regular_heads, head_to_leaf = [], [], {}
       HEAD_TO_LEAF_TABLE.each do |head, leaf|
-        escaped_head = IRREGULAR_LEAFS.include?(leaf) ? head : Regexp.escape(head)
+        leaf_is_irregular = IRREGULAR_LEAFS.include?(leaf)
+        escaped_head = leaf_is_irregular ? head : Regexp.escape(head)
         head_pat = leaf.with_depth? ? "#{escaped_head}+" : "#{escaped_head}"
         leaf.head_re = /\A#{head_pat}/
         head_to_leaf[head] = leaf
-        irregular_head_pats.push "(#{escaped_head})" if IRREGULAR_LEAFS.include?(leaf)
-        regular_heads.push head unless IRREGULAR_LEAFS.include?(leaf)
+        irregular_head_pats.push "(#{escaped_head})" if leaf_is_irregular
+        regular_heads.push head unless leaf_is_irregular
       end
       return /\A(?:#{irregular_head_pats.join('|')})/, regular_heads, head_to_leaf, IRREGULAR_LEAFS.length
     end
