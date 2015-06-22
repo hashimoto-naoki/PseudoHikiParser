@@ -351,9 +351,13 @@ module PseudoHiki
       end
 
       def warning_for_non_comformant_style
-        raise NotConformantStyleError.new("The table is not conformant to GFM style. The first row will be treated as a header row.")
+        warning_message =<<ERROR
+The table is not conformant to GFM style.
+The first row will be treated as a header row.
+ERROR
+        raise NotConformantStyleError.new(warning_message)
       rescue
-        STDERR.puts "The table is not conformant to GFM style. The first row will be treated as a header row."
+        STDERR.puts warning_message
       end
 
       def calculate_cell_width(table)
