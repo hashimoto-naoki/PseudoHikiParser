@@ -136,15 +136,14 @@ module PseudoHiki
       def visit(tree)
         not_from_thumbnail = tree.first.class != LinkNode
         caption, ref = caption_and_ref(tree)
-        if ImageSuffix =~ ref_tail(ref, caption) and not_from_thumbnail
+        if ImageSuffix =~ ref and not_from_thumbnail
           htmlelement = ImgFormat.create_self_element
-          htmlelement[SRC] = ref.join
+          htmlelement[SRC] = ref
           htmlelement[ALT] = caption.join if caption
         else
           htmlelement = create_self_element
-          url = ref.join
-          htmlelement[HREF] = url.start_with?("#".freeze) ? url.upcase : url
-          htmlelement.push caption || url
+          htmlelement[HREF] = ref.start_with?("#".freeze) ? ref.upcase : ref
+          htmlelement.push caption || ref
         end
         htmlelement
       end
@@ -152,13 +151,9 @@ module PseudoHiki
       def caption_and_ref(tree)
         caption, ref = split_into_parts(tree, LinkSep)
         caption = ref ? caption.map {|token| visited_result(token) } : nil
-        return caption, ref || tree
-      end
-
-      def ref_tail(tree, caption)
-        tree.last.join
+        return caption, (ref || tree).join
       rescue NoMethodError
-        raise NoMethodError unless tree.empty?
+        raise NoMethodError unless (ref || tree).empty?
         STDERR.puts "No uri is specified for #{caption}"
       end
     end
