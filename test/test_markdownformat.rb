@@ -44,11 +44,11 @@ TEXT
     assert_equal(gfm_text, MarkDownFormat.format(tree, :gfm_style => true))
   end
 
-  def test_self_convert_to_gfm_id_format
+  def test_self_convert_into_gfm_id_format
     heading_with_non_ascii_chars = "class PseudoHiki::BlockParser"
     heading_with_multiple_spaces = "Development status of features from the original Hiki notation"
-    gfm_id_with_non_ascii_chars = MarkDownFormat.convert_to_gfm_id_format(heading_with_non_ascii_chars)
-    gfm_id_with_multiple_spaces = MarkDownFormat.convert_to_gfm_id_format(heading_with_multiple_spaces)
+    gfm_id_with_non_ascii_chars = MarkDownFormat.convert_into_gfm_id_format(heading_with_non_ascii_chars)
+    gfm_id_with_multiple_spaces = MarkDownFormat.convert_into_gfm_id_format(heading_with_multiple_spaces)
     assert_equal("class-pseudohikiblockparser", gfm_id_with_non_ascii_chars)
     assert_equal("development-status-of-features-from-the-original-hiki-notation", gfm_id_with_multiple_spaces)
   end

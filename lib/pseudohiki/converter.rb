@@ -61,7 +61,7 @@ module PseudoHiki
     end
 
     def gfm_id(heading_node)
-      MarkDownFormat.convert_to_gfm_id_format(to_plain(heading_node).strip)
+      MarkDownFormat.convert_into_gfm_id_format(to_plain(heading_node).strip)
     end
 
     def create_gfm_table_of_contents(tree)
