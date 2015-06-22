@@ -34,7 +34,7 @@ module PseudoHiki
       Formatters[options].format(tree)
     end
 
-    def self.convert_to_gfm_id_format(heading)
+    def self.convert_into_gfm_id_format(heading)
       heading.gsub(GFM_STRIPPED_CHARS_PAT) do |char|
         /\A\s+\Z/o =~ char ? '-'.freeze : ''.freeze
       end.downcase
@@ -105,7 +105,7 @@ module PseudoHiki
         collect_headings(tree).each do |heading|
           if node_id = heading.node_id
             heading_text = PlainTextFormat.format(heading).strip
-            table[node_id] = MarkDownFormat.convert_to_gfm_id_format(heading_text)
+            table[node_id] = MarkDownFormat.convert_into_gfm_id_format(heading_text)
           end
         end
       end
