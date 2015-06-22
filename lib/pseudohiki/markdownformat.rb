@@ -107,32 +107,35 @@ module PseudoHiki
 
     def self.create(options={ :strict_mode => false })
       formatter = {}
-      main_formatter = self.new(formatter, options)
-      formatter.default = main_formatter
 
-      formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
-      formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
-      formatter[EmNode] = EmNodeFormatter.new(formatter, options)
-      formatter[StrongNode] = StrongNodeFormatter.new(formatter, options)
-      formatter[DelNode] = DelNodeFormatter.new(formatter, options)
-      formatter[LiteralNode] = LiteralNodeFormatter.new(formatter, options)
-      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
-      formatter[VerbatimLeaf] = VerbatimLeafFormatter.new(formatter, options)
-      formatter[CommentOutLeaf] = CommentOutLeafFormatter.new(formatter, options)
-      formatter[HeadingLeaf] = HeadingLeafFormatter.new(formatter, options)
-      formatter[HrLeaf] = HrLeafFormatter.new(formatter, options)
-      formatter[DescNode] = DescNodeFormatter.new(formatter, options)
-      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
-      formatter[QuoteNode] = QuoteNodeFormatter.new(formatter, options)
-      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
-      formatter[HeadingNode] = HeadingNodeFormatter.new(formatter, options)
-      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
-      formatter[ListNode] = ListNodeFormatter.new(formatter, options)
-      formatter[EnumNode] = EnumNodeFormatter.new(formatter, options)
-      formatter[ListWrapNode] = ListWrapNodeFormatter.new(formatter, options)
-      formatter[EnumWrapNode] = EnumWrapNodeFormatter.new(formatter, options)
+      new(formatter, options).tap do |main_formatter|
+        formatter.default = main_formatter
 
-      main_formatter
+        [[InlineLeaf, InlineLeafFormatter],
+         [LinkNode, LinkNodeFormatter],
+         [EmNode, EmNodeFormatter],
+         [StrongNode, StrongNodeFormatter],
+         [DelNode, DelNodeFormatter],
+         [LiteralNode, LiteralNodeFormatter],
+         [PluginNode, PluginNodeFormatter],
+         [VerbatimLeaf, VerbatimLeafFormatter],
+         [CommentOutLeaf, CommentOutLeafFormatter],
+         [HeadingLeaf, HeadingLeafFormatter],
+         [HrLeaf, HrLeafFormatter],
+         [DescNode, DescNodeFormatter],
+         [VerbatimNode, VerbatimNodeFormatter],
+         [QuoteNode, QuoteNodeFormatter],
+         [TableNode, TableNodeFormatter],
+         [HeadingNode, HeadingNodeFormatter],
+         [ParagraphNode, ParagraphNodeFormatter],
+         [ListNode, ListNodeFormatter],
+         [EnumNode, EnumNodeFormatter],
+         [ListWrapNode, ListWrapNodeFormatter],
+         [EnumWrapNode, EnumWrapNodeFormatter],
+        ].each  do |node, formatter_class|
+          formatter[node] = formatter_class.new(formatter, options)
+        end
+      end
     end
 
     ## Definitions of subclasses of MarkDownFormat begins here.
