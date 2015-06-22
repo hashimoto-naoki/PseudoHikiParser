@@ -77,19 +77,23 @@ module PseudoHiki
 
     def self.create(options={ :verbose_mode => false })
       formatter = {}
-      main_formatter = self.new(formatter, options)
-      formatter.default = main_formatter
 
-      formatter[InlineLeaf] = InlineLeafFormatter.new(formatter, options)
-      formatter[LinkNode] = LinkNodeFormatter.new(formatter, options)
-      formatter[DelNode] = DelNodeFormatter.new(formatter, options)
-      formatter[DescLeaf] = DescLeafFormatter.new(formatter, options)
-      formatter[VerbatimNode] = VerbatimNodeFormatter.new(formatter, options)
-      formatter[TableNode] = TableNodeFormatter.new(formatter, options)
-      formatter[CommentOutNode] = CommentOutNodeFormatter.new(formatter, options)
-      formatter[ParagraphNode] = ParagraphNodeFormatter.new(formatter, options)
-      formatter[PluginNode] = PluginNodeFormatter.new(formatter, options)
-      main_formatter
+      new(formatter, options).tap do |main_formatter|
+        formatter.default = main_formatter
+
+        [[InlineLeaf, InlineLeafFormatter],
+         [LinkNode, LinkNodeFormatter],
+         [DelNode, DelNodeFormatter],
+         [DescLeaf, DescLeafFormatter],
+         [VerbatimNode, VerbatimNodeFormatter],
+         [TableNode, TableNodeFormatter],
+         [CommentOutNode, CommentOutNodeFormatter],
+         [ParagraphNode, ParagraphNodeFormatter],
+         [PluginNode, PluginNodeFormatter]
+        ].each do |node, formatter_class|
+          formatter[node] = formatter_class.new(formatter, options)
+        end
+      end
     end
 
     ## Definitions of subclasses of PlainTextFormat begins here.
