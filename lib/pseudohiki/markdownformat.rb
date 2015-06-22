@@ -100,12 +100,16 @@ module PseudoHiki
       end
     end
 
+    def heading_to_gfm_id(heading)
+      heading_text = PlainTextFormat.format(heading).strip
+      MarkDownFormat.convert_into_gfm_id_format(heading_text)
+    end
+
     def prepare_id_conv_table(tree)
       {}.tap do |table|
         collect_headings(tree).each do |heading|
           if node_id = heading.node_id
-            heading_text = PlainTextFormat.format(heading).strip
-            table[node_id] = MarkDownFormat.convert_into_gfm_id_format(heading_text)
+            table[node_id] = heading_to_gfm_id(heading)
           end
         end
       end
