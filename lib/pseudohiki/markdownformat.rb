@@ -75,7 +75,7 @@ module PseudoHiki
 
     def format(tree)
       formatter = get_plain
-      @formatter[LinkNode].id_conv_table = prepare_id_conv_table(tree) if @options.gfm_style
+      prepare_id_conv_table(tree) if @options.gfm_style
       tree.accept(formatter).join
     end
 
@@ -112,6 +112,7 @@ module PseudoHiki
             table[node_id] = heading_to_gfm_id(heading)
           end
         end
+        @formatter[LinkNode].id_conv_table = table
       end
     end
 
