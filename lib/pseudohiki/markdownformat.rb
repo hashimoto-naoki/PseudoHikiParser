@@ -18,9 +18,15 @@ module PseudoHiki
     GFM_STRIPPED_CHARS = " -&+$,/:;=?@\"{}#|^~[]`\\*()%.!'"
     GFM_STRIPPED_CHARS_PAT = Regexp.union(/\s+/o, /[#{Regexp.escape(GFM_STRIPPED_CHARS)}]/o)
 
-    def self.format(tree, options={ :strict_mode => false, :gfm_style => false })
+    @default_options = { :strict_mode => false, :gfm_style => false }
+
+    def self.default_options
+      @default_options
+    end
+
+    def self.format(tree, options=MarkDownFormat.default_options)
       if Formatters.empty?
-        default_options = { :strict_mode => false, :gfm_style => false }
+        default_options = MarkDownFormat.default_options
         Formatters[default_options] = create(default_options)
       end
 
@@ -34,7 +40,7 @@ module PseudoHiki
       end.downcase
     end
 
-    def initialize(formatter={}, options={ :strict_mode => false, :gfm_style => false })
+    def initialize(formatter={}, options=MarkDownFormat.default_options)
       @formatter = formatter
       options_given_via_block = nil
       if block_given?
