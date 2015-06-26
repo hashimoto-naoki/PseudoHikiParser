@@ -81,10 +81,10 @@ module PseudoHiki
     end
 
     def decorate(htmlelement, tree)
-      each_decorator(htmlelement, tree) do |element, decorator|
-        element[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
+      each_decorator(htmlelement, tree) do |elm, decorator|
+        elm[CLASS] = HtmlElement.escape(decorator[CLASS].id) if decorator[CLASS]
         if id_item = decorator[ID] || decorator[:id]
-          element[ID] = HtmlElement.escape(id_item.id).upcase
+          elm[ID] = HtmlElement.escape(id_item.id).upcase
         end
       end
     end
@@ -97,8 +97,8 @@ module PseudoHiki
 
     class ListLeafNodeFormatter < self
       def create_self_element(tree)
-        super(tree).tap do |element|
-          element[ID] = tree.node_id.upcase if tree.node_id
+        super(tree).tap do |elm|
+          elm[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
@@ -191,7 +191,7 @@ module PseudoHiki
 
     class << Formatter[TableNode]
       def decorate(htmlelement, tree)
-        each_decorator(htmlelement, tree) do |element, decorator|
+        each_decorator(htmlelement, tree) do |elm, decorator|
           htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join) if decorator["summary"]
         end
       end
@@ -199,11 +199,11 @@ module PseudoHiki
 
     class << Formatter[VerbatimNode]
       def visit(tree)
-        create_self_element.tap do |element|
+        create_self_element.tap do |elm|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
             @generator.create(LINK, url, HREF => url).to_s
           end
-          element.push contents
+          elm.push contents
         end
       end
     end
@@ -214,8 +214,8 @@ module PseudoHiki
       alias :orig_create_self_element :create_self_element
 
       def section_with_id(tree, node_id)
-        orig_create_self_element(tree).tap do |element|
-          element[ID] = node_id[1..-1] # remove the first charactor from node_id
+        orig_create_self_element(tree).tap do |elm|
+          elm[ID] = node_id[1..-1] # remove the first charactor from node_id
         end
       end
 
@@ -223,8 +223,8 @@ module PseudoHiki
         if HtmlElement::Html5Tags.include? node_id
           @generator.create(node_id)
         else
-          orig_create_self_element(tree).tap do |element|
-            element[CLASS] ? element[CLASS] += " ".concat(node_id) : element[CLASS] = node_id
+          orig_create_self_element(tree).tap do |elm|
+            elm[CLASS] ? elm[CLASS] += " ".concat(node_id) : elm[CLASS] = node_id
           end
         end
       end
@@ -245,44 +245,44 @@ module PseudoHiki
 
     class << Formatter[HeadingNode]
       def create_self_element(tree)
-        super(tree).tap do |element|
+        super(tree).tap do |elm|
           heading_level = "h#{tree.first.nominal_level}"
-          element[CLASS] ||= heading_level
-          element[CLASS] += SPACE + heading_level unless element[CLASS] == heading_level
+          elm[CLASS] ||= heading_level
+          elm[CLASS] += SPACE + heading_level unless elm[CLASS] == heading_level
         end
       end
     end
 
     class << Formatter[DescLeaf]
       def visit(tree)
-        element = @generator::Children.new
+        elm = @generator::Children.new
         dt_part, dd_part = split_into_parts(tree, DescSep)
         dt = super(dt_part)
-        element.push dt
+        elm.push dt
         unless dd_part.nil? or dd_part.empty?
           dd = @generator.create(DD)
           push_visited_results(dd, dd_part)
-          element.push dd
+          elm.push dd
         end
-        element
+        elm
       end
     end
 
     class << Formatter[TableCellNode]
       def visit(tree)
         @element_name = tree.cell_type
-        super(tree).tap do |element|
-          element[ROWSPAN] = tree.rowspan if tree.rowspan > 1
-          element[COLSPAN] = tree.colspan if tree.colspan > 1
-          # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
+        super(tree).tap do |elm|
+          elm[ROWSPAN] = tree.rowspan if tree.rowspan > 1
+          elm[COLSPAN] = tree.colspan if tree.colspan > 1
+          # elm.push "&#160;" if elm.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
         end
       end
     end
 
     class << Formatter[HeadingLeaf]
       def create_self_element(tree)
-        @generator.create(@element_name + tree.nominal_level.to_s).tap do |element|
-          element[ID] = tree.node_id.upcase if tree.node_id
+        @generator.create(@element_name + tree.nominal_level.to_s).tap do |elm|
+          elm[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
