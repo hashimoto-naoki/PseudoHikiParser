@@ -60,12 +60,12 @@ module PseudoHiki
     end
 
     def visit(tree)
-      htmlelement = create_self_element(tree)
+      htmlelement = create_element(tree)
       push_visited_results(htmlelement, tree)
       htmlelement
     end
 
-    def create_self_element(tree=nil)
+    def create_element(tree=nil)
       @generator.create(@element_name)
     end
 
@@ -80,7 +80,7 @@ module PseudoHiki
     end
 
     class ListLeafNodeFormatter < self
-      def create_self_element(tree)
+      def create_element(tree)
         super(tree).tap do |elm|
           elm[ID] = tree.node_id.upcase if tree.node_id
         end
@@ -137,11 +137,11 @@ module PseudoHiki
         not_from_thumbnail = tree.first.class != LinkNode
         caption, ref = caption_and_ref(tree)
         if ImageSuffix =~ ref and not_from_thumbnail
-          htmlelement = ImgFormat.create_self_element
+          htmlelement = ImgFormat.create_element
           htmlelement[SRC] = ref
           htmlelement[ALT] = caption.join if caption
         else
-          htmlelement = create_self_element
+          htmlelement = create_element
           htmlelement[HREF] = ref.start_with?("#".freeze) ? ref.upcase : ref
           htmlelement.push caption || ref
         end
@@ -165,7 +165,7 @@ module PseudoHiki
     end
 
     class << Formatter[PlainNode]
-      def create_self_element(tree=nil)
+      def create_element(tree=nil)
         @generator::Children.new
       end
     end
@@ -178,7 +178,7 @@ module PseudoHiki
         contents_with_link = contents.gsub(BlockParser::URI_RE) do |url|
           @generator.create(LINK, url, HREF => url).to_s
         end
-        create_self_element.tap {|elm| elm.push contents_with_link }
+        create_element.tap {|elm| elm.push contents_with_link }
       end
     end
 
@@ -187,7 +187,7 @@ module PseudoHiki
     end
 
     class << Formatter[HeadingNode]
-      def create_self_element(tree)
+      def create_element(tree)
         super(tree).tap do |elm|
           heading_level = "h#{tree.first.nominal_level}"
           elm[CLASS] ||= heading_level
@@ -223,7 +223,7 @@ module PseudoHiki
     end
 
     class << Formatter[HeadingLeaf]
-      def create_self_element(tree)
+      def create_element(tree)
         @generator.create(@element_name + tree.nominal_level.to_s).tap do |elm|
           elm[ID] = tree.node_id.upcase if tree.node_id
         end
