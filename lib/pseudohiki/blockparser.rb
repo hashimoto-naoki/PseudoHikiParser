@@ -200,8 +200,8 @@ module PseudoHiki
         NestedBlockNode => %w(HeadingNode),
         ListTypeBlockNode => %w(ListNode EnumNode),
         ListLeafNode => %w(ListWrapNode EnumWrapNode)
-      }.each do |parent_class, children|
-        PseudoHiki.subclass_of(parent_class, binding, children)
+      }.each do |parent_class, sub_classes|
+        sub_classes.each {|sub| const_set(sub, Class.new(parent_class)) }
       end
     end
     include BlockElement
