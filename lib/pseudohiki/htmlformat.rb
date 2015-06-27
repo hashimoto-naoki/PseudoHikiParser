@@ -81,8 +81,8 @@ module PseudoHiki
 
     class ListLeafNodeFormatter < self
       def create_self_element(tree)
-        super(tree).tap do |element|
-          element[ID] = tree.node_id.upcase if tree.node_id
+        super(tree).tap do |elm|
+          elm[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
@@ -109,7 +109,7 @@ module PseudoHiki
       [DescLeaf, DT],
       [TableCellNode, nil],
       [HeadingLeaf, "h"], # Until here is for BlockParser
-    ].each {|node_class, element| Formatter[node_class] = new(element) }
+    ].each {|node_class, elm| Formatter[node_class] = new(elm) }
 
     # for InlineParser
     ImgFormat = new("img")
@@ -174,11 +174,11 @@ module PseudoHiki
 
     class << Formatter[VerbatimNode]
       def visit(tree)
-        create_self_element.tap do |element|
+        create_self_element.tap do |elm|
           contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
             @generator.create(LINK, url, HREF => url).to_s
           end
-          element.push contents
+          elm.push contents
         end
       end
     end
@@ -189,44 +189,44 @@ module PseudoHiki
 
     class << Formatter[HeadingNode]
       def create_self_element(tree)
-        super(tree).tap do |element|
+        super(tree).tap do |elm|
           heading_level = "h#{tree.first.nominal_level}"
-          element[CLASS] ||= heading_level
-          element[CLASS] += SPACE + heading_level unless element[CLASS] == heading_level
+          elm[CLASS] ||= heading_level
+          elm[CLASS] += SPACE + heading_level unless elm[CLASS] == heading_level
         end
       end
     end
 
     class << Formatter[DescLeaf]
       def visit(tree)
-        element = @generator::Children.new
+        elm = @generator::Children.new
         dt_part, dd_part = split_into_parts(tree, DescSep)
         dt = super(dt_part)
-        element.push dt
+        elm.push dt
         unless dd_part.nil? or dd_part.empty?
           dd = @generator.create(DD)
           push_visited_results(dd, dd_part)
-          element.push dd
+          elm.push dd
         end
-        element
+        elm
       end
     end
 
     class << Formatter[TableCellNode]
       def visit(tree)
         @element_name = tree.cell_type
-        super(tree).tap do |element|
-          element[ROWSPAN] = tree.rowspan if tree.rowspan > 1
-          element[COLSPAN] = tree.colspan if tree.colspan > 1
-          # element.push "&#160;" if element.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
+        super(tree).tap do |elm|
+          elm[ROWSPAN] = tree.rowspan if tree.rowspan > 1
+          elm[COLSPAN] = tree.colspan if tree.colspan > 1
+          # elm.push "&#160;" if elm.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
         end
       end
     end
 
     class << Formatter[HeadingLeaf]
       def create_self_element(tree)
-        @generator.create(@element_name + tree.nominal_level.to_s).tap do |element|
-          element[ID] = tree.node_id.upcase if tree.node_id
+        @generator.create(@element_name + tree.nominal_level.to_s).tap do |elm|
+          elm[ID] = tree.node_id.upcase if tree.node_id
         end
       end
     end
