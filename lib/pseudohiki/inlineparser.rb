@@ -9,10 +9,6 @@ module PseudoHiki
   FILE_MARK = "file:///"
   ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
 
-  def self.subclass_of(parent_class, bound_env, subclass_names)
-    subclass_names. each {|name| eval "class #{name} < #{parent_class}; end", bound_env  }
-  end
-
   def self.compile_token_pat(*token_sets)
     tokens = token_sets.flatten.uniq.sort do |x, y|
       [y.length, y] <=> [x.length, x]
@@ -37,8 +33,9 @@ module PseudoHiki
       class InlineLeaf < InlineParser::Leaf; end
       # class LinkSepLeaf < InlineLeaf; end
 
-      PseudoHiki.subclass_of(InlineNode, binding,
-                             %w(LinkNode EmNode StrongNode DelNode PlainNode LiteralNode PluginNode))
+      %w(LinkNode EmNode StrongNode DelNode PlainNode LiteralNode PluginNode).each do |subclass|
+        const_set(subclass, Class.new(InlineNode))
+      end
 
       LinkSep, TableSep, DescSep = %w(| || :)
     end
