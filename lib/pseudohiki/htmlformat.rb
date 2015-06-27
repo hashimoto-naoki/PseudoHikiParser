@@ -174,12 +174,11 @@ module PseudoHiki
 
     class << Formatter[VerbatimNode]
       def visit(tree)
-        create_self_element.tap do |elm|
-          contents = @generator.escape(tree.join).gsub(BlockParser::URI_RE) do |url|
-            @generator.create(LINK, url, HREF => url).to_s
-          end
-          elm.push contents
+        contents = @generator.escape(tree.join)
+        contents_with_link = contents.gsub(BlockParser::URI_RE) do |url|
+          @generator.create(LINK, url, HREF => url).to_s
         end
+        create_self_element.tap {|elm| elm.push contents_with_link }
       end
     end
 
