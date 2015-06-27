@@ -25,7 +25,7 @@ class HtmlElement
   end
 
   DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">'.split(/\r?\n/o).join($/) + "#{$/}"
+  "http://www.w3.org/TR/html4/loose.dtd">'.gsub(/\r?\n/o, $/) + $/
 
   ESC = {
     '&' => '&amp;',
@@ -164,7 +164,7 @@ end
 class XhtmlElement < HtmlElement
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.split(/\r?\n/o).join($/) + "#{$/}"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.gsub(/\r?\n/o, $/) + $/
 
   ELEMENTS_FORMAT = superclass::ELEMENTS_FORMAT.dup
   ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
@@ -175,7 +175,7 @@ end
 
 class Xhtml5Element < XhtmlElement
   DOCTYPE = '<?xml version="1.0" encoding="%s"?>
-<!DOCTYPE html>'.split(/\r?\n/o).join($/) + "#{$/}"
+<!DOCTYPE html>'.gsub(/\r?\n/o, $/) + $/
 
   ELEMENT_TYPES = superclass::ELEMENT_TYPES.dup
   ELEMENT_TYPES[:BLOCK] = superclass::ELEMENT_TYPES[:BLOCK] + superclass::HTML5_TAGS
