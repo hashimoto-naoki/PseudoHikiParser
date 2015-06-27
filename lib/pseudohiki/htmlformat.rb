@@ -192,7 +192,8 @@ module PseudoHiki
     class << Formatter[TableNode]
       def decorate(htmlelement, tree)
         each_decorator(htmlelement, tree) do |elm, decorator|
-          htmlelement["summary"] = HtmlElement.escape(decorator["summary"].value.join) if decorator["summary"]
+          summary = decorator["summary"] && decorator["summary"].value.join
+          htmlelement["summary"] = HtmlElement.escape(summary) if summary
         end
       end
     end
