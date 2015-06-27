@@ -126,7 +126,7 @@ module PseudoHiki
       [DescLeaf, DT],
       [TableCellNode, nil],
       [HeadingLeaf, "h"], # Until here is for BlockParser
-    ].each {|node_class, element| Formatter[node_class] = new(element) }
+    ].each {|node_class, elm| Formatter[node_class] = new(elm) }
 
     # for InlineParser
     ImgFormat = new("img")
