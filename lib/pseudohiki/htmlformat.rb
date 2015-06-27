@@ -60,13 +60,13 @@ module PseudoHiki
     end
 
     def visit(tree)
-      htmlelement = create_self_element(tree)
+      htmlelement = create_element(tree)
       decorate(htmlelement, tree)
       push_visited_results(htmlelement, tree)
       htmlelement
     end
 
-    def create_self_element(tree=nil)
+    def create_element(tree=nil)
       @generator.create(@element_name)
     end
 
@@ -96,7 +96,7 @@ module PseudoHiki
     end
 
     class ListLeafNodeFormatter < self
-      def create_self_element(tree)
+      def create_element(tree)
         super(tree).tap do |elm|
           elm[ID] = tree.node_id.upcase if tree.node_id
         end
@@ -154,11 +154,11 @@ module PseudoHiki
         not_from_thumbnail = tree.first.class != LinkNode
         caption, ref = caption_and_ref(tree)
         if ImageSuffix =~ ref and not_from_thumbnail
-          htmlelement = ImgFormat.create_self_element
+          htmlelement = ImgFormat.create_element
           htmlelement[SRC] = ref
           htmlelement[ALT] = caption.join if caption
         else
-          htmlelement = create_self_element
+          htmlelement = create_element
           htmlelement[HREF] = ref.start_with?("#".freeze) ? ref.upcase : ref
           htmlelement.push caption || ref
         end
@@ -182,7 +182,7 @@ module PseudoHiki
     end
 
     class << Formatter[PlainNode]
-      def create_self_element(tree=nil)
+      def create_element(tree=nil)
         @generator::Children.new
       end
     end
@@ -203,17 +203,17 @@ module PseudoHiki
         contents_with_link = contents.gsub(BlockParser::URI_RE) do |url|
           @generator.create(LINK, url, HREF => url).to_s
         end
-        create_self_element.tap {|elm| elm.push contents_with_link }
+        create_element.tap {|elm| elm.push contents_with_link }
       end
     end
 
     class << Formatter[SectioningNode]
       ID_MARK = "#"
 
-      alias :orig_create_self_element :create_self_element
+      alias :orig_create_element :create_element
 
       def section_with_id(tree, node_id)
-        orig_create_self_element(tree).tap do |elm|
+        orig_create_element(tree).tap do |elm|
           elm[ID] = node_id[1..-1] # remove the first charactor from node_id
         end
       end
@@ -222,13 +222,13 @@ module PseudoHiki
         if HtmlElement::Html5Tags.include? node_id
           @generator.create(node_id)
         else
-          orig_create_self_element(tree).tap do |elm|
+          orig_create_element(tree).tap do |elm|
             elm[CLASS] = elm[CLASS] ? "#{elm[CLASS]} #{node_id}" : node_id
           end
         end
       end
 
-      def create_self_element(tree)
+      def create_element(tree)
         node_id = tree.node_id
         if node_id.start_with? ID_MARK
           section_with_id(tree, node_id)
@@ -243,7 +243,7 @@ module PseudoHiki
     end
 
     class << Formatter[HeadingNode]
-      def create_self_element(tree)
+      def create_element(tree)
         super(tree).tap do |elm|
           heading_level = "h#{tree.first.nominal_level}"
           elm[CLASS] ||= heading_level
@@ -279,7 +279,7 @@ module PseudoHiki
     end
 
     class << Formatter[HeadingLeaf]
-      def create_self_element(tree)
+      def create_element(tree)
         @generator.create(@element_name + tree.nominal_level.to_s).tap do |elm|
           elm[ID] = tree.node_id.upcase if tree.node_id
         end
