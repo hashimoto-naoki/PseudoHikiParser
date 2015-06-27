@@ -220,7 +220,7 @@ module PseudoHiki
       end
 
       def section_for_class(tree, node_id)
-        if HtmlElement::Html5Tags.include? node_id
+        if HtmlElement::HTML5_TAGS.include? node_id
           @generator.create(node_id)
         else
           orig_create_element(tree).tap do |elm|

@@ -37,7 +37,7 @@ class HtmlElement
   DECODE = ESC.invert
   CharEntityPat = /#{DECODE.keys.join("|")}/
 
-  Html5Tags = %w(article section hgroup aside nav menu header footer figure details legend)
+  HTML5_TAGS = %w(article section hgroup aside nav menu header footer figure details legend)
 
   ELEMENT_TYPES = {
     :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
@@ -62,7 +62,7 @@ class HtmlElement
   end
 
   def self.create(tagname, content=nil, attributes={})
-    if self::Html5Tags.include? tagname
+    if self::HTML5_TAGS.include? tagname
       attributes["class"] = tagname
       tagname = "div"
     end
@@ -178,8 +178,8 @@ class Xhtml5Element < XhtmlElement
 <!DOCTYPE html>'.split(/\r?\n/o).join($/) + "#{$/}"
 
   ELEMENT_TYPES = superclass::ELEMENT_TYPES.dup
-  ELEMENT_TYPES[:BLOCK] = superclass::ELEMENT_TYPES[:BLOCK] + superclass::Html5Tags
-  Html5Tags = %w(main)
+  ELEMENT_TYPES[:BLOCK] = superclass::ELEMENT_TYPES[:BLOCK] + superclass::HTML5_TAGS
+  HTML5_TAGS = %w(main)
 
   TagFormats = assign_tagformats
 end
