@@ -224,7 +224,7 @@ module PseudoHiki
           @generator.create(node_id)
         else
           orig_create_self_element(tree).tap do |elm|
-            elm[CLASS] ? elm[CLASS] += " ".concat(node_id) : elm[CLASS] = node_id
+            elm[CLASS] = elm[CLASS] ? "#{elm[CLASS]} #{node_id}" : node_id
           end
         end
       end
