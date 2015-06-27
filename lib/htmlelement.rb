@@ -35,7 +35,7 @@ class HtmlElement
   }
 
   DECODE = ESC.invert
-  CharEntityPat = /#{DECODE.keys.join("|")}/
+  @char_entity_pat = /#{DECODE.keys.join("|")}/
 
   HTML5_TAGS = %w(article section hgroup aside nav menu header footer figure details legend)
 
@@ -98,7 +98,7 @@ class HtmlElement
   end
 
   def self.decode(str)
-    str.gsub(CharEntityPat) {|ent| DECODE[ent] }
+    str.gsub(@char_entity_pat) {|ent| DECODE[ent] }
   end
 
   TagFormats = assign_tagformats
