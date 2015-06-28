@@ -112,7 +112,8 @@ module PseudoHiki
     def create_html_toc_container(toc)
       formatter.create_element("section").tap do |elm|
         elm["id"] = "toc"
-        elm.push formatter.create_element("h2", @options[:toc]) unless @options[:toc].empty?
+        title = @options[:toc]
+        elm.push formatter.create_element("h2", title) unless title.empty?
         elm.push toc
       end
     end
