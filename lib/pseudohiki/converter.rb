@@ -75,7 +75,9 @@ module PseudoHiki
 
     def create_gfm_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        "%s[[%s|#%s]]#{$/}"%['*' * toc_node.nominal_level, to_plain(toc_node).strip, gfm_id(toc_node)]
+        "%s[[%s|#%s]]#{$/}"%['*' * toc_node.nominal_level,
+                             to_plain(toc_node).strip,
+                             gfm_id(toc_node)]
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines))
@@ -99,7 +101,10 @@ module PseudoHiki
     def create_plain_main(toc, body, h1)
       contents = [body]
       contents.unshift toc unless toc.empty?
-      contents.unshift @options.formatter.format(BlockParser.parse("!!" + @options[:toc])) if @options[:toc]
+      if title = @options[:toc]
+        toc_title = @options.formatter.format(BlockParser.parse("!!" + title))
+        contents.unshift toc_title
+      end
       contents.unshift h1 unless h1.empty?
       contents.join($/)
     end
@@ -442,7 +447,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       if self[:output]
         File.expand_path(self[:output])
       else
-        File.join(@input_file_dir, @input_file_basename + self[:html_version].ext)
+        ext = self[:html_version].ext
+        File.join(@input_file_dir, @input_file_basename + ext)
       end
     end
 
