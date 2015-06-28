@@ -447,7 +447,8 @@ USAGE: #{File.basename(__FILE__)} [options]") do |opt|
       if self[:output]
         File.expand_path(self[:output])
       else
-        File.join(@input_file_dir, @input_file_basename + self[:html_version].ext)
+        ext = self[:html_version].ext
+        File.join(@input_file_dir, @input_file_basename + ext)
       end
     end
 
