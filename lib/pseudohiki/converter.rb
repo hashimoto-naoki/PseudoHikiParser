@@ -304,7 +304,8 @@ module PseudoHiki
           self[:html_version] = v if v.opt_pat =~ version
         end
       end
-      STDERR.puts "\"#{version}\" is an invalid option for --format-version. \"#{self[:html_version].version}\" is chosen instead."
+      STDERR.puts "\"#{version}\" is an invalid option for --format-version. \
+\"#{self[:html_version].version}\" is chosen instead."
     end
 
     def set_html_encoding(given_opt)
@@ -314,7 +315,8 @@ module PseudoHiki
         ENCODING_REGEXP.each do |pat, encoding|
           self[:encoding] = encoding if pat =~ given_opt
         end
-        STDERR.puts "\"#{self[:encoding]}\" is chosen as an encoding system, instead of \"#{given_opt}\"."
+        STDERR.puts "\"#{self[:encoding]}\" is chosen as an encoding system, \
+instead of \"#{given_opt}\"."
       end
     end
 
