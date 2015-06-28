@@ -187,6 +187,8 @@ module PseudoHiki
       end
     end
 
+    class UnmatchedSectioningTagError < StandardError; end
+
     module BlockElement
       {
         BlockLeaf => %w(DescLeaf VerbatimLeaf TableLeaf CommentOutLeaf BlockNodeEnd HrLeaf DecoratorLeaf SectioningNodeEnd),
@@ -273,8 +275,6 @@ module PseudoHiki
         end
       end
     end
-
-    class UnmatchedSectioningTagError < StandardError; end
 
     class BlockElement::SectioningNode
       attr_accessor :under_heading_level
