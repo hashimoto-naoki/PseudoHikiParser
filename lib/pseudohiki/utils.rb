@@ -5,7 +5,6 @@ require 'pseudohiki/blockparser'
 
 module PseudoHiki
   module Utils
-
     class NodeCollector
       attr_reader :nodes
 
