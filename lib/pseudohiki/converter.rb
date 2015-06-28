@@ -101,7 +101,10 @@ module PseudoHiki
     def create_plain_main(toc, body, h1)
       contents = [body]
       contents.unshift toc unless toc.empty?
-      contents.unshift @options.formatter.format(BlockParser.parse("!!" + @options[:toc])) if @options[:toc]
+      if title = @options[:toc]
+        toc_title = @options.formatter.format(BlockParser.parse("!!" + title))
+        contents.unshift toc_title
+      end
       contents.unshift h1 unless h1.empty?
       contents.join($/)
     end
