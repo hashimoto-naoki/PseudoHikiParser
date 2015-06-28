@@ -85,7 +85,8 @@ module PseudoHiki
 
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      return create_gfm_table_of_contents(tree) if @options[:html_version].version == "gfm"
+      gfm_chosen = @options[:html_version].version == "gfm"
+      return create_gfm_table_of_contents(tree) if gfm_chosen
       return create_plain_table_of_contents(tree) unless @options.html_template
       create_html_table_of_contents(tree)
     end
@@ -326,7 +327,7 @@ module PseudoHiki
 
     def parse_command_line_options
       OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
-USAGE: #{File.basename(__FILE__)} [options]") do |opt|
+USAGE: #{File.basename($0)} [options]") do |opt|
         opt.on("-f [html_version]", "--format-version [=format_version]",
                "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version].version})") do |version|
           set_html_version(version)
