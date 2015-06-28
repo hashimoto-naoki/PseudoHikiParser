@@ -171,7 +171,7 @@ module PseudoHiki
         tree = tree.dup
         element = create_self_element
         caption = get_caption(tree)
-        if ImageSuffix =~ ref_tail(tree, caption) and not_from_thumbnail
+        if IMAGE_SUFFIX_RE =~ ref_tail(tree, caption) and not_from_thumbnail
           element.push "!"
         end
         link = format_link(tree)
