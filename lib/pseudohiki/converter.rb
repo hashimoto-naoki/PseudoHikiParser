@@ -206,19 +206,19 @@ module PseudoHiki
     }
 
     @default_options = {
-        :html_version => VERSIONS[0],
-        :lang => 'en',
-        :encoding => 'utf8',
-        :title => nil,
-        :css => "default.css",
-        :embed_css => nil,
-        :base => nil,
-        :template => nil,
-        :output => nil,
-        :force => false,
-        :toc => nil,
-        :split_main_heading => false
-      }
+      :html_version => VERSIONS[0],
+      :lang => 'en',
+      :encoding => 'utf8',
+      :title => nil,
+      :css => "default.css",
+      :embed_css => nil,
+      :base => nil,
+      :template => nil,
+      :output => nil,
+      :force => false,
+      :toc => nil,
+      :split_main_heading => false
+    }
 
     attr_accessor :need_output_file, :default_title
     attr_reader :input_file_basename
