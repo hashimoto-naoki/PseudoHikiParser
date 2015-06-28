@@ -206,6 +206,21 @@ module PseudoHiki
       'latin1' => LATIN1
     }
 
+    @default_options = {
+      :html_version => VERSIONS[0],
+      :lang => 'en',
+      :encoding => 'utf8',
+      :title => nil,
+      :css => "default.css",
+      :embed_css => nil,
+      :base => nil,
+      :template => nil,
+      :output => nil,
+      :force => false,
+      :toc => nil,
+      :split_main_heading => false
+    }
+
     attr_accessor :need_output_file, :default_title
     attr_reader :input_file_basename
 
@@ -214,23 +229,16 @@ module PseudoHiki
       input.rewind unless BOM == bom
     end
 
+    def self.default_options
+      @default_options.dup
+    end
+
     def initialize(options=nil)
-      @options = options || {
-        :html_version => VERSIONS[0],
-        :lang => 'en',
-        :encoding => 'utf8',
-        :title => nil,
-        :css => "default.css",
-        :embed_css => nil,
-        :base => nil,
-        :template => nil,
-        :output => nil,
-        :force => false,
-        :toc => nil,
-        :split_main_heading => false
-      }
+      @options = options || self.class.default_options
       @written_option_pat = {}
-      @options.keys.each {|opt| @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/ }
+      @options.keys.each do |opt|
+        @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/
+      end
     end
 
     def [](key)
