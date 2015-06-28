@@ -151,13 +151,16 @@ module PseudoHiki
       body = compose_body(tree)
       title = @options.title
       main = create_main(toc, body, h1)
+      choose_template(main, body, binding)
+    end
 
+    def choose_template(main, body, current_binding)
       if @options[:template]
-        erb = ERB.new(@options.read_template_file)
-        html = erb.result(binding)
+        html = ERB.new(@options.read_template_file).result(current_binding)
       else
         html = @options.create_html_template_with_current_options
-        html.head.push create_style(@options[:embed_css]) if @options[:embed_css]
+        embed_css = @options[:embed_css]
+        html.head.push create_style(embed_css) if embed_css
         html.push main || body
       end
 
