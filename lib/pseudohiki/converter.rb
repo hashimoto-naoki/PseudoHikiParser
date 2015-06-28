@@ -51,17 +51,22 @@ module PseudoHiki
     end
 
     def create_html_table_of_contents(tree)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        "%s[[%s|#%s]]"%['*' * toc_node.nominal_level, to_plain(toc_node).lstrip, toc_node.node_id.upcase]
-      end
-
-      @options.formatter.format(BlockParser.parse(toc_lines)).tap do |toc|
+      @options.formatter.format(create_html_toc_tree(tree)).tap do |toc|
         toc.traverse do |element|
           if element.kind_of? HtmlElement and element.tagname == "a"
             element["title"] = "toc_item: " + element.children.join.chomp
           end
         end
       end
+    end
+
+    def create_html_toc_tree(tree, newline=nil)
+      toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
+        "%s[[%s|#%s]]#{newline}"%['*' * line.nominal_level,
+                                  to_plain(line).lstrip,
+                                  line.node_id.upcase]
+      end
+      BlockParser.parse(toc_lines)
     end
 
     def gfm_id(heading_node)
