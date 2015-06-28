@@ -153,7 +153,7 @@ module PseudoHiki
       def visit(tree)
         not_from_thumbnail = tree.first.class != LinkNode
         caption, ref = caption_and_ref(tree)
-        if ImageSuffix =~ ref and not_from_thumbnail
+        if IMAGE_SUFFIX_RE =~ ref and not_from_thumbnail
           htmlelement = ImgFormat.create_element
           htmlelement[SRC] = ref
           htmlelement[ALT] = caption.join if caption

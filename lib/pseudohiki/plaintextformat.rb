@@ -108,7 +108,7 @@ module PseudoHiki
       def visit(tree)
         element = Node.new
         caption, ref = get_caption(tree)
-        if ImageSuffix =~ ref_tail(ref, caption)
+        if IMAGE_SUFFIX_RE =~ ref_tail(ref, caption)
           element.push (caption || ref).join
         else
           element.push caption || ref.join

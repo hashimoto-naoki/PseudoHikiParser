@@ -7,7 +7,7 @@ module PseudoHiki
   RELATIVE_PATH = /^\./o
   ROOT_PATH = /^(\/|\\\\|[A-Za-z]:\\)/o
   FILE_MARK = "file:///"
-  ImageSuffix = /\.(jpg|jpeg|gif|png|bmp)$/io
+  IMAGE_SUFFIX_RE = /\.(jpg|jpeg|gif|png|bmp)$/io
 
   def self.compile_token_pat(*token_sets)
     tokens = token_sets.flatten.uniq.sort do |x, y|
