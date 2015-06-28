@@ -343,7 +343,7 @@ module PseudoHiki
       end
 
       def warning_for_non_comformant_style
-        warning_message =<<ERROR
+        warning_message = <<ERROR
 The table is not conformant to GFM style.
 The first row will be treated as a header row.
 ERROR
