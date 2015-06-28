@@ -326,7 +326,7 @@ module PseudoHiki
 
     def parse_command_line_options
       OptionParser.new("** Convert texts written in a Hiki-like notation into HTML **
-USAGE: #{File.basename(__FILE__)} [options]") do |opt|
+USAGE: #{File.basename($0)} [options]") do |opt|
         opt.on("-f [html_version]", "--format-version [=format_version]",
                "HTML version to be used. Choose html4, xhtml1, html5, plain, plain_verbose, markdown or gfm (default: #{self[:html_version].version})") do |version|
           set_html_version(version)
