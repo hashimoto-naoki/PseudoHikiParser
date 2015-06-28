@@ -19,7 +19,11 @@ module PseudoHiki
 
     def initialize(options)
       @options = options
-      @is_toc_item_pat = Proc.new do |node|
+      @is_toc_item_pat = proc_for_is_toc_item_pat
+    end
+
+    def proc_for_is_toc_item_pat
+      proc do |node|
         node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
           (2..3).include? node.nominal_level and
           node.node_id
