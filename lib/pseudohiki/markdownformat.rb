@@ -141,7 +141,7 @@ module PseudoHiki
          [ListNode, ListNodeFormatter],
          [EnumNode, EnumNodeFormatter],
          [ListWrapNode, ListWrapNodeFormatter],
-         [EnumWrapNode, EnumWrapNodeFormatter],
+         [EnumWrapNode, EnumWrapNodeFormatter]
         ].each  do |node, formatter_class|
           formatter[node] = formatter_class.new(formatter, options)
         end
