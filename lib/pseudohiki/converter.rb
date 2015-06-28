@@ -85,7 +85,8 @@ module PseudoHiki
 
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      return create_gfm_table_of_contents(tree) if @options[:html_version].version == "gfm"
+      gfm_chosen = @options[:html_version].version == "gfm"
+      return create_gfm_table_of_contents(tree) if gfm_chosen
       return create_plain_table_of_contents(tree) unless @options.html_template
       create_html_table_of_contents(tree)
     end
