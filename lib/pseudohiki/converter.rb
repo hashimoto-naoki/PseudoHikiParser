@@ -101,11 +101,6 @@ module PseudoHiki
 
     def create_html_main(toc, body, h1)
       return nil unless @options[:toc]
-      toc_container = formatter.create_element("section").tap do |element|
-        element["id"] = "toc"
-        element.push formatter.create_element("h2", @options[:toc]) unless @options[:toc].empty?
-        element.push toc
-      end
       contents_container = formatter.create_element("section").tap do |element|
         element["id"] = "contents"
         element.push body
@@ -113,8 +108,16 @@ module PseudoHiki
       main = formatter.create_element("section").tap do |element|
         element["id"] = "main"
         element.push h1 unless h1.empty?
-        element.push toc_container
+        element.push create_html_toc_container(toc)
         element.push contents_container
+      end
+    end
+
+    def create_html_toc_container(toc)
+      formatter.create_element("section").tap do |elm|
+        elm["id"] = "toc"
+        elm.push formatter.create_element("h2", @options[:toc]) unless @options[:toc].empty?
+        elm.push toc
       end
     end
 
