@@ -175,8 +175,7 @@ module PseudoHiki
     MDFormat = MarkDownFormat.create
     GFMFormat = MarkDownFormat.create(:gfm_style => true)
 
-    class Formatter < Struct.new(:version, :formatter, :template, :ext, :opt_pat)
-    end
+    Formatter = Struct.new(:version, :formatter, :template, :ext, :opt_pat)
 
     VERSIONS = [
                 ["html4", HtmlFormat, HtmlTemplate, ".html", /^h/io],
