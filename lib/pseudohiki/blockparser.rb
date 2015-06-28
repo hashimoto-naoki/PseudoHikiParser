@@ -336,14 +336,14 @@ module PseudoHiki
     class ListTypeLeaf
       include BlockElement
 
-      Wrapper = {
+      WRAPPER = {
         ListLeaf => ListWrapNode,
         EnumLeaf => EnumWrapNode
       }
 
       def push_self(stack)
         push_block(stack) unless under_appropriate_block?(stack)
-        stack.push Wrapper[self.class].new
+        stack.push WRAPPER[self.class].new
         BlockParser.assign_node_id(self[0], stack.current_node)
         stack.push_as_leaf self
       end
