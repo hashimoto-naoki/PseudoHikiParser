@@ -206,16 +206,7 @@ module PseudoHiki
       'latin1' => LATIN1
     }
 
-    attr_accessor :need_output_file, :default_title
-    attr_reader :input_file_basename
-
-    def self.remove_bom(input=ARGF)
-      bom = input.read(3)
-      input.rewind unless BOM == bom
-    end
-
-    def initialize(options=nil)
-      @options = options || {
+    @default_options = {
         :html_version => VERSIONS[0],
         :lang => 'en',
         :encoding => 'utf8',
@@ -229,8 +220,25 @@ module PseudoHiki
         :toc => nil,
         :split_main_heading => false
       }
+
+    attr_accessor :need_output_file, :default_title
+    attr_reader :input_file_basename
+
+    def self.remove_bom(input=ARGF)
+      bom = input.read(3)
+      input.rewind unless BOM == bom
+    end
+
+    def self.default_options
+      @default_options.dup
+    end
+
+    def initialize(options=nil)
+      @options = options || self.class.default_options
       @written_option_pat = {}
-      @options.keys.each {|opt| @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/ }
+      @options.keys.each do |opt|
+        @written_option_pat[opt] = /^\/\/#{opt}:\s*(.*)$/
+      end
     end
 
     def [](key)
