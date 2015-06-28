@@ -15,7 +15,7 @@ module PseudoHiki
       PLUGIN_END = /\}\}/o
     end
 
-    ParentNode = {}
+    PARENT_NODE = {}
 
     attr_reader :stack, :auto_linker
 
@@ -75,7 +75,7 @@ module PseudoHiki
       end
 
       def block
-        @parent_node ||= ParentNode[self.class]
+        @parent_node ||= PARENT_NODE[self.class]
       end
 
       def push_block(stack)
@@ -362,7 +362,7 @@ module PseudoHiki
      [BlockNodeEnd, BlockNodeEnd], # special case
      [DecoratorLeaf, DecoratorNode]
     ].each do |leaf, node|
-      ParentNode[leaf] = node
+      PARENT_NODE[leaf] = node
     end
 
     head_to_leaf_table = [['\r?\n?$', BlockNodeEnd],
