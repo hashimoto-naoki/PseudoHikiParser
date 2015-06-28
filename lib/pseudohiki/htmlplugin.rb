@@ -144,21 +144,3 @@ module PseudoHiki
     end
   end
 end
-
-if $0 == __FILE__
-  p HtmlPlugin.new("div", "html(
-<ul>
-<li>list
-<li>list
-</ul>)").apply
-  p HtmlPlugin.new("div", "inline(
-*list
-*list
-)").apply
-
-p HtmlPlugin.new("div", "co2").apply
-p HtmlPlugin.new("div", "co2 :en").apply
-p HtmlPlugin.new("div", "cb(3km)").apply
-p HtmlPlugin.new("div", "per m").apply
-p HtmlPlugin.new("div", "iso 18co2").apply
-end
