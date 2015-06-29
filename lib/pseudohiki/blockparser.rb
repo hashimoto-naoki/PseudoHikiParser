@@ -203,133 +203,133 @@ module PseudoHiki
       }.each do |parent_class, sub_classes|
         sub_classes.each {|sub| const_set(sub, Class.new(parent_class)) }
       end
+
+      class BlockNodeEnd
+        PARSED_NODE_END = new.concat(InlineParser.parse(""))
+
+        def push_self(stack); end
+
+        def self.create(line, inline_parser=InlineParser)
+          PARSED_NODE_END
+        end
+      end
+
+      class VerbatimNode
+        attr_accessor :in_block_tag
+
+        def add_leaf(line, blockparser)
+          return @stack.pop_with_breaker if VERBATIM_END =~ line
+          return super(line, blockparser) unless @in_block_tag
+          line = " ".concat(line) if BlockNodeEnd.head_re =~ line and not @in_block_tag
+          @stack.push VerbatimLeaf.create(line, @in_block_tag)
+        end
+      end
+
+      class DecoratorNode
+        DECORATOR_PAT = /\A(?:([^\[\]:]+))?(?:\[([^\[\]]+)\])?(?::\s*(\S.*))?/o
+
+        class DecoratorItem < Struct.new(:string, :type, :id, :value)
+          def initialize(*args)
+            super
+            self.value = InlineParser.parse(self.value) if self.value
+          end
+        end
+
+        def parse_leafs(breaker)
+          decorator = {}
+          breaker.decorator = decorator
+          @stack.remove_current_node.each do |leaf|
+            m = DECORATOR_PAT.match(leaf.join)
+            return nil unless m
+            item = DecoratorItem.new(*(m.to_a))
+            decorator[item.type || :id] = item
+          end
+        end
+
+        def breakable?(breaker)
+          return super if breaker.kind_of?(DecoratorLeaf)
+          parse_leafs(breaker)
+          @stack.current_node.breakable?(breaker)
+        end
+      end
+
+      class DecoratorLeaf
+        def push_sectioning_node(stack, node_class)
+          node = node_class.new
+          m = DecoratorNode::DECORATOR_PAT.match(join)
+          node.node_id = m[2]
+          node.under_heading_level = stack.current_heading_level if node.kind_of? SectioningNode
+          stack.push(node)
+        end
+
+        def push_self(stack)
+          decorator_type = self[0][0]
+          if decorator_type.start_with? "begin[".freeze
+            push_sectioning_node(stack, SectioningNode)
+          elsif decorator_type.start_with? "end[".freeze
+            push_sectioning_node(stack, SectioningNodeEnd)
+          else
+            super
+          end
+        end
+      end
+
+      class SectioningNode
+        attr_accessor :under_heading_level
+
+        def breakable?(breaker)
+          breaker.kind_of? HeadingLeaf and @under_heading_level >= breaker.nominal_level
+        end
+      end
+
+      class SectioningNodeEnd
+        def push_self(stack)
+          n = stack.stack.rindex do |node|
+            node.kind_of? SectioningNode and node.node_id == node_id
+          end
+          raise UnmatchedSectioningTagError unless n
+          stack.pop until stack.stack.length == n
+        rescue UnmatchedSectioningTagError => e
+          STDERR.puts "#{e}: The start tag for '#{node_id}' is not found."
+          # FIXME: The handling of this error should be changed appropriately.
+        end
+      end
+
+      class QuoteNode
+        def parse_leafs(breaker)
+          self[0] = BlockParser.parse(self[0])
+        end
+      end
+
+      class HeadingNode
+        def breakable?(breaker)
+          kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
+        end
+      end
+
+      class VerbatimLeaf
+        attr_accessor :in_block_tag
+
+        def self.create(line, in_block_tag=nil)
+          line = line.sub(head_re, "".freeze) if head_re and not in_block_tag
+          new.tap do |leaf|
+            leaf.push line
+            leaf.in_block_tag = in_block_tag
+          end
+        end
+
+        def push_block(stack)
+          stack.push(block.new.tap {|n| n.in_block_tag = @in_block_tag })
+        end
+      end
+
+      class TableLeaf
+        def self.create(line)
+          super(line, TableRowParser)
+        end
+      end
     end
     include BlockElement
-
-    class BlockElement::BlockNodeEnd
-      PARSED_NODE_END = new.concat(InlineParser.parse(""))
-
-      def push_self(stack); end
-
-      def self.create(line, inline_parser=InlineParser)
-        PARSED_NODE_END
-      end
-    end
-
-    class BlockElement::VerbatimNode
-      attr_accessor :in_block_tag
-
-      def add_leaf(line, blockparser)
-        return @stack.pop_with_breaker if VERBATIM_END =~ line
-        return super(line, blockparser) unless @in_block_tag
-        line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line and not @in_block_tag
-        @stack.push BlockElement::VerbatimLeaf.create(line, @in_block_tag)
-      end
-    end
-
-    class BlockElement::DecoratorNode
-      DECORATOR_PAT = /\A(?:([^\[\]:]+))?(?:\[([^\[\]]+)\])?(?::\s*(\S.*))?/o
-
-      class DecoratorItem < Struct.new(:string, :type, :id, :value)
-        def initialize(*args)
-          super
-          self.value = InlineParser.parse(self.value) if self.value
-        end
-      end
-
-      def parse_leafs(breaker)
-        decorator = {}
-        breaker.decorator = decorator
-        @stack.remove_current_node.each do |leaf|
-          m = DECORATOR_PAT.match(leaf.join)
-          return nil unless m
-          item = DecoratorItem.new(*(m.to_a))
-          decorator[item.type || :id] = item
-        end
-      end
-
-      def breakable?(breaker)
-        return super if breaker.kind_of?(BlockElement::DecoratorLeaf)
-        parse_leafs(breaker)
-        @stack.current_node.breakable?(breaker)
-      end
-    end
-
-    class BlockElement::DecoratorLeaf
-      def push_sectioning_node(stack, node_class)
-        node = node_class.new
-        m = BlockElement::DecoratorNode::DECORATOR_PAT.match(join)
-        node.node_id = m[2]
-        node.under_heading_level = stack.current_heading_level if node.kind_of? BlockElement::SectioningNode
-        stack.push(node)
-      end
-
-      def push_self(stack)
-        decorator_type = self[0][0]
-        if decorator_type.start_with? "begin[".freeze
-          push_sectioning_node(stack, BlockElement::SectioningNode)
-        elsif decorator_type.start_with? "end[".freeze
-          push_sectioning_node(stack, BlockElement::SectioningNodeEnd)
-        else
-          super
-        end
-      end
-    end
-
-    class BlockElement::SectioningNode
-      attr_accessor :under_heading_level
-
-      def breakable?(breaker)
-        breaker.kind_of? BlockElement::HeadingLeaf and @under_heading_level >= breaker.nominal_level
-      end
-    end
-
-    class BlockElement::SectioningNodeEnd
-      def push_self(stack)
-        n = stack.stack.rindex do |node|
-          node.kind_of? BlockElement::SectioningNode and node.node_id == node_id
-        end
-        raise UnmatchedSectioningTagError unless n
-        stack.pop until stack.stack.length == n
-      rescue UnmatchedSectioningTagError => e
-        STDERR.puts "#{e}: The start tag for '#{node_id}' is not found."
-        # FIXME: The handling of this error should be changed appropriately.
-      end
-    end
-
-    class BlockElement::QuoteNode
-      def parse_leafs(breaker)
-        self[0] = BlockParser.parse(self[0])
-      end
-    end
-
-    class BlockElement::HeadingNode
-      def breakable?(breaker)
-        kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
-      end
-    end
-
-    class BlockElement::VerbatimLeaf
-      attr_accessor :in_block_tag
-
-      def self.create(line, in_block_tag=nil)
-        line = line.sub(head_re, "".freeze) if head_re and not in_block_tag
-        new.tap do |leaf|
-          leaf.push line
-          leaf.in_block_tag = in_block_tag
-        end
-      end
-
-      def push_block(stack)
-        stack.push(block.new.tap {|n| n.in_block_tag = @in_block_tag })
-      end
-    end
-
-    class BlockElement::TableLeaf
-      def self.create(line)
-        super(line, TableRowParser)
-      end
-    end
 
     class ListTypeLeaf
       include BlockElement
