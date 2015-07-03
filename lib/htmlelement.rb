@@ -58,7 +58,7 @@ class HtmlElement
   attr_accessor :parent, :children
 
   def self.doctype(encoding="UTF-8")
-    self::DOCTYPE%[encoding]
+    format(self::DOCTYPE, encoding)
   end
 
   def self.create(tagname, content=nil, attributes={})
@@ -74,7 +74,7 @@ class HtmlElement
   end
 
   def self.urlencode(str)
-    str.toutf8.gsub(/[^\w\.\-]/o) {|utf8_char| utf8_char.unpack("C*").map {|b| '%%%02X'%[b] }.join }
+    str.toutf8.gsub(/[^\w\.\-]/o) {|utf8_char| utf8_char.unpack("C*").map {|b| format('%%%02X', b) }.join }
   end
 
   def self.urldecode(str)
@@ -136,7 +136,7 @@ class HtmlElement
 
   def format_attributes
     @attributes.collect do |attr, value|
-      ' %s="%s"'%[attr, HtmlElement.escape(value.to_s)]
+      format(' %s="%s"', attr, HtmlElement.escape(value.to_s))
     end.sort.join
   end
   private :format_attributes
@@ -151,7 +151,7 @@ class HtmlElement
 
   def to_s
     add_end_comment_for_div_or_section
-    self.class::TagFormats[@tagname]%[@tagname, format_attributes, @children, @tagname]
+    format(self.class::TagFormats[@tagname], @tagname, format_attributes, @children, @tagname)
   end
   alias to_str to_s
 
