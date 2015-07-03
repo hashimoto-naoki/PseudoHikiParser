@@ -258,7 +258,7 @@ module PseudoHiki
           node = node_class.new
           m = DecoratorNode::DECORATOR_PAT.match(join)
           node.node_id = m[2]
-          node.in_heading_level = stack.current_heading_level if node.kind_of? SectioningNode
+          node.section_level = stack.current_heading_level if node.kind_of? SectioningNode
           stack.push(node)
         end
 
@@ -275,10 +275,10 @@ module PseudoHiki
       end
 
       class SectioningNode
-        attr_accessor :in_heading_level
+        attr_accessor :section_level
 
         def breakable?(breaker)
-          breaker.kind_of? HeadingLeaf and @in_heading_level >= breaker.nominal_level
+          breaker.kind_of? HeadingLeaf and @section_level >= breaker.nominal_level
         end
       end
 
