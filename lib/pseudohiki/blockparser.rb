@@ -138,7 +138,7 @@ module PseudoHiki
       end
 
       def breakable?(breaker)
-        not (kind_of?(breaker.block) and nominal_level == breaker.nominal_level)
+        not (kind_of? breaker.block and nominal_level == breaker.nominal_level)
       end
 
       def parse_leafs; end
@@ -172,7 +172,7 @@ module PseudoHiki
 
     class ListLeafNode < NestedBlockNode
       def breakable?(breaker)
-        not (breaker.kind_of?(ListTypeLeaf) and nominal_level < breaker.nominal_level)
+        not (breaker.kind_of? ListTypeLeaf and nominal_level < breaker.nominal_level)
       end
     end
 
@@ -220,7 +220,7 @@ module PseudoHiki
 
       class HeadingNode
         def breakable?(breaker)
-          kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
+          kind_of? breaker.block and nominal_level >= breaker.nominal_level
         end
       end
 
