@@ -62,9 +62,10 @@ module PseudoHiki
 
     def create_html_toc_tree(tree, newline=nil)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
-        "%s[[%s|#%s]]#{newline}"%['*' * line.nominal_level,
-                                  to_plain(line).lstrip,
-                                  line.node_id.upcase]
+        format("%s[[%s|#%s]]#{newline}",
+               '*' * line.nominal_level,
+               to_plain(line).lstrip,
+               line.node_id.upcase)
       end
       BlockParser.parse(toc_lines)
     end
@@ -75,9 +76,10 @@ module PseudoHiki
 
     def create_gfm_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        "%s[[%s|#%s]]#{$/}"%['*' * toc_node.nominal_level,
-                             to_plain(toc_node).strip,
-                             gfm_id(toc_node)]
+        format("%s[[%s|#%s]]#{$/}",
+               '*' * toc_node.nominal_level,
+               to_plain(toc_node).strip,
+               gfm_id(toc_node))
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines))
