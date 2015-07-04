@@ -193,9 +193,9 @@ ERROR_TEXT
       end
 
       def warning_for_malformed_row(row)
-        message = ERROR_MESSAGE%[row.inspect]
+        message = sprintf(ERROR_MESSAGE, row.inspect)
         raise MalFormedTableError.new(message) if @options.strict_mode
-        STDERR.puts ERROR_MESSAGE%[row.inspect]
+        STDERR.puts message
       end
 
       def deep_copy_tree(tree)
