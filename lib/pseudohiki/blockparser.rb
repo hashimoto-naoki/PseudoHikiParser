@@ -190,63 +190,63 @@ module PseudoHiki
       }.each do |parent_class, sub_classes|
         sub_classes.each {|sub| const_set(sub, Class.new(parent_class)) }
       end
-    end
-    include BlockElement
 
-    class BlockElement::BlockNodeEnd
-      PARSED_NODE_END = new.concat(InlineParser.parse(""))
+      class BlockNodeEnd
+        PARSED_NODE_END = new.concat(InlineParser.parse(""))
 
-      def push_self(stack); end
+        def push_self(stack); end
 
-      def self.create(line, inline_parser=InlineParser)
-        PARSED_NODE_END
-      end
-    end
-
-    class BlockElement::VerbatimNode
-      attr_accessor :in_block_tag
-
-      def add_leaf(line, blockparser)
-        return @stack.pop if VERBATIM_END =~ line
-        return super(line, blockparser) unless @in_block_tag
-        line = " ".concat(line) if BlockElement::BlockNodeEnd.head_re =~ line and not @in_block_tag
-        @stack.push BlockElement::VerbatimLeaf.create(line, @in_block_tag)
-      end
-    end
-
-    class BlockElement::QuoteNode
-      def parse_leafs
-        self[0] = BlockParser.parse(self[0])
-      end
-    end
-
-    class BlockElement::HeadingNode
-      def breakable?(breaker)
-        kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
-      end
-    end
-
-    class BlockElement::VerbatimLeaf
-      attr_accessor :in_block_tag
-
-      def self.create(line, in_block_tag=nil)
-        line = line.sub(head_re, "".freeze) if head_re and not in_block_tag
-        new.tap do |leaf|
-          leaf.push line
-          leaf.in_block_tag = in_block_tag
+        def self.create(line, inline_parser=InlineParser)
+          PARSED_NODE_END
         end
       end
 
-      def push_block(stack)
-        stack.push(block.new.tap {|n| n.in_block_tag = @in_block_tag })
-      end
-    end
+      class VerbatimNode
+        attr_accessor :in_block_tag
 
-    class BlockElement::TableLeaf
-      def self.create(line)
-        super(line, TableRowParser)
+        def add_leaf(line, blockparser)
+          return @stack.pop if VERBATIM_END =~ line
+          return super(line, blockparser) unless @in_block_tag
+          line = " ".concat(line) if BlockNodeEnd.head_re =~ line and not @in_block_tag
+          @stack.push VerbatimLeaf.create(line, @in_block_tag)
+        end
+      end
+
+      class QuoteNode
+        def parse_leafs
+          self[0] = BlockParser.parse(self[0])
+        end
+      end
+
+      class HeadingNode
+        def breakable?(breaker)
+          kind_of?(breaker.block) and nominal_level >= breaker.nominal_level
+        end
+      end
+
+      class VerbatimLeaf
+        attr_accessor :in_block_tag
+
+        def self.create(line, in_block_tag=nil)
+          line = line.sub(head_re, "".freeze) if head_re and not in_block_tag
+          new.tap do |leaf|
+            leaf.push line
+            leaf.in_block_tag = in_block_tag
+          end
+        end
+
+        def push_block(stack)
+          stack.push(block.new.tap {|n| n.in_block_tag = @in_block_tag })
+        end
+      end
+
+      class TableLeaf
+        def self.create(line)
+          super(line, TableRowParser)
+        end
       end
     end
+    include BlockElement
 
     class ListTypeLeaf
       include BlockElement
