@@ -24,7 +24,7 @@ class HtmlElement
     LATIN1 = "ISO-8859-1"
   end
 
-  DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  @doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">'.gsub(/\r?\n/o, $/) + $/
 
   ESC = {
@@ -58,7 +58,7 @@ class HtmlElement
   attr_accessor :parent, :children
 
   def self.doctype(encoding="UTF-8")
-    format(self::DOCTYPE, encoding)
+    format(@doctype, encoding)
   end
 
   def self.create(tagname, content=nil, attributes={})
@@ -162,7 +162,7 @@ class HtmlElement
 end
 
 class XhtmlElement < HtmlElement
-  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+  @doctype = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.gsub(/\r?\n/o, $/) + $/
 
@@ -174,7 +174,7 @@ class XhtmlElement < HtmlElement
 end
 
 class Xhtml5Element < XhtmlElement
-  DOCTYPE = '<?xml version="1.0" encoding="%s"?>
+  @doctype = '<?xml version="1.0" encoding="%s"?>
 <!DOCTYPE html>'.gsub(/\r?\n/o, $/) + $/
 
   ELEMENT_TYPES = superclass::ELEMENT_TYPES.dup
