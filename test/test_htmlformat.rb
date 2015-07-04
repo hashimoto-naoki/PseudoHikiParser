@@ -677,6 +677,20 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_no_automatical_link_generation
+    text = <<TEXT
+a line with a url http://www.example.org/ to test an automatical link generation.
+TEXT
+
+    xhtml = <<HTML
+<p>
+a line with a url http://www.example.org/ to test an automatical link generation.
+</p>
+HTML
+    tree = BlockParser.parse(text.lines.to_a, AutoLink::Off)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_automatical_link_generation_in_verbatim_blocks
     text = <<TEXT
  a line with a url http://www.example.org/ to test an automatical link generation.
