@@ -5,7 +5,6 @@ require 'pseudohiki/inlineparser'
 
 module PseudoHiki
   class BlockParser
-    URI_RE = /(?:https?|ftp|file|mailto):[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/ # borrowed from hikidoc
     ID_TAG_PAT = /\A\[([^\[\]]+)\]/o
 
     VERBATIM_BEGIN = /\A<<<\s*/o
@@ -28,8 +27,8 @@ module PseudoHiki
       node
     end
 
-    def self.parse(lines)
-      parser = new
+    def self.parse(lines, auto_linker=AutoLink::URL)
+      parser = new(auto_linker)
       parser.read_lines(lines)
       parser.stack.tree
     end
@@ -394,27 +393,7 @@ module PseudoHiki
 
     IRREGULAR_HEAD_PAT, REGULAR_HEADS = assign_head_re(head_to_leaf_table)
 
-    module NotAutoLinkURL
-      def self.link(line) line; end
-    end
-
-    module AutoLinkURL
-      OPEN_TAG, LINK_SEP = "[[", "|"
-
-      def self.in_link_tag?(preceding_str)
-        preceding_str.end_with?(OPEN_TAG) or preceding_str.end_with?(LINK_SEP)
-      end
-
-      def self.link(line)
-        if URI_RE =~ line and BlockElement::VerbatimLeaf.head_re !~ line
-          line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
-        else
-          line
-        end
-      end
-    end
-
-    def initialize(auto_linker=AutoLinkURL)
+    def initialize(auto_linker=AutoLink::URL)
       root_node = BlockNode.new
       def root_node.breakable?(breaker)
         false
@@ -438,6 +417,32 @@ module PseudoHiki
       each_line = lines.respond_to?(:each_line) ? :each_line : :each
       lines.send(each_line) {|line| @stack.current_node.add_leaf(line, self) }
       @stack.pop_with_breaker
+    end
+  end
+
+  module AutoLink
+    # URI_RE is borrowed from hikidoc
+    URI_RE = /(?:https?|ftp|file|mailto):[A-Za-z0-9;\/?:@&=+$,\-_.!~*\'()#%]+/
+    VERBATIM_LEAF_HEAD_RE = BlockParser::BlockElement::VerbatimLeaf.head_re
+
+    module Off
+      def self.link(line) line; end
+    end
+
+    module URL
+      OPEN_TAG, LINK_SEP = "[[", "|"
+
+      def self.in_link_tag?(preceding_str)
+        preceding_str.end_with?(OPEN_TAG) or preceding_str.end_with?(LINK_SEP)
+      end
+
+      def self.link(line)
+        if URI_RE =~ line and VERBATIM_LEAF_HEAD_RE !~ line
+          line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
+        else
+          line
+        end
+      end
     end
   end
 end
