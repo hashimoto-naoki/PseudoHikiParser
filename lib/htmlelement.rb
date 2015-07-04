@@ -47,11 +47,11 @@ class HtmlElement
   }
 
   ELEMENTS_FORMAT = {
-    :INLINE => "<%s%s>%s</%s>",
-    :BLOCK => "<%s%s>#{$/}%s</%s>#{$/}",
-    :HEADING_TYPE_BLOCK => "<%s%s>%s</%s>#{$/}",
-    :LIST_ITEM_TYPE_BLOCK => "<%s%s>%s#{$/}",
-    :EMPTY_BLOCK => "<%s%s>#{$/}"
+    :INLINE => "<%1$s%2$s>%3$s</%1$s>",
+    :BLOCK => "<%1$s%2$s>#{$/}%3$s</%1$s>#{$/}",
+    :HEADING_TYPE_BLOCK => "<%1$s%2$s>%3$s</%1$s>#{$/}",
+    :LIST_ITEM_TYPE_BLOCK => "<%1$s%2$s>%3$s#{$/}",
+    :EMPTY_BLOCK => "<%1$s%2$s>#{$/}"
   }
 
   attr_reader :tagname
@@ -151,7 +151,7 @@ class HtmlElement
 
   def to_s
     add_end_comment_for_div_or_section
-    format(self.class::TagFormats[@tagname], @tagname, format_attributes, @children, @tagname)
+    format(self.class::TagFormats[@tagname], @tagname, format_attributes, @children)
   end
   alias to_str to_s
 
@@ -167,8 +167,8 @@ class XhtmlElement < HtmlElement
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.gsub(/\r?\n/o, $/) + $/
 
   ELEMENTS_FORMAT = superclass::ELEMENTS_FORMAT.dup
-  ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%s%s>%s</%s>#{$/}"
-  ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%s%s />#{$/}"
+  ELEMENTS_FORMAT[:LIST_ITEM_TYPE_BLOCK] = "<%1$s%2$s>%3$s</%1$s>#{$/}"
+  ELEMENTS_FORMAT[:EMPTY_BLOCK] = "<%1$s%2$s />#{$/}"
 
   TagFormats = assign_tagformats
 end
