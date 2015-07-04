@@ -316,8 +316,8 @@ module PseudoHiki
         cell_formats = cell_width.map {|width| "%-#{width}s" }
         table[1, 0] = [header_delimiter]
         table.map do |row|
-          formatted_row = row.zip(cell_formats).map do |cell, format|
-            format%[cell]
+          formatted_row = row.zip(cell_formats).map do |cell, format_str|
+            sprintf(format_str, cell)
           end
           "|#{formatted_row.join("|") }|#{$/}"
         end.join + $/
