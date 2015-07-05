@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
                         "lib/pseudohiki/converter.rb",
                         "lib/pseudohiki/utils.rb",
                         "lib/pseudohiki/htmlplugin.rb",
+                        "lib/pseudohiki/autolink.rb",
                         "lib/htmlelement.rb",
                         "lib/htmlelement/htmltemplate.rb"
                        ]
