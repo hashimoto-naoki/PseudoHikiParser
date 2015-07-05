@@ -150,7 +150,7 @@ Other than HtmlFormat, XhtmlFormat, Xhtml5Format, PlainTextFormat and MarkDownFo
 
 #### WikiNames
 
-If you want to use WikiNames, you have to pass an instance of PseudoHiki::AutoLink::WikiName as the argument of BlockParser.new or the second argument of BlockParser.parse.
+If you want to use WikiNames, you have to pass an instance of PseudoHiki::AutoLink::[WikiName](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11) as the argument of BlockParser.new or the second argument of BlockParser.parse.
 
 ```ruby
 require 'pseudohiki/blockparser'
