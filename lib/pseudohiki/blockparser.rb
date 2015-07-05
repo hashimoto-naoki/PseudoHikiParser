@@ -42,6 +42,7 @@ module PseudoHiki
 
     class BlockLeaf < BlockStack::Leaf
       attr_accessor :nominal_level, :node_id
+      alias :level :nominal_level
 
       def self.head_re=(head_regex)
         @self_head_re = head_regex
@@ -73,7 +74,7 @@ module PseudoHiki
       end
 
       def under_appropriate_block?(stack)
-        stack.current_node.kind_of? block and stack.current_node.nominal_level == nominal_level
+        stack.current_node.kind_of? block and stack.current_node.level == nominal_level
       end
 
       def push_self(stack)
@@ -128,8 +129,9 @@ module PseudoHiki
       attr_accessor :node_id
 
       def nominal_level
-        first.nominal_level if first # @cached_nominal_level ||= (first.nominal_level if first)
+        first.level if first # @cached_nominal_level ||= (first.level if first)
       end
+      alias :level :nominal_level
 
       def push_self(stack)
         @stack = stack
@@ -137,7 +139,7 @@ module PseudoHiki
       end
 
       def breakable?(breaker)
-        not (kind_of? breaker.block and nominal_level == breaker.nominal_level)
+        not (kind_of? breaker.block and nominal_level == breaker.level)
       end
 
       def parse_leafs; end
@@ -165,13 +167,13 @@ module PseudoHiki
 
     class ListTypeBlockNode < NestedBlockNode
       def breakable?(breaker)
-        not (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.nominal_level)
+        not (breaker.block.superclass == ListTypeBlockNode and nominal_level <= breaker.level)
       end
     end
 
     class ListLeafNode < NestedBlockNode
       def breakable?(breaker)
-        not (breaker.kind_of? ListTypeLeaf and nominal_level < breaker.nominal_level)
+        not (breaker.kind_of? ListTypeLeaf and nominal_level < breaker.level)
       end
     end
 
@@ -219,7 +221,7 @@ module PseudoHiki
 
       class HeadingNode
         def breakable?(breaker)
-          kind_of? breaker.block and nominal_level >= breaker.nominal_level
+          kind_of? breaker.block and nominal_level >= breaker.level
         end
       end
 

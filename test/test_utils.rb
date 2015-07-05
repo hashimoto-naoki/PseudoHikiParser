@@ -28,7 +28,7 @@ TEXT
     tree = PseudoHiki::BlockParser.parse(@input_text)
     nodes = PseudoHiki::Utils::NodeCollector.select(tree) do |node|
       node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
-        node.nominal_level == 2 and
+        node.level == 2 and
         node.node_id
     end
 

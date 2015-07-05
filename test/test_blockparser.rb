@@ -39,7 +39,7 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     paragraph_line = "This is a paragraph."
     paragraph = parser.select_leaf_type(paragraph_line).create(paragraph_line)
     assert_equal([paragraph_line], paragraph)
-    assert_equal(nil, paragraph.nominal_level)
+    assert_equal(nil, paragraph.level)
   end
 
   def test_nestedleaf_create
@@ -47,12 +47,12 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     level1_heading_line = "!This is a level1 heading."
     heading1 = parser.select_leaf_type(level1_heading_line).create(level1_heading_line)
     assert_equal([["This is a level1 heading."]], heading1)
-    assert_equal(1, heading1.nominal_level)
+    assert_equal(1, heading1.level)
 
     level2_heading_line = "!!This is a level2 heading."
     heading2 = parser.select_leaf_type(level2_heading_line).create(level2_heading_line)
     assert_equal([["This is a level2 heading."]], heading2)
-    assert_equal(2, heading2.nominal_level)
+    assert_equal(2, heading2.level)
   end
 
   def test_select_leaf_type
@@ -85,7 +85,7 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     stack.push create_leaf(paragraph_str)
     paragraph_tree = stack.tree
     assert_equal([[[paragraph_str]]],paragraph_tree)
-    assert_equal(nil,paragraph_tree.first.nominal_level)
+    assert_equal(nil,paragraph_tree.first.level)
     another_paragraph = create_leaf(another_paragraph_str)
     stack.push another_paragraph
     assert_equal([[[paragraph_str,
@@ -96,7 +96,7 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     stack.push create_leaf("!"+heading_str)
     heading_tree = stack.tree
 #    heading_tree = push_leaf_on_stack("!"+heading_str).tree
-    assert_equal(1,heading_tree.first.nominal_level)
+    assert_equal(1,heading_tree.first.level)
     assert_equal(HeadingNode, heading_tree.first.class)
     assert_equal(HeadingLeaf, heading_tree.first.first.class)
     stack.push create_leaf("!!"+heading_str)
@@ -107,7 +107,7 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     stack.push create_leaf("!!"+heading_str)
     heading2_tree = stack.tree
     assert_equal([[[[heading_str]]]], heading2_tree)
-    assert_equal(2,heading2_tree.first.nominal_level)
+    assert_equal(2,heading2_tree.first.level)
 
     stack = PseudoHiki::BlockParser.new.stack
     stack.push create_leaf("!"+heading_str)
@@ -180,11 +180,11 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     parser.stack.push list2_leaf
     current_node_superclass = parser.stack.current_node.class.superclass
     leaf_superclass = list1_leaf.block.superclass
-    assert_equal(2, parser.stack.current_node.nominal_level)
+    assert_equal(2, parser.stack.current_node.level)
     assert_equal(ListNode, list1_leaf.block)
-    assert_equal(1, list1_leaf.nominal_level)
+    assert_equal(1, list1_leaf.level)
     assert_equal(ListNode, list2_leaf.block)
-    assert_equal(2, list2_leaf.nominal_level)
+    assert_equal(2, list2_leaf.level)
     assert_equal(ListWrapNode, parser.stack.current_node.class)
 #    assert_equal(true, parser.stack.current_node.class.kind_of?(PseudoHiki::BlockParser::ListTypeBlockNode))
     assert_equal(PseudoHiki::BlockParser::ListLeafNode, current_node_superclass)
@@ -192,8 +192,8 @@ class TC_BlockLeaf < MiniTest::Unit::TestCase
     assert_equal(false, current_node_superclass == leaf_superclass)
     assert_equal(true, PseudoHiki::BlockParser::ListTypeBlockNode == leaf_superclass)
     assert_equal(true, parser.breakable?(blocknode_end))
-    assert_equal(false, parser.stack.current_node.nominal_level <= list1_leaf.nominal_level)
-    assert_equal(true, parser.stack.current_node.nominal_level <= list2_leaf.nominal_level)
+    assert_equal(false, parser.stack.current_node.level <= list1_leaf.level)
+    assert_equal(true, parser.stack.current_node.level <= list2_leaf.level)
     assert_equal(true, parser.breakable?(list1_leaf))
     assert_equal(true, parser.breakable?(list2_leaf))
     parser.stack.pop
