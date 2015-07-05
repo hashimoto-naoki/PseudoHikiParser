@@ -1,0 +1,30 @@
+Style/SpaceInsideBlockBraces:
+  SpaceBeforeBlockParameters: false
+Metrics/LineLength:
+  Max: 80
+StringLiterals:
+  Enabled: false
+Style/AndOr:
+  Enabled: false
+Style/Not:
+  Enabled: false
+Style/SpaceAroundEqualsInParameterDefault:
+  EnforcedStyle: no_space
+Style/ClassCheck:
+  EnforcedStyle: kind_of?
+Style/FormatString:
+  EnforcedStyle: percent
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+Style/Documentation:
+  Enabled: false
+Style/SpecialGlobalVars:
+  Enabled: false
+Style/RegexpLiteral:
+  EnforcedStyle: slashes
+Style/ClassAndModuleChildren:
+  Enabled: false
+Lint/UnusedMethodArgument:
+  Enabled: false
+Performance/ParallelAssignment:
+  Enabled: true
