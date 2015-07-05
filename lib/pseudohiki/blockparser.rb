@@ -27,9 +27,20 @@ module PseudoHiki
       node
     end
 
+    def self.auto_linker=(auto_linker)
+      @auto_linker = auto_linker
+    end
+
+    def self.auto_linker
+      @auto_linker
+    end
+
     def self.parse(lines, auto_linker=AutoLink::URL)
+      current_linker = self.auto_linker
+      self.auto_linker = auto_linker
       parser = new(auto_linker)
       parser.read_lines(lines)
+      self.auto_linker = current_linker
       parser.stack.tree
     end
 
@@ -314,7 +325,7 @@ module PseudoHiki
         false
       end
       @stack = BlockStack.new(root_node)
-      @auto_linker = auto_linker
+      @auto_linker = auto_linker || self.class.auto_linker || AutoLink::URL
     end
 
     def breakable?(breaker)
