@@ -157,7 +157,7 @@ Other than HtmlFormat, XhtmlFormat, Xhtml5Format, PlainTextFormat and MarkDownFo
 
 #### WikiNames
 
-If you want to use WikiNames, you have to pass an instance of PseudoHiki::AutoLink::WikiName as the argument of BlockParser.new or the second argument of BlockParser.parse.
+If you want to use WikiNames, you have to pass an instance of PseudoHiki::AutoLink::[WikiName](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11) as the argument of BlockParser.new or the second argument of BlockParser.parse.
 
 ```ruby
 require 'pseudohiki/blockparser'
@@ -303,7 +303,7 @@ will be rendered as
 
 ### Experimental
 
-The following feature is just experimental and available only in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
+The following features are just experimental and available only in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
 #### Decorator for blocks
 
@@ -411,7 +411,7 @@ paragraph 3
 
 Please note that some of the following classes are implemented partly or not tested well.
 
-### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291)
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
@@ -455,11 +455,11 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 </div>
 ```
 
-### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L301)
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
 
 This visitor is for HTML5.
 
-Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296) except for the handling of \<section\> elements.
+Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291) except for the handling of \<section\> elements.
 
 ### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
 
