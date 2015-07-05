@@ -41,8 +41,7 @@ module PseudoHiki
     end
 
     class BlockLeaf < BlockStack::Leaf
-      attr_accessor :nominal_level, :node_id
-      alias :level :nominal_level
+      attr_accessor :level, :node_id
 
       def self.head_re=(head_regex)
         @self_head_re = head_regex
@@ -110,7 +109,7 @@ module PseudoHiki
     class NestedBlockLeaf < BlockLeaf
       def self.create(line)
         m = head_re.match(line)
-        super(line).tap {|leaf| leaf.nominal_level = m[0].length }
+        super(line).tap {|leaf| leaf.level = m[0].length }
       end
 
       def self.with_depth?
@@ -128,10 +127,9 @@ module PseudoHiki
     class BlockNode < BlockStack::Node
       attr_accessor :node_id
 
-      def nominal_level
+      def level
         first.level if first # @cached_level ||= (first.level if first)
       end
-      alias :level :nominal_level
 
       def push_self(stack)
         @stack = stack
