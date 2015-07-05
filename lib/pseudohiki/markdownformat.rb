@@ -81,7 +81,7 @@ module PseudoHiki
     def list_mark(tree, mark)
       mark = mark.dup
       mark << " " if /^ /o !~ tree.join
-      " " * (tree.nominal_level - 1) * 2 + mark
+      " " * (tree.level - 1) * 2 + mark
     end
 
     def enclose_in(element, mark)
@@ -385,7 +385,7 @@ ERROR
     class HeadingNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          heading_mark = "#" * tree.first.nominal_level
+          heading_mark = "#" * tree.first.level
           heading_mark << " " if /^ /o !~ tree.join
           element.unshift heading_mark
         end
@@ -425,7 +425,7 @@ ERROR
     class EnumWrapNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          element.unshift list_mark(tree, "#{tree.nominal_level}.")
+          element.unshift list_mark(tree, "#{tree.level}.")
         end
       end
     end

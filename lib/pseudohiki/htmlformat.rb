@@ -246,7 +246,7 @@ module PseudoHiki
     class << Formatter[HeadingNode]
       def create_element(tree)
         super(tree).tap do |elm|
-          heading_level = "h#{tree.first.nominal_level}"
+          heading_level = "h#{tree.first.level}"
           elm[CLASS] ||= heading_level
           elm[CLASS] += SPACE + heading_level unless elm[CLASS] == heading_level
         end
@@ -281,7 +281,7 @@ module PseudoHiki
 
     class << Formatter[HeadingLeaf]
       def create_element(tree)
-        @generator.create(@element_name + tree.nominal_level.to_s).tap do |elm|
+        @generator.create(@element_name + tree.level.to_s).tap do |elm|
           elm[ID] = tree.node_id.upcase if tree.node_id
         end
       end

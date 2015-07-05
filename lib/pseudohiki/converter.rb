@@ -25,7 +25,7 @@ module PseudoHiki
     def proc_for_is_toc_item_pat
       proc do |node|
         node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
-          (2..3).include? node.nominal_level and
+          (2..3).include? node.level and
           node.node_id
       end
     end
@@ -44,7 +44,7 @@ module PseudoHiki
 
     def create_plain_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        ('*' * toc_node.nominal_level) + to_plain(toc_node)
+        ('*' * toc_node.level) + to_plain(toc_node)
       end
 
       @options.formatter.format(BlockParser.parse(toc_lines))
@@ -63,7 +63,7 @@ module PseudoHiki
     def create_html_toc_tree(tree, newline=nil)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
         format("%s[[%s|#%s]]#{newline}",
-               '*' * line.nominal_level,
+               '*' * line.level,
                to_plain(line).lstrip,
                line.node_id.upcase)
       end
@@ -77,7 +77,7 @@ module PseudoHiki
     def create_gfm_table_of_contents(tree)
       toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
         format("%s[[%s|#%s]]#{$/}",
-               '*' * toc_node.nominal_level,
+               '*' * toc_node.level,
                to_plain(toc_node).strip,
                gfm_id(toc_node))
       end
