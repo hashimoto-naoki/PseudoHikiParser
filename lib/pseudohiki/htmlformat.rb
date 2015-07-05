@@ -87,28 +87,28 @@ module PseudoHiki
       end
     end
 
-    [ [EmNode, "em"],
-      [StrongNode, "strong"],
-      [DelNode, "del"],
-      [LiteralNode, LITERAL],
-      [PluginNode, PLUGIN],
-      [LinkNode, LINK],
-      [InlineLeaf, nil],
-      [PlainNode, nil], # Until here is for InlineParser
-      [DescNode, "dl"],
-      [QuoteNode, "blockquote"],
-      [TableNode, "table"],
-      [ParagraphNode, "p"],
-      [HrNode, "hr"],
-      [ListNode, "ul"],
-      [EnumNode, "ol"],
-      [TableLeaf, "tr"],
-      [VerbatimNode, "pre"],
-      [CommentOutNode, nil],
-      [HeadingNode, "section"],
-      [DescLeaf, DT],
-      [TableCellNode, nil],
-      [HeadingLeaf, "h"], # Until here is for BlockParser
+    [[EmNode, "em"],
+     [StrongNode, "strong"],
+     [DelNode, "del"],
+     [LiteralNode, LITERAL],
+     [PluginNode, PLUGIN],
+     [LinkNode, LINK],
+     [InlineLeaf, nil],
+     [PlainNode, nil], # Until here is for InlineParser
+     [DescNode, "dl"],
+     [QuoteNode, "blockquote"],
+     [TableNode, "table"],
+     [ParagraphNode, "p"],
+     [HrNode, "hr"],
+     [ListNode, "ul"],
+     [EnumNode, "ol"],
+     [TableLeaf, "tr"],
+     [VerbatimNode, "pre"],
+     [CommentOutNode, nil],
+     [HeadingNode, "section"],
+     [DescLeaf, DT],
+     [TableCellNode, nil],
+     [HeadingLeaf, "h"], # Until here is for BlockParser
     ].each {|node_class, elm| Formatter[node_class] = new(elm) }
 
     # for InlineParser
