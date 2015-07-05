@@ -19,7 +19,7 @@ TEXT
 a line with a url <a href="http://www.example.org/">http://www.example.org/</a> and a WikiName.
 </p>
 HTML
-    auto_linker = AutoLink::WikiName.new
+    auto_linker = AutoLink::WikiName.new({:wiki_name => false})
     tree = BlockParser.parse(text.lines.to_a, auto_linker)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
@@ -34,7 +34,7 @@ TEXT
 a line with a url <a href="http://www.example.org/">http://www.example.org/</a> , an ^<a href="EscapedWikiName">EscapedWikiName</a> and a <a href="WikiName">WikiName</a>.
 </p>
 HTML
-    auto_linker = AutoLink::WikiName.new({:wiki_name => true})
+    auto_linker = AutoLink::WikiName.new
     tree = BlockParser.parse(text.lines.to_a, auto_linker)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
