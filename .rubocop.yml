@@ -12,8 +12,6 @@ Style/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: no_space
 Style/ClassCheck:
   EnforcedStyle: kind_of?
-Style/FormatString:
-  EnforcedStyle: percent
 Style/HashSyntax:
   EnforcedStyle: hash_rockets
 Style/Documentation:
