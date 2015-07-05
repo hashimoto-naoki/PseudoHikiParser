@@ -155,6 +155,43 @@ In the example above, HtmlFormat is a visitor class that converts the parsed tex
 
 Other than HtmlFormat, XhtmlFormat, Xhtml5Format, PlainTextFormat and MarkDownFormat are available.
 
+#### WikiNames
+
+If you want to use WikiNames, you have to pass an instance of PseudoHiki::AutoLink::[WikiName](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11) as the argument of BlockParser.new or the second argument of BlockParser.parse.
+
+```
+require 'pseudohiki/blockparser'
+require 'pseudohiki/htmlformat'
+require 'pseudohiki/autolink' # PseudoHiki::AutoLink::WikiName is defined in this file.
+
+text = <<TEXT
+a line with an ^EscapedWikiName and a WikiName.
+TEXT
+
+puts "--- with default options:"
+wiki_name_link = PseudoHiki::AutoLink::WikiName.new
+tree = PseudoHiki::BlockParser.parse(text, wiki_name_link)
+puts PseudoHiki::XhtmlFormat.format(tree)
+
+puts "--- when :escape_wiki_name option is set to true:"
+escape_wiki_name_link = PseudoHiki::AutoLink::WikiName.new({:escape_wiki_name => true})
+escaped_tree = PseudoHiki::BlockParser.parse(text, escape_wiki_name_link)
+puts PseudoHiki::XhtmlFormat.format(escaped_tree)
+```
+
+will print
+
+```
+--- with default options:
+<p>
+a line with an ^<a href="EscapedWikiName">EscapedWikiName</a> and a <a href="WikiName">WikiName</a>.
+</p>
+--- when :escape_wiki_name option is set to true:
+<p>
+a line with an EscapedWikiName and a <a href="WikiName">WikiName</a>.
+</p>
+```
+
 ### class PseudoHiki::Format
 
 If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you can use following class methods of PseudoHiki::Format.
@@ -187,7 +224,7 @@ puts PseudoHiki::Format.to_html(hiki_text)
 
 * Paragraphs - Usable
 * Links
-  * WikiNames - Not supported (and would never be)
+  * WikiNames - ~~Not supported (and would never be)~~ Provided as an option but not tested well
   * Linking to other Wiki pages - Not supported as well
   * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
@@ -266,7 +303,7 @@ will be rendered as
 
 ### Experimental
 
-The following feature is just experimental and available only in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
+The following features are just experimental and available only in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop).
 
 #### Decorator for blocks
 
@@ -374,7 +411,7 @@ paragraph 3
 
 Please note that some of the following classes are implemented partly or not tested well.
 
-### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291)
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
@@ -418,11 +455,11 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 </div>
 ```
 
-### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L301)
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
 
 This visitor is for HTML5.
 
-Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296) except for the handling of \<section\> elements.
+Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291) except for the handling of \<section\> elements.
 
 ### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
 
