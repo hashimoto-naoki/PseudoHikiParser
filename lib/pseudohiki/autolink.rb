@@ -11,7 +11,7 @@ module PseudoHiki
     class WikiName
       @default_options = {
         :url => true,
-        :wiki_name => false,
+        :wiki_name => true,
         :escape_wiki_name => false
       }
 
