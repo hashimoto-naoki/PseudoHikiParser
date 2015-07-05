@@ -352,11 +352,8 @@ module PseudoHiki
       end
 
       def self.link(line)
-        if URI_RE =~ line and VERBATIM_LEAF_HEAD_RE !~ line
-          line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
-        else
-          line
-        end
+        return line unless URI_RE =~ line and VERBATIM_LEAF_HEAD_RE !~ line
+        line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
       end
     end
   end
