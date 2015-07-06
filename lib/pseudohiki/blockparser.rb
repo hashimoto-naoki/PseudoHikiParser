@@ -35,12 +35,9 @@ module PseudoHiki
       @auto_linker
     end
 
-    def self.parse(lines, auto_linker=AutoLink::URL)
-      current_linker = self.auto_linker
-      self.auto_linker = auto_linker
-      parser = new(auto_linker)
+    def self.parse(lines, tmp_auto_linker=BlockParser.auto_linker)
+      parser = new(tmp_auto_linker)
       parser.read_lines(lines)
-      self.auto_linker = current_linker
       parser.stack.tree
     end
 
@@ -307,7 +304,7 @@ module PseudoHiki
 
       class QuoteNode
         def parse_leafs(breaker)
-          self[0] = BlockParser.parse(self[0])
+          self[0] = BlockParser.parse(self[0], AutoLink::Off)
         end
       end
 
@@ -404,13 +401,13 @@ module PseudoHiki
 
     IRREGULAR_HEAD_PAT, REGULAR_HEADS = assign_head_re(head_to_leaf_table)
 
-    def initialize(auto_linker=AutoLink::URL)
+    def initialize(auto_linker=BlockParser.auto_linker)
       root_node = BlockNode.new
       def root_node.breakable?(breaker)
         false
       end
       @stack = BlockStack.new(root_node)
-      @auto_linker = auto_linker || self.class.auto_linker || AutoLink::URL
+      @auto_linker = auto_linker || AutoLink::URL
     end
 
     def breakable?(breaker)

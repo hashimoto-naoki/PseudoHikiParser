@@ -81,8 +81,24 @@ a line with a url <a href="http://www.example.org/">http://www.example.org/</a> 
 </p>
 </blockquote>
 HTML
+
+    wikiname_off_xhtml = <<HTML
+<blockquote>
+<p>
+a line with a url <a href="http://www.example.org/">http://www.example.org/</a> , an ^EscapedWikiName and a WikiName.
+</p>
+</blockquote>
+HTML
     auto_linker = AutoLink::WikiName.new({:wiki_name => true, :escape_wiki_name => true})
     tree = BlockParser.parse(text.lines.to_a, auto_linker)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+
+    BlockParser.auto_linker = AutoLink::WikiName.new({:wiki_name => true, :escape_wiki_name => true})
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+
+    BlockParser.auto_linker = nil
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(wikiname_off_xhtml, XhtmlFormat.format(tree).to_s)
   end
 end
