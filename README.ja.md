@@ -148,6 +148,43 @@ The first paragraph
 
 HtmlFormat以外にはXhtmlFormat、Xhtml5Format、PlainTextFormat、MarkDownFormatが用意されています。
 
+#### WikiNames
+
+もしWikiNameを利用したければ、PseudoHiki::AutoLink::[WikiName](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11)クラスのインスタンスをBlockParser.newの引数、もしくはBlockParser.parseの第2引数として渡してやる必要があります。
+
+```ruby
+require 'pseudohiki/blockparser'
+require 'pseudohiki/htmlformat'
+require 'pseudohiki/autolink' # PseudoHiki::AutoLink::WikiName is defined in this file.
+
+text = <<TEXT
+a line with an ^EscapedWikiName and a WikiName.
+TEXT
+
+puts "--- with default options:"
+wiki_name_link = PseudoHiki::AutoLink::WikiName.new
+tree = PseudoHiki::BlockParser.parse(text, wiki_name_link)
+puts PseudoHiki::XhtmlFormat.format(tree)
+
+puts "--- when :escape_wiki_name option is set to true:"
+escape_wiki_name_link = PseudoHiki::AutoLink::WikiName.new({:escape_wiki_name => true})
+escaped_tree = PseudoHiki::BlockParser.parse(text, escape_wiki_name_link)
+puts PseudoHiki::XhtmlFormat.format(escaped_tree)
+```
+
+は次のように出力します。
+
+```
+--- with default options:
+<p>
+a line with an ^<a href="EscapedWikiName">EscapedWikiName</a> and a <a href="WikiName">WikiName</a>.
+</p>
+--- when :escape_wiki_name option is set to true:
+<p>
+a line with an EscapedWikiName and a <a href="WikiName">WikiName</a>.
+</p>
+```
+
 ### PseudoHiki::Formatクラス
 
 PseudoHiki::BlockParser.parseで作られた構文木を使い回す必要がなければ、以下のPseudoHiki::Formatのクラスメソッドも利用可能です。
@@ -180,8 +217,8 @@ puts PseudoHiki::Format.to_html(hiki_text)
 
 * パラグラフ - 使いものになる
 * リンク
-  * WikiNames - 未サポート(実装予定なし)
-  * ページへのリンク - これも未サポート
+  * WikiNames - オプションとして提供されているが十分にテストされていない
+  * ページへのリンク - 未サポート
   * 任意のURLへのリンク - 一応使えるはず
 * 整形済みテキスト - 使いものになる
 * 文字の修飾 - 一部をサポート
