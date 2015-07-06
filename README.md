@@ -218,7 +218,7 @@ puts PseudoHiki::Format.to_html(hiki_text)
 * Paragraphs - Usable
 * Links
   * WikiNames - Provided as an option but not tested well
-  * Linking to other Wiki pages - Not supported as well
+  * Linking to other Wiki pages - Not supported
   * Linking to an arbitrary URL - Maybe usable
 * Preformatted text - Usable
 * Text decoration - Partly supported
