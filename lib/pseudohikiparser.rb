@@ -93,7 +93,7 @@ module PseudoHiki
     #    </div>
     #
     def self.to_html(hiki_data, &block)
-      format(hiki_data, :html, options=nil, &block)
+      format(hiki_data, :html, nil, &block)
     end
 
     # Converts <hiki_data> into XHTML1.0
@@ -101,7 +101,7 @@ module PseudoHiki
     # You can give a block to this method as in the case of ::to_html, but the parameter to the block is a tree of XhtmlElement objects
     #
     def self.to_xhtml(hiki_data, &block)
-      format(hiki_data, :xhtml, options=nil, &block)
+      format(hiki_data, :xhtml, nil, &block)
     end
 
     # Converts <hiki_data> into HTML5
@@ -109,25 +109,25 @@ module PseudoHiki
     # You can give a block to this method as in the case of ::to_html, but the parameter to the block is a tree of Xhtml5Element objects
     #
     def self.to_html5(hiki_data, &block)
-      format(hiki_data, :html5, options=nil, &block)
+      format(hiki_data, :html5, nil, &block)
     end
 
     # Converts <hiki_data> into plain texts without tags
     #
     def self.to_plain(hiki_data, &block)
-      format(hiki_data, :plain, options=nil, &block)
+      format(hiki_data, :plain, nil, &block)
     end
 
     # Converts <hiki_data> into Markdown
     #
     def self.to_markdown(hiki_data, &block)
-      format(hiki_data, :markdown, options=nil, &block)
+      format(hiki_data, :markdown, nil, &block)
     end
 
     # Converts <hiki_data> into GitHub Flavored Markdown
     #
     def self.to_gfm(hiki_data, &block)
-      format(hiki_data, :gfm, options=nil, &block)
+      format(hiki_data, :gfm, nil, &block)
     end
   end
 end
