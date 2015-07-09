@@ -21,10 +21,10 @@ module PseudoHiki
      [:html, HtmlFormat, nil],
      [:xhtml, XhtmlFormat, nil],
      [:html5, Xhtml5Format, nil],
-     [:plain, PlainTextFormat, {:verbose_mode => false }],
-     [:plain_verbose, PlainTextFormat, {:verbose_mode => true }],
-     [:markdown, MarkDownFormat, { :strict_mode=> false, :gfm_style => false }],
-     [:gfm, MarkDownFormat, { :strict_mode=> false, :gfm_style => true }]
+     [:plain, PlainTextFormat, { :verbose_mode => false }],
+     [:plain_verbose, PlainTextFormat, { :verbose_mode => true }],
+     [:markdown, MarkDownFormat, { :strict_mode => false, :gfm_style => false }],
+     [:gfm, MarkDownFormat, { :strict_mode => false, :gfm_style => true }]
     ].each do |type, formatter, options|
       preset_options = [type, nil]
       @formatter[preset_options] = formatter.create(options)
@@ -132,4 +132,4 @@ module PseudoHiki
   end
 end
 
-require 'pseudohiki/sinatra_helpers'if defined? Sinatra
+require 'pseudohiki/sinatra_helpers' if defined? Sinatra
