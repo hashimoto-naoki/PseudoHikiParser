@@ -13,9 +13,9 @@ module PseudoHiki
   # This class provides class methods for converting texts written in a Hiki-like notation into HTML or other formats.
   #
   class Format
-    @@formatter = {}
-    @@preset_options = {}
-    @@type_to_formatter = {}
+    @formatter = {}
+    @preset_options = {}
+    @type_to_formatter = {}
 
     [
      [:html, HtmlFormat, nil],
@@ -27,9 +27,9 @@ module PseudoHiki
      [:gfm, MarkDownFormat, { :strict_mode=> false, :gfm_style => true }]
     ].each do |type, formatter, options|
       preset_options = [type, nil]
-      @@formatter[preset_options] = formatter.create(options)
-      @@preset_options[type] = preset_options
-      @@type_to_formatter[type] = formatter
+      @formatter[preset_options] = formatter.create(options)
+      @preset_options[type] = preset_options
+      @type_to_formatter[type] = formatter
     end
 
     # Converts <hiki_data> into a format specified by <format_type>
@@ -49,9 +49,9 @@ module PseudoHiki
       tree = BlockParser.parse(hiki_data)
 
       if options
-        @@formatter[[format_type, options]] ||= @@type_to_formatter[format_type].create(options)
+        @formatter[[format_type, options]] ||= @type_to_formatter[format_type].create(options)
       else
-        @@formatter[@@preset_options[format_type]]
+        @formatter[@preset_options[format_type]]
       end.format(tree).tap do |formatted|
         block.call(formatted) if block
       end.to_s
