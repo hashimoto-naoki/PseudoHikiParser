@@ -169,4 +169,178 @@ HTML
     assert_equal(expected_html_without_wikiname,
                  Format.format(@text_with_wikiname, :html))
   end
+
+  def test_to_html_with_wikiname
+    wikiname_linker = AutoLink::WikiName.new
+
+    expected_html_with_wikiname = <<HTML
+<p>
+a line with <a href="WikiName">WikiName</a> and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    expected_html_without_wikiname = <<HTML
+<p>
+a line with WikiName and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_html(@text_with_wikiname, wikiname_linker))
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_html(@text_with_wikiname))
+
+    BlockParser.auto_linker = wikiname_linker
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_html(@text_with_wikiname))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_html(@text_with_wikiname))
+  end
+
+  def test_to_xhtml_with_wikiname
+    wikiname_linker = AutoLink::WikiName.new
+
+    expected_html_with_wikiname = <<HTML
+<p>
+a line with <a href="WikiName">WikiName</a> and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    expected_html_without_wikiname = <<HTML
+<p>
+a line with WikiName and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_xhtml(@text_with_wikiname, wikiname_linker))
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_xhtml(@text_with_wikiname))
+
+    BlockParser.auto_linker = wikiname_linker
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_xhtml(@text_with_wikiname))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_xhtml(@text_with_wikiname))
+  end
+
+  def test_to_html5_with_wikiname
+    wikiname_linker = AutoLink::WikiName.new
+
+    expected_html_with_wikiname = <<HTML
+<p>
+a line with <a href="WikiName">WikiName</a> and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    expected_html_without_wikiname = <<HTML
+<p>
+a line with WikiName and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_html5(@text_with_wikiname, wikiname_linker))
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_html5(@text_with_wikiname))
+
+    BlockParser.auto_linker = wikiname_linker
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_html5(@text_with_wikiname))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_html5(@text_with_wikiname))
+  end
+
+  def test_to_plain_with_wikiname
+    wikiname_linker = AutoLink::WikiName.new
+
+    expected_html_with_wikiname = <<HTML
+a line with WikiName and a normal link
+HTML
+
+    expected_html_without_wikiname = <<HTML
+a line with WikiName and a normal link
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_plain(@text_with_wikiname, wikiname_linker))
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_plain(@text_with_wikiname))
+
+    BlockParser.auto_linker = wikiname_linker
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_plain(@text_with_wikiname))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_plain(@text_with_wikiname))
+  end
+
+  def test_to_markdown_with_wikiname
+    wikiname_linker = AutoLink::WikiName.new
+
+    expected_html_with_wikiname = <<HTML
+a line with [WikiName](WikiName) and a [normal link](http://www.example.org/)
+HTML
+
+    expected_html_without_wikiname = <<HTML
+a line with WikiName and a [normal link](http://www.example.org/)
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_markdown(@text_with_wikiname, wikiname_linker))
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_markdown(@text_with_wikiname))
+
+    BlockParser.auto_linker = wikiname_linker
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_markdown(@text_with_wikiname))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_markdown(@text_with_wikiname))
+  end
+
+  def test_to_gfm_with_wikiname
+    wikiname_linker = AutoLink::WikiName.new
+
+    expected_html_with_wikiname = <<HTML
+a line with [WikiName](WikiName) and a [normal link](http://www.example.org/)
+HTML
+
+    expected_html_without_wikiname = <<HTML
+a line with WikiName and a [normal link](http://www.example.org/)
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_gfm(@text_with_wikiname, wikiname_linker))
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_gfm(@text_with_wikiname))
+
+    BlockParser.auto_linker = wikiname_linker
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.to_gfm(@text_with_wikiname))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.to_gfm(@text_with_wikiname))
+  end
 end

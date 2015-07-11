@@ -94,42 +94,42 @@ module PseudoHiki
     #    <!-- end of section h2 -->
     #    </div>
     #
-    def self.to_html(hiki_data, &block)
-      format(hiki_data, :html, nil, &block)
+    def self.to_html(hiki_data, auto_linker=BlockParser.auto_linker, &block)
+      format(hiki_data, :html, nil, auto_linker, &block)
     end
 
     # Converts <hiki_data> into XHTML1.0
     #
     # You can give a block to this method as in the case of ::to_html, but the parameter to the block is a tree of XhtmlElement objects
     #
-    def self.to_xhtml(hiki_data, &block)
-      format(hiki_data, :xhtml, nil, &block)
+    def self.to_xhtml(hiki_data, auto_linker=BlockParser.auto_linker, &block)
+      format(hiki_data, :xhtml, nil, auto_linker, &block)
     end
 
     # Converts <hiki_data> into HTML5
     #
     # You can give a block to this method as in the case of ::to_html, but the parameter to the block is a tree of Xhtml5Element objects
     #
-    def self.to_html5(hiki_data, &block)
-      format(hiki_data, :html5, nil, &block)
+    def self.to_html5(hiki_data, auto_linker=BlockParser.auto_linker, &block)
+      format(hiki_data, :html5, nil, auto_linker, &block)
     end
 
     # Converts <hiki_data> into plain texts without tags
     #
-    def self.to_plain(hiki_data, &block)
-      format(hiki_data, :plain, nil, &block)
+    def self.to_plain(hiki_data, auto_linker=BlockParser.auto_linker, &block)
+      format(hiki_data, :plain, nil, auto_linker, &block)
     end
 
     # Converts <hiki_data> into Markdown
     #
-    def self.to_markdown(hiki_data, &block)
-      format(hiki_data, :markdown, nil, &block)
+    def self.to_markdown(hiki_data, auto_linker=BlockParser.auto_linker, &block)
+      format(hiki_data, :markdown, nil, auto_linker, &block)
     end
 
     # Converts <hiki_data> into GitHub Flavored Markdown
     #
-    def self.to_gfm(hiki_data, &block)
-      format(hiki_data, :gfm, nil, &block)
+    def self.to_gfm(hiki_data, auto_linker=BlockParser.auto_linker, &block)
+      format(hiki_data, :gfm, nil, auto_linker, &block)
     end
   end
 end
