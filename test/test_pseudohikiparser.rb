@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'minitest/autorun'
 require 'pseudohikiparser'
+require 'pseudohiki/autolink'
 
 class TC_MarkDownFormat < MiniTest::Unit::TestCase
   include PseudoHiki
@@ -16,6 +17,8 @@ the first paragraph with ''inline'' ``tags``
 
 the second paragraph with ==block== [[inline|#id]] tags
 TEXT
+
+    @text_with_wikiname = 'a line with WikiName and a [[normal link|http://www.example.org/]]'
   end
 
   def test_to_html
@@ -138,5 +141,32 @@ HTML
     end
 
     assert_equal(expected_html_table, table_with_id)
+  end
+
+  def test_format_with_wikiname
+    expected_html_with_wikiname = <<HTML
+<p>
+a line with <a href="WikiName">WikiName</a> and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    expected_html_without_wikiname = <<HTML
+<p>
+a line with WikiName and a <a href="http://www.example.org/">normal link</a></p>
+HTML
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.format(@text_with_wikiname, :html, nil, AutoLink::WikiName.new))
+    assert_equal(expected_html_without_wikiname,
+                 Format.format(@text_with_wikiname, :html))
+
+    BlockParser.auto_linker = AutoLink::WikiName.new
+
+    assert_equal(expected_html_with_wikiname,
+                 Format.format(@text_with_wikiname, :html))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_without_wikiname,
+                 Format.format(@text_with_wikiname, :html))
   end
 end
