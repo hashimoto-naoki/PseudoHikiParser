@@ -3,6 +3,7 @@
 require "pseudohiki/htmlformat"
 require "pseudohiki/plaintextformat"
 require "pseudohiki/markdownformat"
+require 'pseudohiki/autolink'
 require "pseudohiki/version"
 
 # = PseudoHikiParser -- A converter of texts written in a Hiki-like notation into HTML or other formats.
@@ -45,8 +46,9 @@ module PseudoHiki
     # [:markdown] Markdown
     # [:gfm] GitHub Flavored Markdown
     #
-    def self.format(hiki_data, format_type, options=nil, &block)
-      tree = BlockParser.parse(hiki_data)
+    def self.format(hiki_data, format_type, options=nil,
+                    auto_linker=BlockParser.auto_linker, &block)
+      tree = BlockParser.parse(hiki_data, auto_linker)
 
       if options
         @formatter[[format_type, options]] ||= @type_to_formatter[format_type].create(options)
