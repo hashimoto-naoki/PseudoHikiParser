@@ -27,12 +27,8 @@ module PseudoHiki
       node
     end
 
-    def self.auto_linker=(auto_linker)
-      @auto_linker = auto_linker
-    end
-
-    def self.auto_linker
-      @auto_linker
+    class << self
+      attr_accessor :auto_linker
     end
 
     def self.parse(lines, tmp_auto_linker=BlockParser.auto_linker)
