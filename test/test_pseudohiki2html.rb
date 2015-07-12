@@ -4,6 +4,7 @@ require 'stringio'
 require 'shellwords'
 require 'minitest/autorun'
 require 'pseudohiki/converter'
+require 'pseudohiki/autolink'
 
 def set_argv(command_line_str)
   ARGV.replace Shellwords.split(command_line_str)
@@ -377,5 +378,16 @@ GFM
     html = PageComposer.new(options).compose_html(input).join
 
     assert_equal(output, html)
+  end
+
+  def test_with_wikiname
+    current_auto_linker = BlockParser.auto_linker
+    set_argv("--with-wikiname wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+
+    assert_equal(AutoLink::WikiName, BlockParser.auto_linker.class)
+
+    BlockParser.auto_linker = current_auto_linker
   end
 end

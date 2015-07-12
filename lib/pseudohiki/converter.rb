@@ -412,6 +412,14 @@ inside (default: not specified)") do |template|
           self[:split_main_heading] = should_be_split
         end
 
+        opt.on("-W", "--with-wikiname",
+               "Use WikiNames") do |with_wikiname|
+          if with_wikiname
+            auto_linker = PseudoHiki::AutoLink::WikiName.new
+            PseudoHiki::BlockParser.auto_linker = auto_linker
+          end
+        end
+
         opt.parse!
       end
     end
