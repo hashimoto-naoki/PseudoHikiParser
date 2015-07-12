@@ -54,12 +54,8 @@ module PseudoHiki
     class BlockLeaf < BlockStack::Leaf
       attr_accessor :level, :node_id, :decorator
 
-      def self.head_re=(head_regex)
-        @self_head_re = head_regex
-      end
-
-      def self.head_re
-        @self_head_re
+      class << self
+        attr_accessor :head_re
       end
 
       def self.with_depth?
