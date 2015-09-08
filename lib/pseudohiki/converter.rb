@@ -4,6 +4,7 @@
 require 'optparse'
 require 'erb'
 require 'pseudohiki/blockparser'
+require 'pseudohiki/autolink'
 require 'pseudohiki/htmlformat'
 require 'pseudohiki/plaintextformat'
 require 'pseudohiki/markdownformat'
