@@ -21,13 +21,14 @@ module PseudoHiki
     Formatter = {}
 
     attr_reader :element_name
-    attr_writer :generator, :formatter
+    attr_writer :generator, :formatter, :format_class
 
     def self.setup_new_formatter(new_formatter, generator)
       new_formatter.each do |node_class, formatter|
         new_formatter[node_class] = formatter.clone
         new_formatter[node_class].generator = generator
         new_formatter[node_class].formatter = new_formatter
+        new_formatter[node_class].format_class = self
       end
     end
 
