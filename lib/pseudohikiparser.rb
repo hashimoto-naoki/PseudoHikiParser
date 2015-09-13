@@ -41,7 +41,12 @@ module PseudoHiki
       end
     end
 
-    private_class_method :select_formatter
+    def self.auto_link_url?(auto_linker)
+      return true if auto_linker.nil?
+      auto_linker.auto_link_url?
+    end
+
+    private_class_method :select_formatter, :auto_link_url?
 
     # Converts <hiki_data> into a format specified by <format_type>
     #
