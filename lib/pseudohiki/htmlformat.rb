@@ -21,7 +21,7 @@ module PseudoHiki
     Formatter = {}
 
     class << self
-      attr_accessor :disable_auto_link_in_verbatim
+      attr_accessor :auto_link_in_verbatim
     end
 
     attr_reader :element_name
@@ -53,6 +53,7 @@ module PseudoHiki
       @element_name = element_name
       @generator = generator
       @formatter = Formatter
+      self.class.auto_link_in_verbatim = true
     end
 
     def visited_result(element)
@@ -210,7 +211,7 @@ module PseudoHiki
       end
 
       def add_link(verbatim)
-        return verbatim if @format_class.disable_auto_link_in_verbatim
+        return verbatim unless @format_class.auto_link_in_verbatim
         verbatim.gsub(AutoLink::URI_RE) do |url|
           @generator.create(LINK, url, HREF => url).to_s
         end
