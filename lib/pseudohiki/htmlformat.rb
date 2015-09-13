@@ -64,6 +64,7 @@ module PseudoHiki
       @element_name = element_name
       @generator = generator
       @formatter = Formatter
+      @format_class = self.class
     end
 
     def visited_result(element)
