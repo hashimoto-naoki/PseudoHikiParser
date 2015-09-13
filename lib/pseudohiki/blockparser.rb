@@ -427,6 +427,10 @@ module PseudoHiki
 
     module Off
       def self.link(line) line; end
+
+      def self.auto_link_url?
+        false
+      end
     end
 
     module URL
@@ -439,6 +443,10 @@ module PseudoHiki
       def self.link(line)
         return line unless URI_RE =~ line and VERBATIM_LEAF_HEAD_RE !~ line
         line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
+      end
+
+      def self.auto_link_url?
+        true
       end
     end
   end
