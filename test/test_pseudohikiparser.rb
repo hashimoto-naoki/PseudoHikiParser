@@ -170,6 +170,21 @@ HTML
                  Format.format(@text_with_wikiname, :html))
   end
 
+  def test_format_without_auto_link_in_verbatim
+    verbatim_text_with_url = <<TEXT
+ a verbatim line with http://www.example.org/ and WikiName
+TEXT
+
+    expected_html_without_auto_link_in_verbatim = <<HTML
+<pre>
+a verbatim line with http://www.example.org/ and WikiName
+</pre>
+HTML
+
+    assert_equal(expected_html_without_auto_link_in_verbatim,
+                 Format.format(verbatim_text_with_url, :html, nil, AutoLink::Off))
+  end
+
   def test_to_html_with_wikiname
     wikiname_linker = AutoLink::WikiName.new
 
