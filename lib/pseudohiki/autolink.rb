@@ -24,6 +24,10 @@ module PseudoHiki
         @auto_linker = @options[:url] ? URL : Off
       end
 
+      def auto_link_url?
+        @options[:url]
+      end
+
       def escaped_wiki_name?(wiki_name)
         @options[:escape_wiki_name] and wiki_name.start_with?(ESCAPE_CHAR)
       end
