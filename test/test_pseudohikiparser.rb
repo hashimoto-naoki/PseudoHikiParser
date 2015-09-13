@@ -185,6 +185,23 @@ HTML
                  Format.format(verbatim_text_with_url, :html, nil, AutoLink::Off))
   end
 
+  def test_format_with_auto_link_in_verbatim
+    verbatim_text_with_url = <<TEXT
+ a verbatim line with http://www.example.org/ and WikiName
+TEXT
+
+    expected_html_with_auto_link_in_verbatim = <<HTML
+<pre>
+a verbatim line with <a href="http://www.example.org/">http://www.example.org/</a> and WikiName
+</pre>
+HTML
+
+    assert_equal(expected_html_with_auto_link_in_verbatim,
+                 Format.format(verbatim_text_with_url, :html, nil, AutoLink::URL))
+    assert_equal(expected_html_with_auto_link_in_verbatim,
+                 Format.format(verbatim_text_with_url, :html, nil, nil))
+  end
+
   def test_to_html_with_wikiname
     wikiname_linker = AutoLink::WikiName.new
 
