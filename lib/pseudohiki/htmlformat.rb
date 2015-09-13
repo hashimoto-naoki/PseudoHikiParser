@@ -24,6 +24,8 @@ module PseudoHiki
       attr_accessor :auto_link_in_verbatim
     end
 
+    @auto_link_in_verbatim = true
+
     attr_reader :element_name
     attr_writer :generator, :formatter, :format_class
 
@@ -44,13 +46,13 @@ module PseudoHiki
       self
     end
 
+    def self.default_options
+      { :auto_link_in_verbatim => @auto_link_in_verbatim }
+    end
+
     def self.format(tree, options=nil)
       cur_auto_link_setting = @auto_link_in_verbatim
-      unless options
-        options = {
-          :auto_link_in_verbatim => @auto_link_in_verbatim
-        }
-      end
+      options = default_options unless options
       @auto_link_in_verbatim = options[:auto_link_in_verbatim]
       formatter = get_plain
       tree.accept(formatter)
@@ -62,7 +64,6 @@ module PseudoHiki
       @element_name = element_name
       @generator = generator
       @formatter = Formatter
-      self.class.auto_link_in_verbatim = true
     end
 
     def visited_result(element)
