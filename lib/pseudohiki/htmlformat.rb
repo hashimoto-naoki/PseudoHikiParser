@@ -44,9 +44,18 @@ module PseudoHiki
       self
     end
 
-    def self.format(tree)
+    def self.format(tree, options=nil)
+      cur_auto_link_setting = @auto_link_in_verbatim
+      unless options
+        options = {
+          :auto_link_in_verbatim => @auto_link_in_verbatim
+        }
+      end
+      @auto_link_in_verbatim = options[:auto_link_in_verbatim]
       formatter = get_plain
       tree.accept(formatter)
+    ensure
+      @auto_link_in_verbatim = cur_auto_link_setting
     end
 
     def initialize(element_name, generator=HtmlElement)
