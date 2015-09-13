@@ -726,9 +726,9 @@ another line with [[link|sample.html]]
 </pre>
 HTML
     tree = BlockParser.parse(text.lines.to_a)
-    XhtmlFormat.disable_auto_link_in_verbatim = true
+    XhtmlFormat.auto_link_in_verbatim = false
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
-    XhtmlFormat.disable_auto_link_in_verbatim = false
+    XhtmlFormat.auto_link_in_verbatim = true
   end
 
   def test_comment_out_followed_by_a_verbatim_block
