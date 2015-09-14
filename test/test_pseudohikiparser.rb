@@ -375,4 +375,54 @@ HTML
     assert_equal(expected_html_without_wikiname,
                  Format.to_gfm(@text_with_wikiname))
   end
+
+  def test_to_html5_without_auto_link
+    current_linker = BlockParser.auto_linker
+
+    link_off_linker = AutoLink::Off
+
+    text_with_urls = <<TEXT
+a link in a paragraph http://www.example.org/
+
+<<<
+http://www.example.org/
+>>>
+TEXT
+
+    expected_html_with_links = <<HTML
+<p>
+a link in a paragraph <a href="http://www.example.org/">http://www.example.org/</a>
+</p>
+<pre>
+<a href="http://www.example.org/">http://www.example.org/</a>
+</pre>
+HTML
+
+    expected_html_without_links = <<HTML
+<p>
+a link in a paragraph http://www.example.org/
+</p>
+<pre>
+http://www.example.org/
+</pre>
+HTML
+
+    assert_equal(expected_html_without_links,
+                 Format.to_html5(text_with_urls, link_off_linker))
+
+    assert_equal(expected_html_with_links,
+                 Format.to_html5(text_with_urls))
+
+    BlockParser.auto_linker = link_off_linker
+
+    assert_equal(expected_html_without_links,
+                 Format.to_html5(text_with_urls))
+
+    BlockParser.auto_linker = nil
+
+    assert_equal(expected_html_with_links,
+                 Format.to_html5(text_with_urls))
+
+    BlockParser.auto_linker = current_linker
+  end
 end
