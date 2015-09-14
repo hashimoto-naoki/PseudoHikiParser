@@ -17,6 +17,7 @@ module PseudoHiki
     @formatter = {}
     @preset_options = {}
     @type_to_formatter = {}
+    @html_types = [:html, :xhtml, :html5]
 
     [
      [:html, HtmlFormat, nil],
@@ -32,6 +33,21 @@ module PseudoHiki
       @preset_options[type] = preset_options
       @type_to_formatter[type] = formatter
     end
+
+    def self.select_formatter(format_type, options)
+      if options
+        @formatter[[format_type, options]] ||= @type_to_formatter[format_type].create(options)
+      else
+        @formatter[@preset_options[format_type]]
+      end
+    end
+
+    def self.auto_link_url?(auto_linker)
+      return true if auto_linker.nil?
+      auto_linker.auto_link_url?
+    end
+
+    private_class_method :select_formatter, :auto_link_url?
 
     # Converts <hiki_data> into a format specified by <format_type>
     #
@@ -49,12 +65,13 @@ module PseudoHiki
     def self.format(hiki_data, format_type, options=nil,
                     auto_linker=BlockParser.auto_linker, &block)
       tree = BlockParser.parse(hiki_data, auto_linker)
+      formatter = select_formatter(format_type, options)
 
-      if options
-        @formatter[[format_type, options]] ||= @type_to_formatter[format_type].create(options)
+      if @html_types.include? format_type
+        formatter.format(tree, { :auto_link_in_verbatim => auto_link_url?(auto_linker) })
       else
-        @formatter[@preset_options[format_type]]
-      end.format(tree).tap do |formatted|
+        formatter.format(tree)
+      end.tap do |formatted|
         block.call(formatted) if block
       end.to_s
     end

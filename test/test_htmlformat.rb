@@ -710,6 +710,65 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_no_automatical_link_generation_in_verbatim_blocks
+    text = <<TEXT
+ a line with a url http://www.example.org/ to test an automatical link generation.
+
+ another line with [[link|sample.html]]
+TEXT
+
+    xhtml = <<HTML
+<pre>
+a line with a url http://www.example.org/ to test an automatical link generation.
+</pre>
+<pre>
+another line with [[link|sample.html]]
+</pre>
+HTML
+    tree = BlockParser.parse(text.lines.to_a)
+    XhtmlFormat.auto_link_in_verbatim = false
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+    XhtmlFormat.auto_link_in_verbatim = true
+  end
+
+  def test_temporal_no_automatical_link_generation_in_verbatim_blocks
+    text = <<TEXT
+ a line with a url http://www.example.org/ to test an automatical link generation.
+
+ another line with [[link|sample.html]]
+TEXT
+
+    xhtml = <<HTML
+<pre>
+a line with a url http://www.example.org/ to test an automatical link generation.
+</pre>
+<pre>
+another line with [[link|sample.html]]
+</pre>
+HTML
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, XhtmlFormat.format(tree, {:auto_link_in_verbatim => false }).to_s)
+  end
+
+  def test_temporal_no_automatical_link_generation_in_verbatim_blocks_with_html
+    text = <<TEXT
+ a line with a url http://www.example.org/ to test an automatical link generation.
+
+ another line with [[link|sample.html]]
+TEXT
+
+    xhtml = <<HTML
+<pre>
+a line with a url http://www.example.org/ to test an automatical link generation.
+</pre>
+<pre>
+another line with [[link|sample.html]]
+</pre>
+HTML
+    tree = BlockParser.parse(text.lines.to_a)
+    assert_equal(xhtml, HtmlFormat.format(tree, {:auto_link_in_verbatim => false }).to_s)
+  end
+
   def test_decorator
     text = <<TEXT
 //@class[section_type]

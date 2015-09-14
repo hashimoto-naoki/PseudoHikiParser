@@ -20,14 +20,21 @@ module PseudoHiki
 
     Formatter = {}
 
+    class << self
+      attr_accessor :auto_link_in_verbatim
+    end
+
+    @auto_link_in_verbatim = true
+
     attr_reader :element_name
-    attr_writer :generator, :formatter
+    attr_writer :generator, :formatter, :format_class
 
     def self.setup_new_formatter(new_formatter, generator)
       new_formatter.each do |node_class, formatter|
         new_formatter[node_class] = formatter.clone
         new_formatter[node_class].generator = generator
         new_formatter[node_class].formatter = new_formatter
+        new_formatter[node_class].format_class = self
       end
     end
 
@@ -39,15 +46,25 @@ module PseudoHiki
       self
     end
 
-    def self.format(tree)
+    def self.default_options
+      { :auto_link_in_verbatim => @auto_link_in_verbatim }
+    end
+
+    def self.format(tree, options=nil)
+      cur_auto_link_setting = @auto_link_in_verbatim
+      options = default_options unless options
+      @auto_link_in_verbatim = options[:auto_link_in_verbatim]
       formatter = get_plain
       tree.accept(formatter)
+    ensure
+      @auto_link_in_verbatim = cur_auto_link_setting
     end
 
     def initialize(element_name, generator=HtmlElement)
       @element_name = element_name
       @generator = generator
       @formatter = Formatter
+      @format_class = self.class
     end
 
     def visited_result(element)
@@ -200,11 +217,15 @@ module PseudoHiki
 
     class << Formatter[VerbatimNode]
       def visit(tree)
-        contents = @generator.escape(tree.join)
-        contents_with_link = contents.gsub(AutoLink::URI_RE) do |url|
+        contents = add_link(@generator.escape(tree.join))
+        create_element.tap {|elm| elm.push contents }
+      end
+
+      def add_link(verbatim)
+        return verbatim unless @format_class.auto_link_in_verbatim
+        verbatim.gsub(AutoLink::URI_RE) do |url|
           @generator.create(LINK, url, HREF => url).to_s
         end
-        create_element.tap {|elm| elm.push contents_with_link }
       end
     end
 
@@ -291,10 +312,12 @@ module PseudoHiki
   class XhtmlFormat < HtmlFormat
     Formatter = HtmlFormat::Formatter.dup
     setup_new_formatter(Formatter, XhtmlElement)
+    @auto_link_in_verbatim = true
   end
 
   class Xhtml5Format < XhtmlFormat
     Formatter = HtmlFormat::Formatter.dup
     setup_new_formatter(Formatter, Xhtml5Element)
+    @auto_link_in_verbatim = true
   end
 end
