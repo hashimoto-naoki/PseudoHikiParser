@@ -390,4 +390,74 @@ GFM
 
     BlockParser.auto_linker = current_auto_linker
   end
+
+  def test_no_automatical_link_in_verbatim
+    verbatim_block_text = <<TEXT.each_line.to_a
+
+a link in a paragraph http://www.example.org/
+
+<<<
+http://www.example.org/
+>>>
+TEXT
+
+    expected_html = <<HTML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<title>wikipage</title>
+<link href="css/with_toc.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<p>
+a link in a paragraph <a href="http://www.example.org/">http://www.example.org/</a>
+</p>
+<pre>
+<a href="http://www.example.org/">http://www.example.org/</a>
+</pre>
+</body>
+</html>
+HTML
+
+    expected_html_without_auto_link = <<HTML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<title>wikipage</title>
+<link href="css/with_toc.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<p>
+a link in a paragraph http://www.example.org/
+</p>
+<pre>
+http://www.example.org/
+</pre>
+</body>
+</html>
+HTML
+
+    set_argv("-fh5 -c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+
+    composed_html = PageComposer.new(options).compose_html(verbatim_block_text).to_s
+    assert_equal(expected_html, composed_html)
+
+    set_argv("-fh5 -c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.set_options_from_command_line
+
+    current_auto_linker = BlockParser.auto_linker
+    BlockParser.auto_linker = AutoLink::Off
+    Xhtml5Format.auto_link_in_verbatim = false
+    composed_html_without_auto_link = PageComposer.new(options).compose_html(verbatim_block_text).to_s
+    assert_equal(expected_html_without_auto_link, composed_html_without_auto_link)
+    BlockParser.auto_linker = current_auto_linker
+    Xhtml5Format.auto_link_in_verbatim = true
+  end
 end
