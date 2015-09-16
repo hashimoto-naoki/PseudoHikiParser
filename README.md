@@ -1,7 +1,7 @@
 PseudoHikiParser
 ================
 
-PseudoHikiParser is a converter of texts written in a [Hiki](http://hikiwiki.org/en/) like notation, into HTML or other formats. 
+PseudoHikiParser is a converter of texts written in a [Hiki](https://github.com/hiki/hikidoc) like notation, into HTML or other formats.
 
 I am writing this tool with following objectives in mind,
 
@@ -213,7 +213,7 @@ TEXT
 puts PseudoHiki::Format.to_html(hiki_text)
 ```
 
-## Development status of features from the original [Hiki notation](http://rabbit-shocker.org/en/hiki.html)
+## Development status of features from the original [Hiki notation](https://github.com/hiki/hikidoc/blob/master/TextFormattingRules.md)
 
 * Paragraphs - Usable
 * Links
@@ -404,7 +404,7 @@ paragraph 3
 
 Please note that some of the following classes are implemented partly or not tested well.
 
-### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291)
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L312)
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
@@ -448,11 +448,11 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 </div>
 ```
 
-### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L318)
 
 This visitor is for HTML5.
 
-Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291) except for the handling of \<section\> elements.
+Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L312) except for the handling of \<section\> elements.
 
 ### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
 
