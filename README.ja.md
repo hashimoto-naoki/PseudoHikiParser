@@ -1,7 +1,7 @@
 PseudoHikiParser
 ================
 
-PseudoHikiParserは[Hiki](http://hikiwiki.org/en/)に似た記法で書かれたテキストをHTMLその他のファイル形式に変換するコンバータです。
+PseudoHikiParserは[Hiki](https://github.com/hiki/hikidoc)に似た記法で書かれたテキストをHTMLその他のファイル形式に変換するコンバータです。
 
 このツールは次の目的を念頭において作成中です。
 
@@ -213,7 +213,7 @@ TEXT
 puts PseudoHiki::Format.to_html(hiki_text)
 ```
 
-## オリジナルの[Hiki記法](http://rabbit-shocker.org/en/hiki.html)にある機能の実装状況
+## オリジナルの[Hiki記法](https://github.com/hiki/hikidoc/blob/master/TextFormattingRules.ja.md)にある機能の実装状況
 
 * パラグラフ - 使いものになる
 * リンク
@@ -404,7 +404,7 @@ paragraph 3
 
 以下のクラスのうちの一部は、部分的にしか実装されていないかテストが十分ではないことにご注意ください。
 
-### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291)
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L312)
 
 これらのクラスのクラスメソッド(HtmlFormat|XhtmlFormat).formatは[HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb)オブジェクトを木にしたものを返すため、以下の例のように後から手を加えることができます。
 
@@ -448,11 +448,11 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 </div>
 ```
 
-### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L318)
 
 HTML5への変換用のVisitorクラスです。
 
-現時点では\<section\>要素の扱い以外に[XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291)との違いは余りありません。
+現時点では\<section\>要素の扱い以外に[XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L312)との違いは余りありません。
 
 ### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
 
