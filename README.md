@@ -291,7 +291,7 @@ will be rendered as
 
 ```html
 <a href="http://www.example.org/image.png"><img alt="thumbnail of an image" src="http://www.example.org/image_thumb.png">
-</a></p>
+</a>
 ```
 
 ### Experimental
