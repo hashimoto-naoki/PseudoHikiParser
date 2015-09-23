@@ -73,7 +73,7 @@
 <h2 id="ABOUT"> About PseudoHikiParser
 </h2>
 <p>
-PseudoHikiParser is a converter of texts written in a <a href="https://github.com/hiki/hikidoc">Hiki</a> like notation, into HTML or other formats.
+PseudoHikiParser is a converter of texts written in a <a href="https://github.com/hiki/hikidoc">Hiki</a> like notation, into HTML, Markdown or other formats.
 </p>
 <p>
 I am writing this tool with following objectives in mind,
@@ -321,6 +321,9 @@ a line with an ^&lt;a href=&quot;EscapedWikiName&quot;&gt;EscapedWikiName&lt;/a&
 a line with an EscapedWikiName and a &lt;a href=&quot;WikiName&quot;&gt;WikiName&lt;/a&gt;.
 &lt;/p&gt;
 </pre>
+<p>
+And if you don't like the default behavior, you may prepare a class/module that substitutes AutoLink::<a href="https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11">WikiName</a>.
+</p>
 <!-- end of section h4 -->
 </div>
 <!-- end of section h3 -->
@@ -521,7 +524,7 @@ paragraph
 <!-- end of section h4 -->
 </div>
 <div class="section h4">
-<h4> Defining sections (As of version 0.0.3.develop, this feature is not included in the rubygems package.)
+<h4> Defining sections
 </h4>
 <p>
 When a certain part of a document is enclosed by <code>//@begin[section_name]</code> and <code>//@end[section_name]</code>, HtmlFormat and its subclasses will convert the tags into &lt;div&gt; or &lt;section&gt; elements with id or class attributes.
