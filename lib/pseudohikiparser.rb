@@ -33,6 +33,16 @@ module PseudoHiki
       @type_to_formatter[type] = formatter
     end
 
+    def self.select_formatter(format_type, options)
+      if options
+        @formatter[[format_type, options]] ||= @type_to_formatter[format_type].create(options)
+      else
+        @formatter[@preset_options[format_type]]
+      end
+    end
+
+    private_class_method :select_formatter
+
     # Converts <hiki_data> into a format specified by <format_type>
     #
     # <hiki_data> should be a string or an array of strings
@@ -50,11 +60,7 @@ module PseudoHiki
                     auto_linker=BlockParser.auto_linker, &block)
       tree = BlockParser.parse(hiki_data, auto_linker)
 
-      if options
-        @formatter[[format_type, options]] ||= @type_to_formatter[format_type].create(options)
-      else
-        @formatter[@preset_options[format_type]]
-      end.format(tree).tap do |formatted|
+      select_formatter(format_type, options).format(tree).tap do |formatted|
         block.call(formatted) if block
       end.to_s
     end
