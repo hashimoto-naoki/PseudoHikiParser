@@ -2,7 +2,7 @@
 
 ## About PseudoHikiParser
 
-PseudoHikiParser is a converter of texts written in a [Hiki](http://hikiwiki.org/en/) like notation, into HTML or other formats. 
+PseudoHikiParser is a converter of texts written in a [Hiki](https://github.com/hiki/hikidoc) like notation, into HTML or other formats.
 
 I am writing this tool with following objectives in mind,
 
@@ -220,7 +220,7 @@ TEXT
 puts PseudoHiki::Format.to_html(hiki_text)
 ```
 
-## Development status of features from the original [Hiki notation](http://rabbit-shocker.org/en/hiki.html)
+## Development status of features from the original [Hiki notation](https://github.com/hiki/hikidoc/blob/master/TextFormattingRules.md)
 
 * Paragraphs - Usable
 * Links
@@ -298,7 +298,7 @@ will be rendered as
 
 ```
 <a href="http://www.example.org/image.png"><img alt="thumbnail of an image" src="http://www.example.org/image_thumb.png">
-</a></p>
+</a>
 ```
 
 ### Experimental
@@ -411,7 +411,7 @@ paragraph 3
 
 Please note that some of the following classes are implemented partly or not tested well.
 
-### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291)
+### [HtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L8), [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L312)
 
 Their class method (HtmlFormat|XhtmlFormat).format returns a tree of [HtmlElement](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/htmlelement.rb) objects, and you can traverse the tree as in the following example.
 
@@ -455,11 +455,11 @@ paragraph 2 that contains <a class="pdf" href="http://www.example.org/example.pd
 </div>
 ```
 
-### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L296)
+### [Xhtml5Format](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L318)
 
 This visitor is for HTML5.
 
-Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L291) except for the handling of \<section\> elements.
+Currently there aren't many differences with [XhtmlFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/htmlformat.rb#L312) except for the handling of \<section\> elements.
 
 ### [PlainTextFormat](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/plaintextformat.rb)  
 
@@ -549,5 +549,16 @@ The first paragraph
 |header 1|header 2|
 |--------|--------|
 |_cell 1_|cell2   |
+```
+
+#### Limitations
+
+You can not convert malformed lists with this visitor class. That means list items must be nested hierarchically and if you skip a level in the sequence of items, the result of coversions will be corrupted.
+
+The following is an example of malformed list in which the first level is skipped:
+
+```
+**First item
+**Second item
 ```
 
