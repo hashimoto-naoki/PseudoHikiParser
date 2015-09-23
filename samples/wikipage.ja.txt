@@ -4,7 +4,7 @@
 
 !![about] PseudoHikiParserとは
 
-PseudoHikiParserは[[Hiki|https://github.com/hiki/hikidoc]]に似た記法で書かれたテキストをHTMLその他のファイル形式に変換するコンバータです。
+PseudoHikiParserは[[Hiki|https://github.com/hiki/hikidoc]]に似た記法で書かれたテキストをHTML・Markdownその他のファイル形式に変換するコンバータです。
 
 このツールは次の目的を念頭において作成中です。
 
@@ -194,6 +194,8 @@ a line with an EscapedWikiName and a <a href="WikiName">WikiName</a>.
 </p>
 >>>
 
+またもしデフォルトの動作が気に入らなければ、AutoLink::[[WikiName|https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11]]を置き換えるクラスあるいはモジュールを用意することもできます。
+
 !!![pseudohiki_format] PseudoHiki::Formatクラス
 
 PseudoHiki::BlockParser.parseで作られた構文木を使い回す必要がなければ、以下のPseudoHiki::Formatのクラスメソッドも利用可能です。
@@ -333,7 +335,7 @@ paragraph
 </div>
 >>>
 
-!!!! セクションの定義 (version 0.0.3.develop時点で、この機能はrubygemsのパッケージに含まれていません。)
+!!!! セクションの定義
 
 ドキュメントの一部を``//@begin[section_name]``と``//@end[section_name]``で囲むと、HtmlFormatとその派生クラスではこれらのタグが classまたはid属性の設定された<div>あるいは<section>要素に変換されます。
 
