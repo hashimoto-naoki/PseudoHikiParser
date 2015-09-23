@@ -2,7 +2,7 @@
 
 ## About PseudoHikiParser
 
-PseudoHikiParser is a converter of texts written in a [Hiki](https://github.com/hiki/hikidoc) like notation, into HTML or other formats.
+PseudoHikiParser is a converter of texts written in a [Hiki](https://github.com/hiki/hikidoc) like notation, into HTML, Markdown or other formats.
 
 I am writing this tool with following objectives in mind,
 
@@ -192,6 +192,8 @@ a line with an EscapedWikiName and a <a href="WikiName">WikiName</a>.
 </p>
 ```
 
+And if you don't like the default behavior, you may prepare a class/module that substitutes AutoLink::[WikiName](https://github.com/nico-hn/PseudoHikiParser/blob/develop/lib/pseudohiki/autolink.rb#L11).
+
 ### class PseudoHiki::Format
 
 If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you can use following class methods of PseudoHiki::Format.
@@ -331,7 +333,7 @@ paragraph
 </div>
 ```
 
-#### Defining sections (As of version 0.0.3.develop, this feature is not included in the rubygems package.)
+#### Defining sections
 
 When a certain part of a document is enclosed by `//@begin[section\_name]` and `//@end[section\_name]`, HtmlFormat and its subclasses will convert the tags into \<div\> or \<section\> elements with id or class attributes.
 
