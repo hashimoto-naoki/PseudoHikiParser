@@ -12,7 +12,7 @@ module PseudoHiki
       @default_options = {
         :url => true,
         :wiki_name => true,
-        :escape_wiki_name => false
+        :escape_wiki_name => true
       }
 
       def self.default_options
