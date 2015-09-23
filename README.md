@@ -548,7 +548,7 @@ The first paragraph
 
 You can not convert malformed lists with this visitor class. That means list items must be nested hierarchically and if you skip a level in the sequence of items, the result of coversions will be corrupted.
 
-The following is an exmaple of malformed list in which the first level is skipped:
+The following is an example of malformed list in which the first level is skipped:
 
 ```
 **First item
