@@ -31,7 +31,7 @@ TEXT
 
     xhtml = <<HTML
 <p>
-a line with a url <a href="http://www.example.org/">http://www.example.org/</a> , an ^<a href="EscapedWikiName">EscapedWikiName</a> and a <a href="WikiName">WikiName</a>.
+a line with a url <a href="http://www.example.org/">http://www.example.org/</a> , an EscapedWikiName and a <a href="WikiName">WikiName</a>.
 </p>
 HTML
     auto_linker = AutoLink::WikiName.new
@@ -39,17 +39,17 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
-  def test_escape_wiki_name
+  def test_not_escape_wiki_name
     text = <<TEXT
 a line with a url http://www.example.org/ , an ^EscapedWikiName and a WikiName.
 TEXT
 
     xhtml = <<HTML
 <p>
-a line with a url <a href="http://www.example.org/">http://www.example.org/</a> , an EscapedWikiName and a <a href="WikiName">WikiName</a>.
+a line with a url <a href="http://www.example.org/">http://www.example.org/</a> , an ^<a href="EscapedWikiName">EscapedWikiName</a> and a <a href="WikiName">WikiName</a>.
 </p>
 HTML
-    auto_linker = AutoLink::WikiName.new({:wiki_name => true, :escape_wiki_name => true})
+    auto_linker = AutoLink::WikiName.new({:wiki_name => true, :escape_wiki_name => false})
     tree = BlockParser.parse(text.lines.to_a, auto_linker)
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
