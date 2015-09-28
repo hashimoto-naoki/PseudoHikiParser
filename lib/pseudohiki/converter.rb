@@ -336,7 +336,7 @@ instead of \"#{given_opt}\"."
 Convert texts written in a Hiki-like notation into another format.") do |opt|
         opt.version = PseudoHiki::VERSION
 
-        opt.on("-f [html_version]", "--format-version [=format_version]",
+        opt.on("-f [format_version]", "--format-version [=format_version]",
                "Choose a formart for the output. Available options: \
 html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
 (default: #{self[:html_version].version})") do |version|
