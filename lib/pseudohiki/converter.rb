@@ -3,6 +3,7 @@
 
 require 'optparse'
 require 'erb'
+require 'pseudohiki/version'
 require 'pseudohiki/blockparser'
 require 'pseudohiki/autolink'
 require 'pseudohiki/htmlformat'
@@ -333,6 +334,8 @@ instead of \"#{given_opt}\"."
     def parse_command_line_options
       OptionParser.new("USAGE: #{File.basename($0)} [OPTION]... [FILE]...
 Convert texts written in a Hiki-like notation into another format.") do |opt|
+        opt.version = PseudoHiki::VERSION
+
         opt.on("-f [html_version]", "--format-version [=format_version]",
                "Choose a formart for the output. Available options: \
 html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
