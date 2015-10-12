@@ -44,6 +44,32 @@ module PseudoHiki
         end
         BlockParser.parse(toc_lines)
       end
+
+      def create_main(toc, body, h1)
+        return nil unless @options[:toc]
+        main = @page_composer.formatter.create_element("section").tap do |element|
+          element["id"] = "main"
+          element.push h1 unless h1.empty?
+          element.push create_html_toc_container(toc)
+          element.push create_html_contents_container(body)
+        end
+      end
+
+      def create_html_toc_container(toc)
+        @page_composer.formatter.create_element("section").tap do |elm|
+          elm["id"] = "toc"
+          title = @options[:toc]
+          elm.push @page_composer.formatter.create_element("h2", title) unless title.empty?
+          elm.push toc
+        end
+      end
+
+      def create_html_contents_container(body)
+        @page_composer.formatter.create_element("section").tap do |elm|
+          elm["id"] = "contents"
+          elm.push body
+        end
+      end
     end
 
     def initialize(options)
@@ -127,29 +153,7 @@ module PseudoHiki
     end
 
     def create_html_main(toc, body, h1)
-      return nil unless @options[:toc]
-      main = formatter.create_element("section").tap do |element|
-        element["id"] = "main"
-        element.push h1 unless h1.empty?
-        element.push create_html_toc_container(toc)
-        element.push create_html_contents_container(body)
-      end
-    end
-
-    def create_html_toc_container(toc)
-      formatter.create_element("section").tap do |elm|
-        elm["id"] = "toc"
-        title = @options[:toc]
-        elm.push formatter.create_element("h2", title) unless title.empty?
-        elm.push toc
-      end
-    end
-
-    def create_html_contents_container(body)
-      formatter.create_element("section").tap do |elm|
-        elm["id"] = "contents"
-        elm.push body
-      end
+      @html_composer.create_main(toc, body, h1)
     end
 
     def create_main(toc, body, h1)
