@@ -154,13 +154,9 @@ module PseudoHiki
       contents.join($/)
     end
 
-    def create_html_main(toc, body, h1)
-      @html_composer.create_main(toc, body, h1)
-    end
-
     def create_main(toc, body, h1)
       return create_plain_main(toc, body, h1) unless @options.html_template
-      create_html_main(toc, body, h1)
+      @html_composer.create_main(toc, body, h1)
     end
 
     def create_style(path_to_css_file)
