@@ -107,6 +107,19 @@ LINES
     assert_equal("Table of Contents", options[:toc])
     assert_equal(nil, options[:title])
   end
+
+  def test_remove_bom
+    bom = "\xef\xbb\xbf"
+    string_without_bom = "a string without BOM"
+    string_with_bom = bom + string_without_bom
+    io_with_bom = StringIO.new(string_with_bom, "r")
+    io_without_bom = StringIO.new(string_without_bom, "r")
+
+    OptionManager.remove_bom(io_with_bom)
+    assert_equal(string_without_bom, io_with_bom.read)
+    OptionManager.remove_bom(io_without_bom)
+    assert_equal(string_without_bom, io_without_bom.read)
+  end
 end
 
 class TC_PageComposer < MiniTest::Unit::TestCase
