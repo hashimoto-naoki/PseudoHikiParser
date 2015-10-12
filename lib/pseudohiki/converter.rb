@@ -74,10 +74,26 @@ module PseudoHiki
       end
     end
 
+    class PlainComposer
+      def initialize(options, page_composer)
+        @options = options
+        @page_composer = page_composer
+      end
+
+      def create_table_of_contents(tree)
+        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
+          ('*' * toc_node.level) + @page_composer.to_plain(toc_node)
+        end
+
+        @options.formatter.format(BlockParser.parse(toc_lines))
+      end
+    end
+
     def initialize(options)
       @options = options
       @is_toc_item_pat = proc_for_is_toc_item_pat
       @html_composer = HtmlComposer.new(options, self)
+      @plain_composer = PlainComposer.new(options, self)
     end
 
     def proc_for_is_toc_item_pat
@@ -101,11 +117,7 @@ module PseudoHiki
     end
 
     def create_plain_table_of_contents(tree)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        ('*' * toc_node.level) + to_plain(toc_node)
-      end
-
-      @options.formatter.format(BlockParser.parse(toc_lines))
+      @plain_composer.create_table_of_contents(tree)
     end
 
     def create_html_table_of_contents(tree)
