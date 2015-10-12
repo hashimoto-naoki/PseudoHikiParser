@@ -35,16 +35,6 @@ module PseudoHiki
         end
       end
 
-      def create_toc_tree(tree, newline=nil)
-        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |line|
-          format("%s[[%s|#%s]]#{newline}",
-                 '*' * line.level,
-                 @page_composer.to_plain(line).lstrip,
-                 line.node_id.upcase)
-        end
-        BlockParser.parse(toc_lines)
-      end
-
       def create_main(toc, body, h1)
         return nil unless @options[:toc]
         main = @page_composer.formatter.create_element("section").tap do |element|
@@ -53,6 +43,16 @@ module PseudoHiki
           element.push create_html_toc_container(toc)
           element.push create_html_contents_container(body)
         end
+      end
+
+      def create_toc_tree(tree, newline=nil)
+        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |line|
+          format("%s[[%s|#%s]]#{newline}",
+                 '*' * line.level,
+                 @page_composer.to_plain(line).lstrip,
+                 line.node_id.upcase)
+        end
+        BlockParser.parse(toc_lines)
       end
 
       def create_html_toc_container(toc)
