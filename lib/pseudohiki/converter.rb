@@ -239,6 +239,7 @@ module PseudoHiki
     attr_reader :input_file_basename
 
     def self.remove_bom(input=ARGF)
+      return if input == ARGF and input.filename == "-"
       bom = input.read(3)
       input.rewind unless BOM == bom
     end
