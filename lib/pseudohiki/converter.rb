@@ -166,12 +166,8 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
-    def create_plain_main(toc, body, h1)
-      @plain_composer.create_main(toc, body, h1)
-    end
-
     def create_main(toc, body, h1)
-      return create_plain_main(toc, body, h1) unless @options.html_template
+      return @plain_composer.create_main(toc, body, h1) unless @options.html_template
       @html_composer.create_main(toc, body, h1)
     end
 
