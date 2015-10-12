@@ -40,10 +40,12 @@ module PseudoHiki
         main = @page_composer.formatter.create_element("section").tap do |element|
           element["id"] = "main"
           element.push h1 unless h1.empty?
-          element.push create_html_toc_container(toc)
-          element.push create_html_contents_container(body)
+          element.push create_toc_container(toc)
+          element.push create_contents_container(body)
         end
       end
+
+      private
 
       def create_toc_tree(tree, newline=nil)
         toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |line|
@@ -55,7 +57,7 @@ module PseudoHiki
         BlockParser.parse(toc_lines)
       end
 
-      def create_html_toc_container(toc)
+      def create_toc_container(toc)
         @page_composer.formatter.create_element("section").tap do |elm|
           elm["id"] = "toc"
           title = @options[:toc]
@@ -64,7 +66,7 @@ module PseudoHiki
         end
       end
 
-      def create_html_contents_container(body)
+      def create_contents_container(body)
         @page_composer.formatter.create_element("section").tap do |elm|
           elm["id"] = "contents"
           elm.push body
