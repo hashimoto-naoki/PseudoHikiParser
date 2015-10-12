@@ -87,6 +87,17 @@ module PseudoHiki
 
         @options.formatter.format(BlockParser.parse(toc_lines))
       end
+
+      def create_main(toc, body, h1)
+        contents = [body]
+        contents.unshift toc unless toc.empty?
+        if title = @options[:toc]
+          toc_title = @options.formatter.format(BlockParser.parse("!!" + title))
+          contents.unshift toc_title
+        end
+        contents.unshift h1 unless h1.empty?
+        contents.join($/)
+      end
     end
 
     def initialize(options)
@@ -156,14 +167,7 @@ module PseudoHiki
     end
 
     def create_plain_main(toc, body, h1)
-      contents = [body]
-      contents.unshift toc unless toc.empty?
-      if title = @options[:toc]
-        toc_title = @options.formatter.format(BlockParser.parse("!!" + title))
-        contents.unshift toc_title
-      end
-      contents.unshift h1 unless h1.empty?
-      contents.join($/)
+      @plain_composer.create_main(toc, body, h1)
     end
 
     def create_main(toc, body, h1)
