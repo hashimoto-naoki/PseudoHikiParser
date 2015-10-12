@@ -84,16 +84,6 @@ module PseudoHiki
       @html_composer.create_table_of_contents(tree)
     end
 
-    def create_html_toc_tree(tree, newline=nil)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
-        format("%s[[%s|#%s]]#{newline}",
-               '*' * line.level,
-               to_plain(line).lstrip,
-               line.node_id.upcase)
-      end
-      BlockParser.parse(toc_lines)
-    end
-
     def gfm_id(heading_node)
       MarkDownFormat.convert_into_gfm_id_format(to_plain(heading_node).strip)
     end
