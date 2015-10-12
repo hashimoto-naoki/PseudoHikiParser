@@ -19,9 +19,37 @@ module PseudoHiki
 
     PlainFormat = PlainTextFormat.create
 
+    class HtmlComposer
+      def initialize(options, page_composer)
+        @options = options
+        @page_composer = page_composer
+      end
+
+      def create_table_of_contents(tree)
+        @options.formatter.format(create_toc_tree(tree)).tap do |toc|
+          toc.traverse do |element|
+            if element.kind_of? HtmlElement and element.tagname == "a"
+              element["title"] = "toc_item: " + element.children.join.chomp
+            end
+          end
+        end
+      end
+
+      def create_toc_tree(tree, newline=nil)
+        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |line|
+          format("%s[[%s|#%s]]#{newline}",
+                 '*' * line.level,
+                 @page_composer.to_plain(line).lstrip,
+                 line.node_id.upcase)
+        end
+        BlockParser.parse(toc_lines)
+      end
+    end
+
     def initialize(options)
       @options = options
       @is_toc_item_pat = proc_for_is_toc_item_pat
+      @html_composer = HtmlComposer.new(options, self)
     end
 
     def proc_for_is_toc_item_pat
@@ -53,13 +81,7 @@ module PseudoHiki
     end
 
     def create_html_table_of_contents(tree)
-      @options.formatter.format(create_html_toc_tree(tree)).tap do |toc|
-        toc.traverse do |element|
-          if element.kind_of? HtmlElement and element.tagname == "a"
-            element["title"] = "toc_item: " + element.children.join.chomp
-          end
-        end
-      end
+      @html_composer.create_table_of_contents(tree)
     end
 
     def create_html_toc_tree(tree, newline=nil)
