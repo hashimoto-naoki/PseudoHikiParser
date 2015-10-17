@@ -154,8 +154,8 @@ module PseudoHiki
       return "" unless @options[:toc]
       gfm_chosen = @options[:html_version].version == "gfm"
       return create_gfm_table_of_contents(tree) if gfm_chosen
-      return @plain_composer.create_table_of_contents(tree) unless @options.html_template
-      @html_composer.create_table_of_contents(tree)
+      composer = @options.html_template ? @html_composer : @plain_composer
+      composer.create_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
