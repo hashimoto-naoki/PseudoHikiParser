@@ -177,6 +177,22 @@ TEXT
     assert_equal(toc_in_plain_text, toc)
   end
 
+  def test_gfm_composer_create_table_of_contents
+    toc_in_plain_text = <<TEXT
+  * [Heading1](#heading1)
+  * [Heading2](#heading2)
+    * [Heading2-1](#heading21)
+TEXT
+    set_argv("-fg -s -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.set_options_from_command_line
+    page_composer = PageComposer.new(options)
+    toc = PageComposer::GfmComposer.new(options, page_composer).create_table_of_contents(@parsed_tree)
+
+    assert_equal(toc_in_plain_text, toc)
+  end
+
   def test_html_composer_create_table_of_contents
     toc_in_html = <<TEXT
 <ul>
