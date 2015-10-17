@@ -161,7 +161,7 @@ HIKI
     assert_equal(collected_nodes, toc_nodes)
   end
 
-  def test_create_plain_table_of_contents
+  def test_plain_composer_create_table_of_contents
     toc_in_plain_text = <<TEXT
   * Heading1
   * Heading2
@@ -171,8 +171,8 @@ TEXT
 
     options = OptionManager.new
     options.set_options_from_command_line
-
-    toc = PageComposer.new(options).create_plain_table_of_contents(@parsed_tree)
+    page_composer = PageComposer.new(options)
+    toc = PageComposer::PlainComposer.new(options, page_composer).create_table_of_contents(@parsed_tree)
 
     assert_equal(toc_in_plain_text, toc)
   end
