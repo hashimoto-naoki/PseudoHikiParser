@@ -137,9 +137,7 @@ module PseudoHiki
 
     def initialize(options)
       @options = options
-      @html_composer = HtmlComposer.new(options, self)
-      @plain_composer = PlainComposer.new(options, self)
-      @gfm_composer = GfmComposer.new(options, self)
+      @composer = select_composer.new(options, self)
     end
 
     def formatter
@@ -147,13 +145,13 @@ module PseudoHiki
     end
 
     def select_composer
-      return @gfm_composer if @options[:html_version].version == "gfm"
-      @options.html_template ? @html_composer : @plain_composer
+      return GfmComposer if @options[:html_version].version == "gfm"
+      @options.html_template ? HtmlComposer : PlainComposer
     end
 
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      select_composer.create_table_of_contents(tree)
+      @composer.create_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
@@ -165,7 +163,7 @@ module PseudoHiki
     end
 
     def create_main(toc, body, h1)
-      select_composer.create_main(toc, body, h1)
+      @composer.create_main(toc, body, h1)
     end
 
     def create_style(path_to_css_file)
