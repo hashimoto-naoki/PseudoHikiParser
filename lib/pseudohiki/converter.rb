@@ -100,11 +100,36 @@ module PseudoHiki
       end
     end
 
+    class GfmComposer
+      def initialize(options, page_composer)
+        @options = options
+        @page_composer = page_composer
+      end
+
+      def create_table_of_contents(tree)
+        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
+          format("%s[[%s|#%s]]#{$/}",
+                 '*' * toc_node.level,
+                 @page_composer.to_plain(toc_node).strip,
+                 gfm_id(toc_node))
+        end
+
+        @options.formatter.format(BlockParser.parse(toc_lines))
+      end
+
+      private
+
+      def gfm_id(heading_node)
+        MarkDownFormat.convert_into_gfm_id_format(@page_composer.to_plain(heading_node).strip)
+      end
+    end
+
     def initialize(options)
       @options = options
       @is_toc_item_pat = proc_for_is_toc_item_pat
       @html_composer = HtmlComposer.new(options, self)
       @plain_composer = PlainComposer.new(options, self)
+      @gfm_composer = GfmComposer.new(options, self)
     end
 
     def proc_for_is_toc_item_pat
@@ -135,19 +160,8 @@ module PseudoHiki
       @html_composer.create_table_of_contents(tree)
     end
 
-    def gfm_id(heading_node)
-      MarkDownFormat.convert_into_gfm_id_format(to_plain(heading_node).strip)
-    end
-
     def create_gfm_table_of_contents(tree)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        format("%s[[%s|#%s]]#{$/}",
-               '*' * toc_node.level,
-               to_plain(toc_node).strip,
-               gfm_id(toc_node))
-      end
-
-      @options.formatter.format(BlockParser.parse(toc_lines))
+      @gfm_composer.create_table_of_contents(tree)
     end
 
     def create_table_of_contents(tree)
