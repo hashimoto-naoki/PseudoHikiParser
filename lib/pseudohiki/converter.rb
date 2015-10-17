@@ -24,6 +24,12 @@ module PseudoHiki
         @options = options
         @page_composer = page_composer
       end
+
+      private
+
+      def to_plain(line)
+        PlainFormat.format(line).to_s
+      end
     end
 
     class HtmlComposer < BaseComposer
@@ -53,7 +59,7 @@ module PseudoHiki
         toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |line|
           format("%s[[%s|#%s]]#{newline}",
                  '*' * line.level,
-                 @page_composer.to_plain(line).lstrip,
+                 to_plain(line).lstrip,
                  line.node_id.upcase)
         end
         BlockParser.parse(toc_lines)
@@ -79,7 +85,7 @@ module PseudoHiki
     class PlainComposer < BaseComposer
       def create_table_of_contents(tree)
         toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
-          ('*' * toc_node.level) + @page_composer.to_plain(toc_node)
+          ('*' * toc_node.level) + to_plain(toc_node)
         end
 
         @options.formatter.format(BlockParser.parse(toc_lines))
@@ -102,7 +108,7 @@ module PseudoHiki
         toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
           format("%s[[%s|#%s]]#{$/}",
                  '*' * toc_node.level,
-                 @page_composer.to_plain(toc_node).strip,
+                 to_plain(toc_node).strip,
                  gfm_id(toc_node))
         end
 
@@ -112,7 +118,7 @@ module PseudoHiki
       private
 
       def gfm_id(heading_node)
-        MarkDownFormat.convert_into_gfm_id_format(@page_composer.to_plain(heading_node).strip)
+        MarkDownFormat.convert_into_gfm_id_format(to_plain(heading_node).strip)
       end
     end
 
@@ -134,10 +140,6 @@ module PseudoHiki
 
     def formatter
       @formatter ||= @options.html_template.new
-    end
-
-    def to_plain(line)
-      PlainFormat.format(line).to_s
     end
 
     def collect_nodes_for_table_of_contents(tree)
