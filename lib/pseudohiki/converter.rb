@@ -137,26 +137,13 @@ module PseudoHiki
 
     def initialize(options)
       @options = options
-      @is_toc_item_pat = proc_for_is_toc_item_pat
       @html_composer = HtmlComposer.new(options, self)
       @plain_composer = PlainComposer.new(options, self)
       @gfm_composer = GfmComposer.new(options, self)
     end
 
-    def proc_for_is_toc_item_pat
-      proc do |node|
-        node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
-          (2..3).include? node.level and
-          node.node_id
-      end
-    end
-
     def formatter
       @formatter ||= @options.html_template.new
-    end
-
-    def collect_nodes_for_table_of_contents(tree)
-      Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
     end
 
     def create_plain_table_of_contents(tree)
