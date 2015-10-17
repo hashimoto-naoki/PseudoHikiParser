@@ -146,12 +146,14 @@ module PseudoHiki
       @formatter ||= @options.html_template.new
     end
 
+    def select_composer
+      return @gfm_composer if @options[:html_version].version == "gfm"
+      @options.html_template ? @html_composer : @plain_composer
+    end
+
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      gfm_chosen = @options[:html_version].version == "gfm"
-      return @gfm_composer.create_table_of_contents(tree) if gfm_chosen
-      composer = @options.html_template ? @html_composer : @plain_composer
-      composer.create_table_of_contents(tree)
+      select_composer.create_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
