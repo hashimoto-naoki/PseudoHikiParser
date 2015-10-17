@@ -162,10 +162,6 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
-    def create_main(toc, body, h1)
-      @composer.create_main(toc, body, h1)
-    end
-
     def create_style(path_to_css_file)
       style = formatter.create_element("style").tap do |element|
         element["type"] = "text/css"
@@ -186,7 +182,7 @@ module PseudoHiki
       toc = create_table_of_contents(tree)
       body = compose_body(tree)
       title = @options.title
-      main = create_main(toc, body, h1)
+      main = @composer.create_main(toc, body, h1)
       choose_template(main, body, binding)
     end
 
