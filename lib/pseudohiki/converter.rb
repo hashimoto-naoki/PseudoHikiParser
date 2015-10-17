@@ -116,7 +116,7 @@ module PseudoHiki
       end
     end
 
-    class GfmComposer < BaseComposer
+    class GfmComposer < PlainComposer
       def create_table_of_contents(tree)
         toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
           format("%s[[%s|#%s]]#{$/}",
