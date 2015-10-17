@@ -23,9 +23,22 @@ module PseudoHiki
       def initialize(options, page_composer)
         @options = options
         @page_composer = page_composer
+        @is_toc_item_pat = proc_for_is_toc_item_pat
       end
 
       private
+
+      def proc_for_is_toc_item_pat
+        proc do |node|
+          node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
+            (2..3).include? node.level and
+            node.node_id
+        end
+      end
+
+      def collect_nodes_for_table_of_contents(tree)
+        Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
+      end
 
       def to_plain(line)
         PlainFormat.format(line).to_s
@@ -56,7 +69,7 @@ module PseudoHiki
       private
 
       def create_toc_tree(tree, newline=nil)
-        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |line|
+        toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
           format("%s[[%s|#%s]]#{newline}",
                  '*' * line.level,
                  to_plain(line).lstrip,
@@ -84,7 +97,7 @@ module PseudoHiki
 
     class PlainComposer < BaseComposer
       def create_table_of_contents(tree)
-        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
           ('*' * toc_node.level) + to_plain(toc_node)
         end
 
@@ -105,7 +118,7 @@ module PseudoHiki
 
     class GfmComposer < BaseComposer
       def create_table_of_contents(tree)
-        toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
+        toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
           format("%s[[%s|#%s]]#{$/}",
                  '*' * toc_node.level,
                  to_plain(toc_node).strip,
