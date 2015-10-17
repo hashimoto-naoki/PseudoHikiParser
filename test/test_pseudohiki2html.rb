@@ -177,7 +177,7 @@ TEXT
     assert_equal(toc_in_plain_text, toc)
   end
 
-  def test_create_html_table_of_contents
+  def test_html_composer_create_table_of_contents
     toc_in_html = <<TEXT
 <ul>
 <li><a href="#HEADING1" title="toc_item: Heading1">Heading1
@@ -195,8 +195,8 @@ TEXT
 
     options = OptionManager.new
     options.set_options_from_command_line
-
-    toc = PageComposer.new(options).create_html_table_of_contents(@parsed_tree).join
+    page_composer = PageComposer.new(options)
+    toc = PageComposer::HtmlComposer.new(options, page_composer).create_table_of_contents(@parsed_tree).join
 
     assert_equal(toc_in_html, toc)
   end

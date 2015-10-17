@@ -150,10 +150,6 @@ module PseudoHiki
       @plain_composer.create_table_of_contents(tree)
     end
 
-    def create_html_table_of_contents(tree)
-      @html_composer.create_table_of_contents(tree)
-    end
-
     def create_gfm_table_of_contents(tree)
       @gfm_composer.create_table_of_contents(tree)
     end
@@ -163,7 +159,7 @@ module PseudoHiki
       gfm_chosen = @options[:html_version].version == "gfm"
       return create_gfm_table_of_contents(tree) if gfm_chosen
       return create_plain_table_of_contents(tree) unless @options.html_template
-      create_html_table_of_contents(tree)
+      @html_composer.create_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
