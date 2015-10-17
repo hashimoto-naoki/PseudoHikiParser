@@ -165,8 +165,7 @@ module PseudoHiki
     end
 
     def create_main(toc, body, h1)
-      composer = @options.html_template ? @html_composer : @plain_composer
-      composer.create_main(toc, body, h1)
+      select_composer.create_main(toc, body, h1)
     end
 
     def create_style(path_to_css_file)
