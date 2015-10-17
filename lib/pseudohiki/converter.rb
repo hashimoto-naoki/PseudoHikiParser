@@ -19,12 +19,14 @@ module PseudoHiki
 
     PlainFormat = PlainTextFormat.create
 
-    class HtmlComposer
+    class BaseComposer
       def initialize(options, page_composer)
         @options = options
         @page_composer = page_composer
       end
+    end
 
+    class HtmlComposer < BaseComposer
       def create_table_of_contents(tree)
         @options.formatter.format(create_toc_tree(tree)).tap do |toc|
           toc.traverse do |element|
@@ -74,12 +76,7 @@ module PseudoHiki
       end
     end
 
-    class PlainComposer
-      def initialize(options, page_composer)
-        @options = options
-        @page_composer = page_composer
-      end
-
+    class PlainComposer < BaseComposer
       def create_table_of_contents(tree)
         toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
           ('*' * toc_node.level) + @page_composer.to_plain(toc_node)
@@ -100,12 +97,7 @@ module PseudoHiki
       end
     end
 
-    class GfmComposer
-      def initialize(options, page_composer)
-        @options = options
-        @page_composer = page_composer
-      end
-
+    class GfmComposer < BaseComposer
       def create_table_of_contents(tree)
         toc_lines = @page_composer.collect_nodes_for_table_of_contents(tree).map do |toc_node|
           format("%s[[%s|#%s]]#{$/}",
