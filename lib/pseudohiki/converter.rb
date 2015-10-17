@@ -146,14 +146,10 @@ module PseudoHiki
       @formatter ||= @options.html_template.new
     end
 
-    def create_gfm_table_of_contents(tree)
-      @gfm_composer.create_table_of_contents(tree)
-    end
-
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
       gfm_chosen = @options[:html_version].version == "gfm"
-      return create_gfm_table_of_contents(tree) if gfm_chosen
+      return @gfm_composer.create_table_of_contents(tree) if gfm_chosen
       composer = @options.html_template ? @html_composer : @plain_composer
       composer.create_table_of_contents(tree)
     end
