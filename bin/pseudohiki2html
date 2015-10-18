@@ -3,7 +3,7 @@
 require 'pseudohiki/converter'
 
 options = PseudoHiki::OptionManager.new
-options.set_options_from_command_line
+options.parse_command_line_options
 
 if $KCODE
   PseudoHiki::OptionManager::ENCODING_REGEXP.each do |pat, encoding|

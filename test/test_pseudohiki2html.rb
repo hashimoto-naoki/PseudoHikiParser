@@ -13,11 +13,11 @@ end
 class TC_OptionManager < MiniTest::Unit::TestCase
   include PseudoHiki
 
-  def test_set_options_from_command_line
+  def test_parse_command_line_options
     set_argv("-fx -s -m 'Table of Contents' -c css/with_toc.css wikipage.txt -o wikipage_with_toc.html")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     assert_equal("xhtml1", options[:html_version].version)
     assert_equal(true, options[:split_main_heading])
@@ -27,11 +27,11 @@ class TC_OptionManager < MiniTest::Unit::TestCase
     assert_equal("wikipage_with_toc.html", File.basename(options[:output]))
   end
 
-  def test_set_options_from_command_line2
+  def test_parse_command_line_options2
     set_argv("-f h -m 'Table of Contents' -w 'Title' -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     assert_equal("html4", options[:html_version].version)
     assert_equal(false, options[:split_main_heading])
@@ -51,7 +51,7 @@ LINES
     set_argv("-f h -m 'Table of Contents' -w 'Title' -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     options.set_options_from_input_file(input_data.each_line.to_a)
 
     assert_equal("Table of Contents set in the input file", options[:toc])
@@ -68,7 +68,7 @@ LINES
     set_argv("-F -f h -m 'Table of Contents' -w 'Title' -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     options.set_options_from_input_file(input_data.each_line.to_a)
 
     assert_equal("Table of Contents", options[:toc])
@@ -85,7 +85,7 @@ LINES
     set_argv("-F -f h -m 'Table of Contents' -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     options.set_options_from_input_file(input_data.each_line.to_a)
 
     assert_equal("Table of Contents", options[:toc])
@@ -101,11 +101,24 @@ LINES
     set_argv("-F -f h -m 'Table of Contents' -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     options.set_options_from_input_file(input_data.each_line.to_a)
 
     assert_equal("Table of Contents", options[:toc])
     assert_equal(nil, options[:title])
+  end
+
+  def test_remove_bom
+    bom = "\xef\xbb\xbf"
+    string_without_bom = "a string without BOM"
+    string_with_bom = bom + string_without_bom
+    io_with_bom = StringIO.new(string_with_bom, "r")
+    io_without_bom = StringIO.new(string_without_bom, "r")
+
+    OptionManager.remove_bom(io_with_bom)
+    assert_equal(string_without_bom, io_with_bom.read)
+    OptionManager.remove_bom(io_without_bom)
+    assert_equal(string_without_bom, io_without_bom.read)
   end
 end
 
@@ -138,17 +151,17 @@ HIKI
   def test_collect_nodes_for_table_of_contents
     set_argv("-fg -s -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     collected_nodes = [[["Heading1\n"]],
                        [["Heading2\n"]],
                        [["Heading2-1\n"]]]
 
     tree = BlockParser.parse(@input_lines)
-    toc_nodes = PageComposer.new(options).collect_nodes_for_table_of_contents(tree)
+    toc_nodes = PageComposer::BaseComposer.new(options).send(:collect_nodes_for_table_of_contents, tree)
     assert_equal(collected_nodes, toc_nodes)
   end
 
-  def test_create_plain_table_of_contents
+  def test_plain_composer_create_table_of_contents
     toc_in_plain_text = <<TEXT
   * Heading1
   * Heading2
@@ -157,14 +170,28 @@ TEXT
     set_argv("-fg -s -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
-
-    toc = PageComposer.new(options).create_plain_table_of_contents(@parsed_tree)
+    options.parse_command_line_options
+    toc = PageComposer::PlainComposer.new(options).create_table_of_contents(@parsed_tree)
 
     assert_equal(toc_in_plain_text, toc)
   end
 
-  def test_create_html_table_of_contents
+  def test_gfm_composer_create_table_of_contents
+    toc_in_plain_text = <<TEXT
+  * [Heading1](#heading1)
+  * [Heading2](#heading2)
+    * [Heading2-1](#heading21)
+TEXT
+    set_argv("-fg -s -c css/with_toc.css wikipage.txt")
+
+    options = OptionManager.new
+    options.parse_command_line_options
+    toc = PageComposer::GfmComposer.new(options).create_table_of_contents(@parsed_tree)
+
+    assert_equal(toc_in_plain_text, toc)
+  end
+
+  def test_html_composer_create_table_of_contents
     toc_in_html = <<TEXT
 <ul>
 <li><a href="#HEADING1" title="toc_item: Heading1">Heading1
@@ -181,9 +208,8 @@ TEXT
     set_argv("-fh5 -s -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
-
-    toc = PageComposer.new(options).create_html_table_of_contents(@parsed_tree).join
+    options.parse_command_line_options
+    toc = PageComposer::HtmlComposer.new(options).create_table_of_contents(@parsed_tree).join
 
     assert_equal(toc_in_html, toc)
   end
@@ -191,7 +217,7 @@ TEXT
   def test_create_table_of_contents
     set_argv("-c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     toc = PageComposer.new(options).create_table_of_contents(@parsed_tree)
     assert_equal("", toc)
 
@@ -203,7 +229,7 @@ TEXT
 
     set_argv("-fg -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     toc = PageComposer.new(options).create_table_of_contents(@parsed_tree)
     assert_equal(toc_in_gfm_text, toc)
 
@@ -222,9 +248,26 @@ TEXT
 
     set_argv("-fh5 -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     toc = PageComposer.new(options).create_table_of_contents(@parsed_tree).join
     assert_equal(toc_in_html, toc)
+  end
+
+  def test_html_composer_create_style
+    expected_style = <<STYLE
+<style type="text/css">
+h1 {
+    margin-left: 0.5em;
+}
+</style>
+STYLE
+
+    set_argv("-c test_data/css/test.css wikipage.txt")
+    options = OptionManager.new
+    options.parse_command_line_options
+    test_data = File.join(File.dirname(__FILE__), "test_data/css/test.css")
+    style = PageComposer::HtmlComposer.new(options).create_style(test_data).to_s
+    assert_equal(expected_style, style)
   end
 
   def test_compose_html
@@ -321,14 +364,14 @@ TEXT
 
     set_argv("-fh5 -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     composed_html = PageComposer.new(options).compose_html(@input_lines).to_s
     assert_equal(expected_html, composed_html)
 
     set_argv("-fg -m 'table of contents' -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     composed_gfm_text = PageComposer.new(options).compose_html(@input_lines).join
     assert_equal(expected_gfm_text, composed_gfm_text)
@@ -372,7 +415,7 @@ GFM
     set_argv("-fg -s -c css/with_toc.css wikipage.txt")
 
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
     options.set_options_from_input_file(input)
 
     html = PageComposer.new(options).compose_html(input).join
@@ -384,7 +427,7 @@ GFM
     current_auto_linker = BlockParser.auto_linker
     set_argv("--with-wikiname wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     assert_equal(AutoLink::WikiName, BlockParser.auto_linker.class)
 
@@ -443,14 +486,14 @@ HTML
 
     set_argv("-fh5 -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     composed_html = PageComposer.new(options).compose_html(verbatim_block_text).to_s
     assert_equal(expected_html, composed_html)
 
     set_argv("-fh5 -c css/with_toc.css wikipage.txt")
     options = OptionManager.new
-    options.set_options_from_command_line
+    options.parse_command_line_options
 
     current_auto_linker = BlockParser.auto_linker
     BlockParser.auto_linker = AutoLink::Off

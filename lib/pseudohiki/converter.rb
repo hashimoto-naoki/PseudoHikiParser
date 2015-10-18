@@ -19,80 +19,153 @@ module PseudoHiki
 
     PlainFormat = PlainTextFormat.create
 
-    def initialize(options)
-      @options = options
-      @is_toc_item_pat = proc_for_is_toc_item_pat
-    end
+    class BaseComposer
+      def initialize(options)
+        @options = options
+        @is_toc_item_pat = proc_for_is_toc_item_pat
+      end
 
-    def proc_for_is_toc_item_pat
-      proc do |node|
-        node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
-          (2..3).include? node.level and
-          node.node_id
+      def compose_body(tree)
+        @options.formatter.format(tree)
+      end
+
+      def create_style(path_to_css_file); "".freeze; end
+
+      private
+
+      def proc_for_is_toc_item_pat
+        proc do |node|
+          node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
+            (2..3).include? node.level and
+            node.node_id
+        end
+      end
+
+      def collect_nodes_for_table_of_contents(tree)
+        Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
+      end
+
+      def to_plain(line)
+        PlainFormat.format(line).to_s
       end
     end
 
-    def formatter
-      @formatter ||= @options.html_template.new
-    end
-
-    def to_plain(line)
-      PlainFormat.format(line).to_s
-    end
-
-    def collect_nodes_for_table_of_contents(tree)
-      Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
-    end
-
-    def create_plain_table_of_contents(tree)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        ('*' * toc_node.level) + to_plain(toc_node)
-      end
-
-      @options.formatter.format(BlockParser.parse(toc_lines))
-    end
-
-    def create_html_table_of_contents(tree)
-      @options.formatter.format(create_html_toc_tree(tree)).tap do |toc|
-        toc.traverse do |element|
-          if element.kind_of? HtmlElement and element.tagname == "a"
-            element["title"] = "toc_item: " + element.children.join.chomp
+    class HtmlComposer < BaseComposer
+      def create_table_of_contents(tree)
+        @options.formatter.format(create_toc_tree(tree)).tap do |toc|
+          toc.traverse do |element|
+            if element.kind_of? HtmlElement and element.tagname == "a"
+              element["title"] = "toc_item: " + element.children.join.chomp
+            end
           end
+        end
+      end
+
+      def create_main(toc, body, h1)
+        return nil unless @options[:toc]
+        main = formatter.create_element("section").tap do |element|
+          element["id"] = "main"
+          element.push h1 unless h1.empty?
+          element.push create_toc_container(toc)
+          element.push create_contents_container(body)
+        end
+      end
+
+      def create_style(path_to_css_file)
+        style = formatter.create_element("style").tap do |element|
+          element["type"] = "text/css"
+          open(File.expand_path(path_to_css_file)) do |css_file|
+            element.push css_file.read
+          end
+        end
+      end
+
+      private
+
+      def formatter
+        @formatter ||= @options.html_template.new
+      end
+
+      def create_toc_tree(tree, newline=nil)
+        toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
+          format("%s[[%s|#%s]]#{newline}",
+                 '*' * line.level,
+                 to_plain(line).lstrip,
+                 line.node_id.upcase)
+        end
+        BlockParser.parse(toc_lines)
+      end
+
+      def create_toc_container(toc)
+        formatter.create_element("section").tap do |elm|
+          elm["id"] = "toc"
+          title = @options[:toc]
+          elm.push formatter.create_element("h2", title) unless title.empty?
+          elm.push toc
+        end
+      end
+
+      def create_contents_container(body)
+        formatter.create_element("section").tap do |elm|
+          elm["id"] = "contents"
+          elm.push body
         end
       end
     end
 
-    def create_html_toc_tree(tree, newline=nil)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
-        format("%s[[%s|#%s]]#{newline}",
-               '*' * line.level,
-               to_plain(line).lstrip,
-               line.node_id.upcase)
-      end
-      BlockParser.parse(toc_lines)
-    end
+    class PlainComposer < BaseComposer
+      def create_table_of_contents(tree)
+        toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+          ('*' * toc_node.level) + to_plain(toc_node)
+        end
 
-    def gfm_id(heading_node)
-      MarkDownFormat.convert_into_gfm_id_format(to_plain(heading_node).strip)
-    end
-
-    def create_gfm_table_of_contents(tree)
-      toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
-        format("%s[[%s|#%s]]#{$/}",
-               '*' * toc_node.level,
-               to_plain(toc_node).strip,
-               gfm_id(toc_node))
+        @options.formatter.format(BlockParser.parse(toc_lines))
       end
 
-      @options.formatter.format(BlockParser.parse(toc_lines))
+      def create_main(toc, body, h1)
+        contents = [body]
+        contents.unshift toc unless toc.empty?
+        if title = @options[:toc]
+          toc_title = @options.formatter.format(BlockParser.parse("!!" + title))
+          contents.unshift toc_title
+        end
+        contents.unshift h1 unless h1.empty?
+        contents.join($/)
+      end
+    end
+
+    class GfmComposer < PlainComposer
+      def create_table_of_contents(tree)
+        toc_lines = collect_nodes_for_table_of_contents(tree).map do |toc_node|
+          format("%s[[%s|#%s]]#{$/}",
+                 '*' * toc_node.level,
+                 to_plain(toc_node).strip,
+                 gfm_id(toc_node))
+        end
+
+        @options.formatter.format(BlockParser.parse(toc_lines))
+      end
+
+      private
+
+      def gfm_id(heading_node)
+        MarkDownFormat.convert_into_gfm_id_format(to_plain(heading_node).strip)
+      end
+    end
+
+    def initialize(options)
+      @options = options
+      @composer = select_composer.new(options)
+    end
+
+    def select_composer
+      return GfmComposer if @options[:html_version].version == "gfm"
+      @options.html_template ? HtmlComposer : PlainComposer
     end
 
     def create_table_of_contents(tree)
       return "" unless @options[:toc]
-      gfm_chosen = @options[:html_version].version == "gfm"
-      return create_gfm_table_of_contents(tree) if gfm_chosen
-      return create_plain_table_of_contents(tree) unless @options.html_template
-      create_html_table_of_contents(tree)
+      @composer.create_table_of_contents(tree)
     end
 
     def split_main_heading(input_lines)
@@ -103,69 +176,14 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
-    def create_plain_main(toc, body, h1)
-      contents = [body]
-      contents.unshift toc unless toc.empty?
-      if title = @options[:toc]
-        toc_title = @options.formatter.format(BlockParser.parse("!!" + title))
-        contents.unshift toc_title
-      end
-      contents.unshift h1 unless h1.empty?
-      contents.join($/)
-    end
-
-    def create_html_main(toc, body, h1)
-      return nil unless @options[:toc]
-      main = formatter.create_element("section").tap do |element|
-        element["id"] = "main"
-        element.push h1 unless h1.empty?
-        element.push create_html_toc_container(toc)
-        element.push create_html_contents_container(body)
-      end
-    end
-
-    def create_html_toc_container(toc)
-      formatter.create_element("section").tap do |elm|
-        elm["id"] = "toc"
-        title = @options[:toc]
-        elm.push formatter.create_element("h2", title) unless title.empty?
-        elm.push toc
-      end
-    end
-
-    def create_html_contents_container(body)
-      formatter.create_element("section").tap do |elm|
-        elm["id"] = "contents"
-        elm.push body
-      end
-    end
-
-    def create_main(toc, body, h1)
-      return create_plain_main(toc, body, h1) unless @options.html_template
-      create_html_main(toc, body, h1)
-    end
-
-    def create_style(path_to_css_file)
-      style = formatter.create_element("style").tap do |element|
-        element["type"] = "text/css"
-        open(File.expand_path(path_to_css_file)) do |css_file|
-          element.push css_file.read
-        end
-      end
-    end
-
-    def compose_body(tree)
-      @options.formatter.format(tree)
-    end
-
     def compose_html(input_lines)
       h1 = split_main_heading(input_lines)
       css = @options[:css]
       tree = BlockParser.parse(input_lines)
       toc = create_table_of_contents(tree)
-      body = compose_body(tree)
+      body = @composer.compose_body(tree)
       title = @options.title
-      main = create_main(toc, body, h1)
+      main = @composer.create_main(toc, body, h1)
       choose_template(main, body, binding)
     end
 
@@ -175,7 +193,7 @@ module PseudoHiki
       else
         html = @options.create_html_template_with_current_options
         embed_css = @options[:embed_css]
-        html.head.push create_style(embed_css) if embed_css
+        html.head.push @composer.create_style(embed_css) if embed_css
         html.push main || body
       end
 
@@ -239,6 +257,7 @@ module PseudoHiki
     attr_reader :input_file_basename
 
     def self.remove_bom(input=ARGF)
+      return if input == ARGF and input.filename == "-"
       bom = input.read(3)
       input.rewind unless BOM == bom
     end
@@ -331,12 +350,12 @@ instead of \"#{given_opt}\"."
       Encoding.default_internal = internal if internal and not internal.empty?
     end
 
-    def parse_command_line_options
+    def setup_command_line_options
       OptionParser.new("USAGE: #{File.basename($0)} [OPTION]... [FILE]...
 Convert texts written in a Hiki-like notation into another format.") do |opt|
         opt.version = PseudoHiki::VERSION
 
-        opt.on("-f [html_version]", "--format-version [=format_version]",
+        opt.on("-f [format_version]", "--format-version [=format_version]",
                "Choose a formart for the output. Available options: \
 html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
 (default: #{self[:html_version].version})") do |version|
@@ -424,7 +443,7 @@ inside (default: not specified)") do |template|
           end
         end
 
-        opt.parse!
+        opt
       end
     end
 
@@ -439,8 +458,10 @@ inside (default: not specified)") do |template|
       end
     end
 
-    def set_options_from_command_line
-      parse_command_line_options
+    def parse_command_line_options
+      opt = setup_command_line_options
+      yield opt if block_given?
+      opt.parse!
       check_argv
       @default_title = @input_file_basename
     end
