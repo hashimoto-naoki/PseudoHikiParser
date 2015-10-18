@@ -22,8 +22,8 @@ module PseudoHiki
     class BaseComposer
       def initialize(options, page_composer)
         @options = options
-        @page_composer = page_composer
         @is_toc_item_pat = proc_for_is_toc_item_pat
+        @formatter = page_composer.formatter if options.html_template
       end
 
       private
@@ -58,7 +58,7 @@ module PseudoHiki
 
       def create_main(toc, body, h1)
         return nil unless @options[:toc]
-        main = @page_composer.formatter.create_element("section").tap do |element|
+        main = @formatter.create_element("section").tap do |element|
           element["id"] = "main"
           element.push h1 unless h1.empty?
           element.push create_toc_container(toc)
@@ -79,16 +79,16 @@ module PseudoHiki
       end
 
       def create_toc_container(toc)
-        @page_composer.formatter.create_element("section").tap do |elm|
+        @formatter.create_element("section").tap do |elm|
           elm["id"] = "toc"
           title = @options[:toc]
-          elm.push @page_composer.formatter.create_element("h2", title) unless title.empty?
+          elm.push @formatter.create_element("h2", title) unless title.empty?
           elm.push toc
         end
       end
 
       def create_contents_container(body)
-        @page_composer.formatter.create_element("section").tap do |elm|
+        @formatter.create_element("section").tap do |elm|
           elm["id"] = "contents"
           elm.push body
         end
