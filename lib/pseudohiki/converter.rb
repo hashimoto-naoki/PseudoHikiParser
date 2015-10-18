@@ -25,6 +25,10 @@ module PseudoHiki
         @is_toc_item_pat = proc_for_is_toc_item_pat
       end
 
+      def compose_body(tree)
+        @options.formatter.format(tree)
+      end
+
       private
 
       def proc_for_is_toc_item_pat
@@ -172,16 +176,12 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
-    def compose_body(tree)
-      @options.formatter.format(tree)
-    end
-
     def compose_html(input_lines)
       h1 = split_main_heading(input_lines)
       css = @options[:css]
       tree = BlockParser.parse(input_lines)
       toc = create_table_of_contents(tree)
-      body = compose_body(tree)
+      body = @composer.compose_body(tree)
       title = @options.title
       main = @composer.create_main(toc, body, h1)
       choose_template(main, body, binding)
