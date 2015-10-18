@@ -157,7 +157,8 @@ HIKI
                        [["Heading2-1\n"]]]
 
     tree = BlockParser.parse(@input_lines)
-    toc_nodes = PageComposer::BaseComposer.new(nil, nil).send(:collect_nodes_for_table_of_contents, tree)
+    page_composer = PageComposer.new(options)
+    toc_nodes = PageComposer::BaseComposer.new(options, page_composer).send(:collect_nodes_for_table_of_contents, tree)
     assert_equal(collected_nodes, toc_nodes)
   end
 
