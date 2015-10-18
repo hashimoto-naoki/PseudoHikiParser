@@ -43,6 +43,8 @@ module PseudoHiki
       def to_plain(line)
         PlainFormat.format(line).to_s
       end
+
+      def create_style(path_to_css_file); "".freeze; end
     end
 
     class HtmlComposer < BaseComposer
@@ -63,6 +65,15 @@ module PseudoHiki
           element.push h1 unless h1.empty?
           element.push create_toc_container(toc)
           element.push create_contents_container(body)
+        end
+      end
+
+      def create_style(path_to_css_file)
+        style = @formatter.create_element("style").tap do |element|
+          element["type"] = "text/css"
+          open(File.expand_path(path_to_css_file)) do |css_file|
+            element.push css_file.read
+          end
         end
       end
 
@@ -163,12 +174,7 @@ module PseudoHiki
     end
 
     def create_style(path_to_css_file)
-      style = formatter.create_element("style").tap do |element|
-        element["type"] = "text/css"
-        open(File.expand_path(path_to_css_file)) do |css_file|
-          element.push css_file.read
-        end
-      end
+      @composer.create_style(path_to_css_file)
     end
 
     def compose_body(tree)
