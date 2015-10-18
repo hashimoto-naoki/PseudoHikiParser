@@ -26,7 +26,7 @@
 </a><ul>
 <li><a href="#SAMPLES" title="toc_item: Samples">Samples
 </a></li>
-<li><a href="#PSEUDOHIKI2HTML" title="toc_item: pseudohiki2html.rb">pseudohiki2html.rb
+<li><a href="#PSEUDOHIKI2HTML" title="toc_item: pseudohiki2html">pseudohiki2html
 </a></li>
 <li><a href="#PSEUDOHIKI_BLOCKPARSER" title="toc_item: class PseudoHiki::BlockParser">class PseudoHiki::BlockParser
 </a></li>
@@ -156,10 +156,10 @@ You will find these samples in <a href="https://github.com/nico-hn/PseudoHikiPar
 <!-- end of h3 -->
 </section>
 <section class="h3">
-<h3 id="PSEUDOHIKI2HTML"> pseudohiki2html.rb
+<h3 id="PSEUDOHIKI2HTML"> pseudohiki2html
 </h3>
 <p>
-<em>(Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.)</em>
+<em>(Please note that pseudohiki2html is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.)</em>
 </p>
 <p>
 After the installation of PseudoHikiParser, you can use a command: <strong>pseudohiki2html.rb</strong>.
@@ -168,7 +168,7 @@ After the installation of PseudoHikiParser, you can use a command: <strong>pseud
 Type the following lines at the command prompt:
 </p>
 <pre>
-pseudohiki2html.rb &lt;&lt;TEXT
+pseudohiki2html &lt;&lt;TEXT
 !! The first heading
 The first paragraph
 TEXT
@@ -203,7 +203,7 @@ The first paragraph
 And if you specify a file name with <code>--output</code> option:
 </p>
 <pre>
-pseudohiki2html.rb --output first_example.html &lt;&lt;TEXT
+pseudohiki2html --output first_example.html &lt;&lt;TEXT
 !! The first heading
 The first paragraph
 TEXT
@@ -212,11 +212,14 @@ TEXT
 the result will be saved in first_example.html.
 </p>
 <p>
-For more options, please try <code>pseudohiki2html.rb --help</code>
+For more options, please try <code>pseudohiki2html --help</code>
 </p>
 <section class="h4">
 <h4> Incompatible changes
 </h4>
+<p>
+Until version 0.0.4, the name of the command was <code>pseudohiki2html.rb</code>.
+</p>
 <p>
 From version 0.0.0.9.develop, command line options are renamed as follows:
 </p>
