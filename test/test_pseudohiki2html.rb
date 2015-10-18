@@ -257,7 +257,7 @@ TEXT
     assert_equal(toc_in_html, toc)
   end
 
-  def test_create_style
+  def test_html_composer_create_style
     expected_style = <<STYLE
 <style type="text/css">
 h1 {
@@ -270,7 +270,8 @@ STYLE
     options = OptionManager.new
     options.set_options_from_command_line
     test_data = File.join(File.dirname(__FILE__), "test_data/css/test.css")
-    style = PageComposer.new(options).create_style(test_data).to_s
+    page_composer = PageComposer.new(options)
+    style = PageComposer::HtmlComposer.new(options, page_composer).create_style(test_data).to_s
     assert_equal(expected_style, style)
   end
 
