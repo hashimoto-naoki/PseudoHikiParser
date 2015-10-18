@@ -36,6 +36,7 @@ Gem::Specification.new do |spec|
                        ]
   spec.executables   << "pseudohiki2html.rb"
   spec.test_files    = Dir.glob("test/test_*.rb")
+  spec.test_files    << "test/test_data/css/test.css"
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.3"
