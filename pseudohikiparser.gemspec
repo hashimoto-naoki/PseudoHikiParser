@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
                         "lib/htmlelement.rb",
                         "lib/htmlelement/htmltemplate.rb"
                        ]
-  spec.executables   << "pseudohiki2html.rb"
+  spec.executables   << "pseudohiki2html"
   spec.test_files    = Dir.glob("test/test_*.rb")
   spec.test_files    << "test/test_data/css/test.css"
   spec.require_paths = ["lib"]
