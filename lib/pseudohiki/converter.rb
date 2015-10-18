@@ -443,7 +443,7 @@ inside (default: not specified)") do |template|
           end
         end
 
-        opt.parse!
+        opt
       end
     end
 
@@ -459,7 +459,9 @@ inside (default: not specified)") do |template|
     end
 
     def set_options_from_command_line
-      parse_command_line_options
+      opt = parse_command_line_options
+      yield opt if block_given?
+      opt.parse!
       check_argv
       @default_title = @input_file_basename
     end
