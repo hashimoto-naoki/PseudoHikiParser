@@ -29,6 +29,8 @@ module PseudoHiki
         @options.formatter.format(tree)
       end
 
+      def create_style(path_to_css_file); "".freeze; end
+
       private
 
       def proc_for_is_toc_item_pat
@@ -46,8 +48,6 @@ module PseudoHiki
       def to_plain(line)
         PlainFormat.format(line).to_s
       end
-
-      def create_style(path_to_css_file); "".freeze; end
     end
 
     class HtmlComposer < BaseComposer
