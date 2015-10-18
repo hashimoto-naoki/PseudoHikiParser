@@ -51,16 +51,16 @@ And results of conversion
 
 You will find these samples in [develop branch](https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples).
 
-### pseudohiki2html.rb
+### pseudohiki2html
 
-_(Please note that pseudohiki2html.rb is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.)_
+_(Please note that pseudohiki2html is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.)_
 
 After the installation of PseudoHikiParser, you can use a command: **pseudohiki2html.rb**.
 
 Type the following lines at the command prompt:
 
 ```
-pseudohiki2html.rb <<TEXT
+pseudohiki2html <<TEXT
 !! The first heading
 The first paragraph
 TEXT
@@ -95,7 +95,7 @@ The first paragraph
 And if you specify a file name with `--output` option:
 
 ```
-pseudohiki2html.rb --output first_example.html <<TEXT
+pseudohiki2html --output first_example.html <<TEXT
 !! The first heading
 The first paragraph
 TEXT
@@ -103,9 +103,11 @@ TEXT
 
 the result will be saved in first\_example.html.
 
-For more options, please try `pseudohiki2html.rb --help`
+For more options, please try `pseudohiki2html --help`
 
 #### Incompatible changes
+
+Until version 0.0.4, the name of the command was `pseudohiki2html.rb`.
 
 From version 0.0.0.9.develop, command line options are renamed as follows:
 
