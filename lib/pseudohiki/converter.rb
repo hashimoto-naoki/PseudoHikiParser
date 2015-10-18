@@ -23,7 +23,6 @@ module PseudoHiki
       def initialize(options, page_composer)
         @options = options
         @is_toc_item_pat = proc_for_is_toc_item_pat
-        @formatter = page_composer.formatter if options.html_template
       end
 
       private
@@ -60,7 +59,7 @@ module PseudoHiki
 
       def create_main(toc, body, h1)
         return nil unless @options[:toc]
-        main = @formatter.create_element("section").tap do |element|
+        main = formatter.create_element("section").tap do |element|
           element["id"] = "main"
           element.push h1 unless h1.empty?
           element.push create_toc_container(toc)
@@ -69,7 +68,7 @@ module PseudoHiki
       end
 
       def create_style(path_to_css_file)
-        style = @formatter.create_element("style").tap do |element|
+        style = formatter.create_element("style").tap do |element|
           element["type"] = "text/css"
           open(File.expand_path(path_to_css_file)) do |css_file|
             element.push css_file.read
@@ -78,6 +77,10 @@ module PseudoHiki
       end
 
       private
+
+      def formatter
+        @formatter ||= @options.html_template.new
+      end
 
       def create_toc_tree(tree, newline=nil)
         toc_lines = collect_nodes_for_table_of_contents(tree).map do |line|
@@ -90,16 +93,16 @@ module PseudoHiki
       end
 
       def create_toc_container(toc)
-        @formatter.create_element("section").tap do |elm|
+        formatter.create_element("section").tap do |elm|
           elm["id"] = "toc"
           title = @options[:toc]
-          elm.push @formatter.create_element("h2", title) unless title.empty?
+          elm.push formatter.create_element("h2", title) unless title.empty?
           elm.push toc
         end
       end
 
       def create_contents_container(body)
-        @formatter.create_element("section").tap do |elm|
+        formatter.create_element("section").tap do |elm|
           elm["id"] = "contents"
           elm.push body
         end
@@ -149,10 +152,6 @@ module PseudoHiki
     def initialize(options)
       @options = options
       @composer = select_composer.new(options, self)
-    end
-
-    def formatter
-      @formatter ||= @options.html_template.new
     end
 
     def select_composer
