@@ -458,7 +458,7 @@ inside (default: not specified)") do |template|
       end
     end
 
-    def set_options_from_command_line
+    def parse_command_line_options
       opt = setup_command_line_options
       yield opt if block_given?
       opt.parse!
