@@ -31,7 +31,7 @@ gem install pseudohikiparser
 もし実験的な機能も試してみたければ、
 
 <<<
-gem install pseudohikiparser --pre
+gem install pseudohikiparser --version 0.0.4.develop
 >>>
 
 
@@ -50,16 +50,16 @@ gem install pseudohikiparser --pre
 
 このサンプルは[[develop branch|https://github.com/nico-hn/PseudoHikiParser/tree/develop/samples]]に置いてあります。
 
-!!![pseudohiki2html] pseudohiki2html.rb
+!!![pseudohiki2html] pseudohiki2html
 
-''(pseudohiki2html.rbは現時点ではPseudoHikiParserの利用例として提供されており、現段階ではオプションも継続的に変更されることにご注意ください。)''
+''(pseudohiki2htmlは現時点ではPseudoHikiParserの利用例として提供されており、現段階ではオプションも継続的に変更されることにご注意ください。)''
 
-インストールが終わると'''pseudohiki2html.rb'''というコマンドが使えるようになります。
+インストールが終わると'''pseudohiki2html'''というコマンドが使えるようになります。
 
 コマンドラインで次のように入力すると
 
 <<<
-pseudohiki2html.rb <<TEXT
+pseudohiki2html <<TEXT
 !! The first heading
 The first paragraph
 TEXT
@@ -95,7 +95,7 @@ The first paragraph
 ``--output``オプションを使ってファイル名を指定した場合は
 
 <<<
-pseudohiki2html.rb --output first_example.html <<TEXT
+pseudohiki2html --output first_example.html <<TEXT
 !! The first heading
 The first paragraph
 TEXT
@@ -103,9 +103,11 @@ TEXT
 
 で、結果がfirst_example.htmlに保存されます。
 
-その他のオプションについては``pseudohiki2html.rb --help``でご参照ください。
+その他のオプションについては``pseudohiki2html --help``でご参照ください。
 
 !!!! 非互換な変更
+
+version 0.0.4まで、コマンド名は``pseudohiki2html.rb``でした。
 
 version 0.0.0.9.developから、コマンドラインのオプション名を以下の通り変更しています。
 
