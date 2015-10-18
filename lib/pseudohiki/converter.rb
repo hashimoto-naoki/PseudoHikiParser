@@ -20,7 +20,7 @@ module PseudoHiki
     PlainFormat = PlainTextFormat.create
 
     class BaseComposer
-      def initialize(options, page_composer)
+      def initialize(options)
         @options = options
         @is_toc_item_pat = proc_for_is_toc_item_pat
       end
@@ -151,7 +151,7 @@ module PseudoHiki
 
     def initialize(options)
       @options = options
-      @composer = select_composer.new(options, self)
+      @composer = select_composer.new(options)
     end
 
     def select_composer

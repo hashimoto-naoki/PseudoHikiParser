@@ -157,8 +157,7 @@ HIKI
                        [["Heading2-1\n"]]]
 
     tree = BlockParser.parse(@input_lines)
-    page_composer = PageComposer.new(options)
-    toc_nodes = PageComposer::BaseComposer.new(options, page_composer).send(:collect_nodes_for_table_of_contents, tree)
+    toc_nodes = PageComposer::BaseComposer.new(options).send(:collect_nodes_for_table_of_contents, tree)
     assert_equal(collected_nodes, toc_nodes)
   end
 
@@ -172,8 +171,7 @@ TEXT
 
     options = OptionManager.new
     options.set_options_from_command_line
-    page_composer = PageComposer.new(options)
-    toc = PageComposer::PlainComposer.new(options, page_composer).create_table_of_contents(@parsed_tree)
+    toc = PageComposer::PlainComposer.new(options).create_table_of_contents(@parsed_tree)
 
     assert_equal(toc_in_plain_text, toc)
   end
@@ -188,8 +186,7 @@ TEXT
 
     options = OptionManager.new
     options.set_options_from_command_line
-    page_composer = PageComposer.new(options)
-    toc = PageComposer::GfmComposer.new(options, page_composer).create_table_of_contents(@parsed_tree)
+    toc = PageComposer::GfmComposer.new(options).create_table_of_contents(@parsed_tree)
 
     assert_equal(toc_in_plain_text, toc)
   end
@@ -212,8 +209,7 @@ TEXT
 
     options = OptionManager.new
     options.set_options_from_command_line
-    page_composer = PageComposer.new(options)
-    toc = PageComposer::HtmlComposer.new(options, page_composer).create_table_of_contents(@parsed_tree).join
+    toc = PageComposer::HtmlComposer.new(options).create_table_of_contents(@parsed_tree).join
 
     assert_equal(toc_in_html, toc)
   end
@@ -270,8 +266,7 @@ STYLE
     options = OptionManager.new
     options.set_options_from_command_line
     test_data = File.join(File.dirname(__FILE__), "test_data/css/test.css")
-    page_composer = PageComposer.new(options)
-    style = PageComposer::HtmlComposer.new(options, page_composer).create_style(test_data).to_s
+    style = PageComposer::HtmlComposer.new(options).create_style(test_data).to_s
     assert_equal(expected_style, style)
   end
 
