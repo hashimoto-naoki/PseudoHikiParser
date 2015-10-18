@@ -172,10 +172,6 @@ module PseudoHiki
       @options.formatter.format(tree)
     end
 
-    def create_style(path_to_css_file)
-      @composer.create_style(path_to_css_file)
-    end
-
     def compose_body(tree)
       @options.formatter.format(tree)
     end
@@ -197,7 +193,7 @@ module PseudoHiki
       else
         html = @options.create_html_template_with_current_options
         embed_css = @options[:embed_css]
-        html.head.push create_style(embed_css) if embed_css
+        html.head.push @composer.create_style(embed_css) if embed_css
         html.push main || body
       end
 
