@@ -350,7 +350,7 @@ instead of \"#{given_opt}\"."
       Encoding.default_internal = internal if internal and not internal.empty?
     end
 
-    def parse_command_line_options
+    def setup_command_line_options
       OptionParser.new("USAGE: #{File.basename($0)} [OPTION]... [FILE]...
 Convert texts written in a Hiki-like notation into another format.") do |opt|
         opt.version = PseudoHiki::VERSION
@@ -459,7 +459,7 @@ inside (default: not specified)") do |template|
     end
 
     def set_options_from_command_line
-      opt = parse_command_line_options
+      opt = setup_command_line_options
       yield opt if block_given?
       opt.parse!
       check_argv
