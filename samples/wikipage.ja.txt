@@ -111,6 +111,7 @@ version 0.0.4まで、コマンド名は``pseudohiki2html.rb``でした。
 
 version 0.0.0.9.developから、コマンドラインのオプション名を以下の通り変更しています。
 
+//@summary: 0.0.0.9.developより前のバージョンから変更されたコマンドラインのオプションのリスト
 ||!元の名前||!新しい名前||!注記
 ||-f||-F||'-f' is now used as the short version of '--format-version'
 ||-h||-f||'-h' is now used as the short version of '--help'
@@ -202,6 +203,7 @@ a line with an EscapedWikiName and a <a href="WikiName">WikiName</a>.
 
 PseudoHiki::BlockParser.parseで作られた構文木を使い回す必要がなければ、以下のPseudoHiki::Formatのクラスメソッドも利用可能です。
 
+//@summary: PseudoHiki::Formatで利用可能なクラスメソッドのリスト
 ||!メソッド名||!変換結果
 ||to_html||HTML 4.01
 ||to_xhtml||XHTML 1.0
