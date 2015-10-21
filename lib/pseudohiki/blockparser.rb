@@ -229,10 +229,6 @@ module PseudoHiki
         LABEL_SEP = [":"]
 
         class DecoratorItem < Struct.new(:string, :type, :id, :value)
-          def initialize(*args)
-            super
-            self.value = InlineParser.parse(self.value.join) if self.value and not self.value.kind_of? DecoratorLeaf
-          end
         end
 
         def parse_leafs(breaker)
