@@ -812,6 +812,24 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_decorator_for_table_caption
+    text = <<TEXT
+//@caption: Caption of ''the table''
+||!header 1||! header 2
+||cell 1||cell 2
+TEXT
+
+    xhtml = <<HTML
+<table>
+<caption>Caption of <em>the table</em></caption>
+<tr><th>header 1</th><th> header 2</th></tr>
+<tr><td>cell 1</td><td>cell 2</td></tr>
+</table>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_decorator_for_verbatim
     text = <<TEXT
 //@code[ruby]
