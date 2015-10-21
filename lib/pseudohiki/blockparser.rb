@@ -256,24 +256,10 @@ module PseudoHiki
           decorator = {}
           breaker.decorator = decorator
           @stack.remove_current_node.each do |leaf|
-            if item = create_decorator_item(leaf)
+            if item = DecoratorItem.create(leaf)
               decorator[item.type || :id] = item
             end
           end
-        end
-
-        def create_decorator_item(leaf)
-          DecoratorItem.create(leaf)
-        end
-
-        def lstrip_value(value)
-          head_val = value[0][0]
-          if head_val.kind_of? String and head_val.start_with? " ".freeze
-            head = value[0].dup
-            head[0] = head_val.lstrip
-            value[0] = head
-          end
-          value
         end
 
         def breakable?(breaker)
