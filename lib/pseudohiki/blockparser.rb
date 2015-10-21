@@ -226,11 +226,12 @@ module PseudoHiki
 
       class DecoratorNode
         DECORATOR_PAT = /\A(?:([^\[\]:]+))?(?:\[([^\[\]]+)\])?(?::\s*(\S.*))?/o
+        LABEL_SEP = [":"]
 
         class DecoratorItem < Struct.new(:string, :type, :id, :value)
           def initialize(*args)
             super
-            self.value = InlineParser.parse(self.value) if self.value
+            self.value = InlineParser.parse(self.value.join) if self.value and not self.value.kind_of? DecoratorLeaf
           end
         end
 
@@ -238,11 +239,32 @@ module PseudoHiki
           decorator = {}
           breaker.decorator = decorator
           @stack.remove_current_node.each do |leaf|
-            m = DECORATOR_PAT.match(leaf.join)
-            return nil unless m
-            item = DecoratorItem.new(*(m.to_a))
-            decorator[item.type || :id] = item
+            if item = create_decorator_item(leaf)
+              decorator[item.type || :id] = item
+            end
           end
+        end
+
+        def create_decorator_item(leaf)
+          m = DECORATOR_PAT.match(leaf.join)
+          return nil unless m
+          args = m.to_a
+          if i = leaf.index(LABEL_SEP)
+            value = leaf.dup
+            value.shift(i + 1)
+            args[-1] = lstrip_value(value)
+          end
+          DecoratorItem.new(*args)
+        end
+
+        def lstrip_value(value)
+          head_val = value[0][0]
+          if head_val.kind_of? String and head_val.start_with? " ".freeze
+            head = value[0].dup
+            head[0] = head_val.lstrip
+            value[0] = head
+          end
+          value
         end
 
         def breakable?(breaker)
