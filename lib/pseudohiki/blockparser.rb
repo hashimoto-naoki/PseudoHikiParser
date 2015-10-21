@@ -229,6 +229,27 @@ module PseudoHiki
         LABEL_SEP = [":"]
 
         class DecoratorItem < Struct.new(:string, :type, :id, :value)
+          def self.create(leaf)
+            m = DECORATOR_PAT.match(leaf.join)
+            return nil unless m
+            args = m.to_a
+            if i = leaf.index(LABEL_SEP)
+              value = leaf.dup
+              value.shift(i + 1)
+              args[-1] = lstrip_value(value)
+            end
+            self.new(*args)
+          end
+
+          def self.lstrip_value(value)
+            head_val = value[0][0]
+            if head_val.kind_of? String and head_val.start_with? " ".freeze
+              head = value[0].dup
+              head[0] = head_val.lstrip
+              value[0] = head
+            end
+            value
+          end
         end
 
         def parse_leafs(breaker)
@@ -242,15 +263,7 @@ module PseudoHiki
         end
 
         def create_decorator_item(leaf)
-          m = DECORATOR_PAT.match(leaf.join)
-          return nil unless m
-          args = m.to_a
-          if i = leaf.index(LABEL_SEP)
-            value = leaf.dup
-            value.shift(i + 1)
-            args[-1] = lstrip_value(value)
-          end
-          DecoratorItem.new(*args)
+          DecoratorItem.create(leaf)
         end
 
         def lstrip_value(value)
