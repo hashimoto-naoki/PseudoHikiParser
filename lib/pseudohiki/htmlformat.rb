@@ -209,15 +209,17 @@ module PseudoHiki
     class << Formatter[TableNode]
       def decorate(htmlelement, tree)
         each_decorator(htmlelement, tree) do |elm, decorator|
-          if summary = decorator["summary"]
-            summary_value = visited_result(summary.value).join
-            htmlelement["summary"] = HtmlElement.escape(summary_value)
+          visited_value(decorator["summary"]) do |summary|
+            htmlelement["summary"] = HtmlElement.escape(summary.join)
           end
-          if caption = decorator["caption"]
-            caption_value = visited_result(caption.value)
-            htmlelement.push @generator.create("caption", caption_value)
+          visited_value(decorator["caption"]) do |caption|
+            htmlelement.push @generator.create("caption", caption)
           end
         end
+      end
+
+      def visited_value(decorator_item)
+        yield visited_result(decorator_item.value) if decorator_item
       end
     end
 
