@@ -210,7 +210,7 @@ module PseudoHiki
       def decorate(htmlelement, tree)
         each_decorator(htmlelement, tree) do |elm, decorator|
           visited_value(decorator["summary"]) do |summary|
-            htmlelement["summary"] = HtmlElement.escape(summary.join)
+            htmlelement["summary"] = HtmlElement.escape(summary.join.chomp)
           end
           visited_value(decorator["caption"]) do |caption|
             htmlelement.push @generator.create("caption", caption)
