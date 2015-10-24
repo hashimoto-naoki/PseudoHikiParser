@@ -812,6 +812,22 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_decorator_for_table_summary
+    text = <<TEXT
+//@summary: Summary of the table
+||!header 1||! header 2
+TEXT
+
+    xhtml = <<HTML
+<table summary="Summary of the table">
+<tr><th>header 1</th><th> header 2
+</th></tr>
+</table>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_decorator_for_table_caption
     text = <<TEXT
 //@caption: Caption of ''the table''
