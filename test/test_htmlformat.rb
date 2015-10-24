@@ -846,6 +846,22 @@ HTML
     assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
   end
 
+  def test_decorator_for_table_caption_with_tags
+    text = <<TEXT
+//@caption: [[''Table caption''that begins with a link|http://www.example.org/]] and contains other strings
+||!header 1||! header 2
+TEXT
+
+    xhtml = <<HTML
+<table>
+<caption><a href="http://www.example.org/"><em>Table caption</em>that begins with a link</a> and contains other strings</caption>
+<tr><th>header 1</th><th> header 2</th></tr>
+</table>
+HTML
+    tree = BlockParser.parse(text.lines.to_a.map {|line| line.chomp })
+    assert_equal(xhtml, XhtmlFormat.format(tree).to_s)
+  end
+
   def test_decorator_for_verbatim
     text = <<TEXT
 //@code[ruby]
