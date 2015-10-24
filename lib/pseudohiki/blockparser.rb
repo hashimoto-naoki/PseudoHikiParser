@@ -236,17 +236,15 @@ module PseudoHiki
             if i = leaf.index(LABEL_SEP)
               value = leaf.dup
               value.shift(i + 1)
-              args[-1] = lstrip_value(value)
+              args[-1] = lstrip_value!(value)
             end
             self.new(*args)
           end
 
-          def self.lstrip_value(value)
+          def self.lstrip_value!(value)
             head_val = value[0][0]
             if head_val.kind_of? String and head_val.start_with? " ".freeze
-              head = value[0].dup
-              head[0] = head_val.lstrip
-              value[0] = head
+              value[0][0] = head_val.lstrip
             end
             value
           end
