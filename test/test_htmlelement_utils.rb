@@ -28,4 +28,42 @@ class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
     assert_equal("./",
                  @link_manager.convert_to_relative_path(@default_domain))
   end
+
+  def test_collect_links
+    hiki_text = <<TEXT
+!! Sample data with links
+
+*[[Default path|http://www.example.org/default_path/]]
+*[[Default index|http://www.example.org/default_path/index.html]]
+*[[Path for staging server|http://stage.example.org/path1/path1-1/index.html]]
+TEXT
+
+    expected_html = <<HTML
+<div class="section h2">
+<h2> Sample data with links
+</h2>
+<ul>
+<li><a href="./">Default path</a>
+</li>
+<li><a href="index.html">Default index</a>
+</li>
+<li><a href="../path1/path1-1/index.html">Path for staging server</a>
+</li>
+</ul>
+<!-- end of section h2 -->
+</div>
+HTML
+
+    html_str = PseudoHiki::Format.to_xhtml(hiki_text) do |html|
+      links = HtmlElement::Utils::LinkManager.collect_links(html)
+      links.each do |a|
+        href = a["href"]
+        href = @link_manager.unify_host_names(href)
+        href = @link_manager.convert_to_relative_path(href)
+        a["href"] = href
+      end
+    end
+
+    assert_equal(expected_html, html_str)
+  end
 end
