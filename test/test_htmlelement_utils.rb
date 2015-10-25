@@ -17,7 +17,9 @@ class TC_HtmlElement < MiniTest::Unit::TestCase
                  @link_manager.unify_host_names("http://develop.example.org/path1/path1-1"))
   end
 
-  def test_link_manager_convert_in_relative
-    assert(@link_manager.convert_in_relative("http://stage.example.org/path2"), "Not implemented yet")
+  def test_link_manager_convert_to_relative_path
+    assert_equal("../path1", @link_manager.convert_to_relative_path("http://www.example.org/path1"))
+    assert_equal("../path1/path1-1/",
+                 @link_manager.convert_to_relative_path("http://www.example.org/path1/path1-1/"))
   end
 end

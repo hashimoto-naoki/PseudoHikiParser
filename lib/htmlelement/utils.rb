@@ -7,6 +7,7 @@ class HtmlElement
   module Utils
     class LinkManager
       def initialize(domain_name, from_host_names)
+        domain_name = domain_name + "/" unless domain_name.end_with?("/")
         @domain_name = URI.parse(domain_name)
         @domain_name_re = Regexp.compile(Regexp.escape(domain_name))
         @from_host_names_re = compile_from_names_re(from_host_names)
@@ -16,8 +17,8 @@ class HtmlElement
         url.sub(@from_host_names_re, @domain_name.host)
       end
 
-      def convert_in_relative(url)
-        false
+      def convert_to_relative_path(url)
+        (URI.parse(url) - @domain_name).to_s
       end
 
       private
