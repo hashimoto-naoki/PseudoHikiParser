@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
                         "lib/pseudohiki/htmlplugin.rb",
                         "lib/pseudohiki/autolink.rb",
                         "lib/htmlelement.rb",
+                        "lib/htmlelement/utils.rb",
                         "lib/htmlelement/htmltemplate.rb"
                        ]
   spec.executables   << "pseudohiki2html"

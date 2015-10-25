@@ -9,6 +9,7 @@ task :test do
 
   test_files = %w(
 htmlelement
+htmlelement_utils
 htmlplugin
 htmltemplate
 inlineparser
