@@ -16,6 +16,7 @@ class HtmlElement
 
     class LinkManager
       SEP = "/"
+      SCHEME_RE = /^(https?|ftp):\/\//
 
       def self.collect_links(tree)
         Utils.collect_elements(tree) do |elm|
@@ -37,6 +38,12 @@ class HtmlElement
       def convert_to_relative_path(url)
         return "./".freeze if default_domain?(url)
         (URI.parse(url) - @domain_name).to_s
+      end
+
+      def external_link?(url)
+        if SCHEME_RE.match(url)
+          URI.parse(url).host != @domain_name.host
+        end
       end
 
       private

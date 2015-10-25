@@ -29,6 +29,11 @@ class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
                  @link_manager.convert_to_relative_path(@default_domain))
   end
 
+  def test_external_link?
+    assert(@link_manager.external_link?("http://www.example.com"), "In a different domain")
+    refute(@link_manager.external_link?("https://www.example.org/path2"), "In the same domain")
+  end
+
   def test_collect_links
     hiki_text = <<TEXT
 !! Sample data with links
