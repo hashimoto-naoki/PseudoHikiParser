@@ -1,1 +1,14 @@
 *~
+.ruby-version
+*.gem
+\#*\#
+doc/
+tmp
+pkg
+local_data/
+published_older_gems
+local_scripts/
+samples/*.md
+samples/*.txt
+samples/*.html
+samples/*.sh
