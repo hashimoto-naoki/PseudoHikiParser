@@ -55,7 +55,7 @@ You will find these samples in [develop branch](https://github.com/nico-hn/Pseud
 
 _(Please note that pseudohiki2html is currently provided as a showcase of PseudoHikiParser, and the options will be continuously changed at this stage of development.)_
 
-After the installation of PseudoHikiParser, you can use a command: **pseudohiki2html.rb**.
+After the installation of PseudoHikiParser, you can use a command: **pseudohiki2html**.
 
 Type the following lines at the command prompt:
 
