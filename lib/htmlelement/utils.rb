@@ -25,15 +25,18 @@ class HtmlElement
         end
       end
 
-      def initialize(domain_name, from_host_names, scheme=DEFAULT_SCHEME)
+      def initialize(domain_name, from_host_names=[], scheme=DEFAULT_SCHEME)
         domain_name = domain_name + SEP unless domain_name.end_with?(SEP)
         domain_name = scheme + domain_name unless SCHEME_RE =~ domain_name
         @domain_name = URI.parse(domain_name)
         @domain_name_re = Regexp.compile(Regexp.escape(domain_name))
-        @from_host_names_re = compile_from_names_re(from_host_names)
+        unless from_host_names.empty?
+          @from_host_names_re = compile_from_names_re(from_host_names)
+        end
       end
 
       def unify_host_names(url)
+        return url unless @from_host_names_re
         url.sub(@from_host_names_re, @domain_name.host)
       end
 
