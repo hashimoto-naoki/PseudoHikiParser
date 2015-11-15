@@ -8,8 +8,11 @@ require 'pseudohikiparser'
 class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
   def setup
     @default_domain = "http://www.example.org/default_path"
+    @from_host_names = ["stage.example.org", "develop.example.org"]
     @link_manager = HtmlElement::Utils::LinkManager.new(@default_domain,
-                                                        ["stage.example.org", "develop.example.org"])
+                                                        @from_host_names)
+    @link_manager_without_scheme = HtmlElement::Utils::LinkManager.new("www.example.org/default_path",
+                                                                       @from_host_names)
   end
 
   def test_unify_host_names
@@ -17,6 +20,13 @@ class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
                  @link_manager.unify_host_names("http://stage.example.org/path1"))
     assert_equal("http://www.example.org/path1/path1-1",
                  @link_manager.unify_host_names("http://develop.example.org/path1/path1-1"))
+  end
+
+  def test_unify_host_names_without_scheme
+    assert_equal("http://www.example.org/path1",
+                 @link_manager_without_scheme.unify_host_names("http://stage.example.org/path1"))
+    assert_equal("http://www.example.org/path1/path1-1",
+                 @link_manager_without_scheme.unify_host_names("http://develop.example.org/path1/path1-1"))
   end
 
   def test_convert_to_relative_path
