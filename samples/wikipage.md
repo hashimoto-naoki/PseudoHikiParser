@@ -2,7 +2,7 @@
 
 ## About PseudoHikiParser
 
-PseudoHikiParser is a converter of texts written in a [Hiki](https://github.com/hiki/hikidoc) like notation, into HTML, Markdown or other formats.
+PseudoHikiParser parses texts written in a [Hiki](https://github.com/hiki/hikidoc) like notation, and converts them into HTML, Markdown or other formats.
 
 I am writing this tool with following objectives in mind,
 
