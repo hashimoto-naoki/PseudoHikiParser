@@ -1,7 +1,7 @@
 PseudoHikiParser
 ================
 
-PseudoHikiParserは[Hiki](https://github.com/hiki/hikidoc)に似た記法で書かれたテキストをHTML・Markdownその他のファイル形式に変換するコンバータです。
+PseudoHikiParserは[Hiki](https://github.com/hiki/hikidoc)に似た記法で書かれたテキストをパースし、HTML・Markdownその他のファイル形式に変換します。
 
 このツールは次の目的を念頭において作成中です。
 
