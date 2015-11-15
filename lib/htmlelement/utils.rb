@@ -40,6 +40,17 @@ class HtmlElement
         (URI.parse(url) - @domain_name).to_s
       end
 
+      def use_relative_path_for_in_domain_links(html)
+        links = self.class.collect_links(html)
+        links.each do |a|
+          href = a["href"]
+          href = unify_host_names(href)
+          href = convert_to_relative_path(href)
+          a["href"] = href
+        end
+        html
+      end
+
       def external_link?(url)
         if SCHEME_RE.match(url)
           URI.parse(url).host != @domain_name.host

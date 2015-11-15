@@ -71,4 +71,36 @@ HTML
 
     assert_equal(expected_html, html_str)
   end
+
+  def test_use_relative_path_for_in_domain_links
+    hiki_text = <<TEXT
+!! Sample data with links
+
+*[[Default path|http://www.example.org/default_path/]]
+*[[Default index|http://www.example.org/default_path/index.html]]
+*[[Path for staging server|http://stage.example.org/path1/path1-1/index.html]]
+TEXT
+
+    expected_html = <<HTML
+<div class="section h2">
+<h2> Sample data with links
+</h2>
+<ul>
+<li><a href="./">Default path</a>
+</li>
+<li><a href="index.html">Default index</a>
+</li>
+<li><a href="../path1/path1-1/index.html">Path for staging server</a>
+</li>
+</ul>
+<!-- end of section h2 -->
+</div>
+HTML
+
+    html_str = PseudoHiki::Format.to_xhtml(hiki_text) do |html|
+      @link_manager.use_relative_path_for_in_domain_links(html).to_s
+    end
+
+    assert_equal(expected_html, html_str)
+  end
 end
