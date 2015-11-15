@@ -54,14 +54,7 @@ module PseudoHiki
     class HtmlComposer < BaseComposer
       def initialize(options)
         super(options)
-        if options[:domain_name]
-          domain_name = @options[:domain_name]
-          alternative_names = @options[:alternative_domain_names]
-          @link_manager = HtmlElement::Utils::LinkManager.new(domain_name,
-                                                              alternative_names)
-        else
-          @link_manager = nil
-        end
+        @link_manager = setup_link_manager(options)
         @relative_link = options[:relative_link]
       end
 
@@ -103,6 +96,14 @@ module PseudoHiki
       end
 
       private
+
+      def setup_link_manager(options)
+        if options[:domain_name]
+          domain_name = @options[:domain_name]
+          alternative_names = @options[:alternative_domain_names]
+          HtmlElement::Utils::LinkManager.new(domain_name, alternative_names)
+        end
+      end
 
       def formatter
         @formatter ||= @options.html_template.new
