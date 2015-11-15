@@ -17,6 +17,7 @@ class HtmlElement
     class LinkManager
       SEP = "/".freeze
       SCHEME_RE = /^(https?|ftp):\/\//
+      DEFAULT_SCHEME = 'http://'
 
       def self.collect_links(tree)
         Utils.collect_elements(tree) do |elm|
@@ -24,8 +25,9 @@ class HtmlElement
         end
       end
 
-      def initialize(domain_name, from_host_names)
+      def initialize(domain_name, from_host_names, scheme=DEFAULT_SCHEME)
         domain_name = domain_name + SEP unless domain_name.end_with?(SEP)
+        domain_name = scheme + domain_name unless SCHEME_RE =~ domain_name
         @domain_name = URI.parse(domain_name)
         @domain_name_re = Regexp.compile(Regexp.escape(domain_name))
         @from_host_names_re = compile_from_names_re(from_host_names)
