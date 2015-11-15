@@ -377,6 +377,48 @@ TEXT
     assert_equal(expected_gfm_text, composed_gfm_text)
   end
 
+  def test_compose_html_with_relative_links
+    expected_html =<<HTML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<title>wikipage</title>
+<link href="css/with_toc.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<p>
+a link in a paragraph <a href="./">http://www.example.org/</a>
+</p>
+<p>
+another link <a href="index.html">for index.html</a> in a paragraph
+</p>
+<pre>
+<a href="http://www.example.org/">http://www.example.org/</a>
+</pre>
+</body>
+</html>
+HTML
+
+    input_text = <<TEXT
+a link in a paragraph http://www.example.org/
+
+another link [[for index.html|http://www.example.org/index.html]] in a paragraph
+
+<<<
+http://www.example.org/
+>>>
+TEXT
+
+    set_argv("-fh5 -d 'www.example.org' --relative-links-in-html -c css/with_toc.css wikipage.txt")
+    options = OptionManager.new
+    options.parse_command_line_options
+
+    composed_html = PageComposer.new(options).compose_html(input_text).to_s
+    assert_equal(expected_html, composed_html)
+  end
+
   def test_output_in_gfm_with_toc
     input = <<TEXT.each_line.to_a
 //title: Test Data

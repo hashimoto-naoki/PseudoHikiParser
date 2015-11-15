@@ -12,6 +12,7 @@ require 'pseudohiki/markdownformat'
 require 'pseudohiki/utils'
 require 'htmlelement/htmltemplate'
 require 'htmlelement'
+require 'htmlelement/utils'
 
 module PseudoHiki
   class PageComposer
@@ -51,6 +52,27 @@ module PseudoHiki
     end
 
     class HtmlComposer < BaseComposer
+      def initialize(options)
+        super(options)
+        if options[:domain_name]
+          domain_name = @options[:domain_name]
+          alternative_names = @options[:alternative_domain_names]
+          @link_manager = HtmlElement::Utils::LinkManager.new(domain_name,
+                                                              alternative_names)
+        else
+          @link_manager = nil
+        end
+        @relative_link = options[:relative_link]
+      end
+
+      def compose_body(tree)
+        html = @options.formatter.format(tree)
+        if @relative_link and @link_manager
+          @link_manager.use_relative_path_for_in_domain_links(html)
+        end
+        html
+      end
+
       def create_table_of_contents(tree)
         @options.formatter.format(create_toc_tree(tree)).tap do |toc|
           toc.traverse do |element|
@@ -441,6 +463,19 @@ inside (default: not specified)") do |template|
             auto_linker = PseudoHiki::AutoLink::WikiName.new
             PseudoHiki::BlockParser.auto_linker = auto_linker
           end
+        end
+
+        opt.on("-d [domain_name(s)]", "--domain-name [=domain_name(s)]",
+               "Specify domain name(s)") do |domain_name|
+          names = domain_name.split(/;\s*/)
+          self[:domain_name] = names.shift
+          self[:alternative_domain_names] = names
+        end
+
+        opt.on("-r", "--relative-links-in-html",
+               "Replace absolute paths with relative ones. \
+*** THIS OPTION IS EXPERIMENTAL ***") do |relative_link|
+          self[:relative_link] = relative_link
         end
 
         opt
