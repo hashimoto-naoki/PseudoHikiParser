@@ -13,6 +13,7 @@ class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
                                                         @from_host_names)
     @link_manager_without_scheme = HtmlElement::Utils::LinkManager.new("www.example.org/default_path",
                                                                        @from_host_names)
+    @link_manager_without_from_host_names = HtmlElement::Utils::LinkManager.new("www.example.org/default_path")
   end
 
   def test_unify_host_names
@@ -27,6 +28,13 @@ class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
                  @link_manager_without_scheme.unify_host_names("http://stage.example.org/path1"))
     assert_equal("http://www.example.org/path1/path1-1",
                  @link_manager_without_scheme.unify_host_names("http://develop.example.org/path1/path1-1"))
+  end
+
+  def test_unify_host_names_without_from_host_names
+    assert_equal("http://stage.example.org/path1",
+                 @link_manager_without_from_host_names.unify_host_names("http://stage.example.org/path1"))
+    assert_equal("http://develop.example.org/path1/path1-1",
+                 @link_manager_without_from_host_names.unify_host_names("http://develop.example.org/path1/path1-1"))
   end
 
   def test_convert_to_relative_path
