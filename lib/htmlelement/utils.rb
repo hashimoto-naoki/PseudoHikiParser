@@ -41,6 +41,7 @@ class HtmlElement
       end
 
       def convert_to_relative_path(url)
+        return url unless SCHEME_RE =~ url
         return "./".freeze if default_domain?(url)
         (URI.parse(url) - @domain_name).to_s
       end
