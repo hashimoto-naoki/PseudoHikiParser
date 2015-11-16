@@ -59,11 +59,11 @@ module PseudoHiki
       end
 
       def compose_body(tree)
-        html = @options.formatter.format(tree)
-        if @relative_link and @link_manager
-          @link_manager.use_relative_path_for_in_domain_links(html)
+        super(tree).tap do |html|
+          if @relative_link and @link_manager
+            @link_manager.use_relative_path_for_in_domain_links(html)
+          end
         end
-        html
       end
 
       def create_table_of_contents(tree)
