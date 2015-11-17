@@ -21,6 +21,7 @@ markdownformat
 pseudohikiparser
 pseudohiki2html
 autolink
+utils
 )
   failed_tests = []
 
