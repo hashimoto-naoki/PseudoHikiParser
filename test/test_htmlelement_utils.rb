@@ -143,10 +143,10 @@ TABLE
 
     table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
     html_table = PseudoHiki::HtmlFormat.format(table_with_row_header)[0]
-    assert_equal(:col_scope, @table_manager.determine_header_scope(html_table))
+    assert_equal("col", @table_manager.determine_header_scope(html_table))
 
     table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
     html_table = PseudoHiki::HtmlFormat.format(table_with_col_header)[0]
-    assert_equal(:row_scope, @table_manager.determine_header_scope(html_table))
+    assert_equal("row", @table_manager.determine_header_scope(html_table))
   end
 end

@@ -77,11 +77,11 @@ class HtmlElement
     end
 
     class TableManager
-      TH, TD, ROWSPAN, COLSPAN = %w(th td rowspan colspan)
+      TH, TD, ROWSPAN, COLSPAN, COL, ROW = %w(th td rowspan colspan col row)
 
       def determine_header_scope(table)
-        col_scope = :col_scope
-        row_scope = :row_scope
+        col_scope = COL
+        row_scope = ROW
 
         cell_with_index(table) do |cell, i, j|
           return if span_set?(cell, ROWSPAN) or span_set?(cell, COLSPAN)
