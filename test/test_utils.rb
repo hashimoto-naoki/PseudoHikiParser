@@ -54,10 +54,10 @@ TABLE
     table_manager = PseudoHiki::Utils::TableManager.new
 
     table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)[0]
-    assert_equal(:col_scope, table_manager.determine_header_scope(table_with_row_header))
+    assert_equal("col", table_manager.determine_header_scope(table_with_row_header))
 
     table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)[0]
-    assert_equal(:row_scope, table_manager.determine_header_scope(table_with_col_header))
+    assert_equal("row", table_manager.determine_header_scope(table_with_col_header))
   end
 end
 

@@ -31,7 +31,7 @@ module PseudoHiki
     end
 
     class TableManager
-      TH = "th"
+      TH, COL, ROW = %w(th col row)
 
       def determine_header_scope(table)
         col_scope?(table) or row_scope?(table)
@@ -48,7 +48,7 @@ module PseudoHiki
             return unless (i == 0) == (cell.cell_type == TH)
           end
         end
-        :col_scope
+        COL
       end
 
       def row_scope?(table)
@@ -60,7 +60,7 @@ module PseudoHiki
             return unless (j == 0) == (cell.cell_type == TH)
           end
         end
-        :row_scope
+        ROW
       end
     end
   end
