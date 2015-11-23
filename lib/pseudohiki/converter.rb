@@ -399,7 +399,7 @@ html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
 
         opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
                "Specify the default external and internal character encodings \
-(same as the option of MRI") do |given_opt|
+(same as the option of MRI)") do |given_opt|
           set_encoding(given_opt)
         end
 
