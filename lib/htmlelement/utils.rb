@@ -105,10 +105,7 @@ class HtmlElement
 
       def assign_scope(table)
         scope = determine_header_scope(table)
-        headers = Utils.collect_elements(table) do |elm|
-          elm.kind_of? HtmlElement and elm.tagname == TH
-        end
-        headers.each do |th|
+        Utils.collect_elements_by_name(table, TH).each do |th|
           th[SCOPE] = scope if scope
         end
         table
