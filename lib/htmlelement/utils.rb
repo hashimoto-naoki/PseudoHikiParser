@@ -25,12 +25,6 @@ class HtmlElement
       SCHEME_RE = /^(https?|ftp):\/\//
       DEFAULT_SCHEME = 'http://'
 
-      def self.collect_links(tree)
-        Utils.collect_elements(tree) do |elm|
-          elm.kind_of? HtmlElement and elm.tagname == "a".freeze
-        end
-      end
-
       def initialize(domain_name, from_host_names=[], scheme=DEFAULT_SCHEME)
         domain_name += SEP unless domain_name.end_with?(SEP)
         domain_name = scheme + domain_name unless SCHEME_RE =~ domain_name
@@ -53,7 +47,7 @@ class HtmlElement
       end
 
       def use_relative_path_for_in_domain_links(html)
-        links = self.class.collect_links(html)
+        links = Utils.collect_elements_by_name(html, "a".freeze)
         links.each do |a|
           href = a["href"]
           href = unify_host_names(href)

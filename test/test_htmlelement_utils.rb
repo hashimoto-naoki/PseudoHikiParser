@@ -52,7 +52,7 @@ class TC_HtmlElement_Utils_LinkManager < MiniTest::Unit::TestCase
     refute(@link_manager.external_link?("https://www.example.org/path2"), "In the same domain")
   end
 
-  def test_collect_links
+  def test_collect_elements_by_name
     hiki_text = <<TEXT
 !! Sample data with links
 
@@ -78,7 +78,7 @@ TEXT
 HTML
 
     html_str = PseudoHiki::Format.to_xhtml(hiki_text) do |html|
-      links = HtmlElement::Utils::LinkManager.collect_links(html)
+      links = HtmlElement::Utils.collect_elements_by_name(html, "a".freeze)
       links.each do |a|
         href = a["href"]
         href = @link_manager.unify_host_names(href)
