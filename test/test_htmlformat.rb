@@ -122,6 +122,8 @@ a paragraph with a normal [[link|http://www.example.org/]]
 a paragraph with an [[image|http://www.example.org/image.png]]
 
 a paragraph with a link to an image from [[[[a thumbnail image|image/thumb_nail.png]]|http://www.example.org/image.png]]
+
+an img element with an empty alt attribute: [[|http://www.example.org/image.png]]
 TEXT
 
     html = <<HTML
@@ -135,6 +137,10 @@ a paragraph with an <img alt="image" src="http://www.example.org/image.png">
 <p>
 a paragraph with a link to an image from <a href="http://www.example.org/image.png"><img alt="a thumbnail image" src="image/thumb_nail.png">
 </a>
+</p>
+<p>
+an img element with an empty alt attribute: <img alt="" src="http://www.example.org/image.png">
+
 </p>
 HTML
 
