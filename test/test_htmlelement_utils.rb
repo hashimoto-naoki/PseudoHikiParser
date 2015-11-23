@@ -125,10 +125,6 @@ end
 
 class TC_HtmlElement_Utils_TableManager < MiniTest::Unit::TestCase
   def setup
-    @table_manager = HtmlElement::Utils::TableManager.new
-  end
-
-  def test_determine_header_scope
     table_with_row_header_text = <<TABLE
 ||!header1||!header2||!header3
 ||row1-1||row1-2||row1-3
@@ -141,29 +137,21 @@ table_with_col_header_text = <<TABLE
 ||!header3||col1-3||col2-3
 TABLE
 
-    table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
-    html_table = PseudoHiki::HtmlFormat.format(table_with_row_header)[0]
+    @table_manager = HtmlElement::Utils::TableManager.new
+    @table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
+    @table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
+
+  end
+
+  def test_determine_header_scope
+    html_table = PseudoHiki::HtmlFormat.format(@table_with_row_header)[0]
     assert_equal("col", @table_manager.determine_header_scope(html_table))
 
-    table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
-    html_table = PseudoHiki::HtmlFormat.format(table_with_col_header)[0]
+    html_table = PseudoHiki::HtmlFormat.format(@table_with_col_header)[0]
     assert_equal("row", @table_manager.determine_header_scope(html_table))
   end
 
   def test_assign_scope
-    table_with_row_header_text = <<TABLE
-||!header1||!header2||!header3
-||row1-1||row1-2||row1-3
-||row2-1||row2-2||row2-3
-TABLE
-
-table_with_col_header_text = <<TABLE
-||!header1||col1-1||col2-1
-||!header2||col1-2||col2-2
-||!header3||col1-3||col2-3
-TABLE
-
-
 col_scope_table = <<TABLE
 <table>
 <tr><th scope="col">header1</th><th scope="col">header2</th><th scope="col">header3
@@ -186,13 +174,11 @@ row_scope_table = <<TABLE
 </table>
 TABLE
 
-    table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
-    html_table = PseudoHiki::HtmlFormat.format(table_with_row_header)[0]
+    html_table = PseudoHiki::HtmlFormat.format(@table_with_row_header)[0]
     @table_manager.assign_scope(html_table)
     assert_equal(col_scope_table, html_table.to_s)
 
-    table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
-    html_table = PseudoHiki::HtmlFormat.format(table_with_col_header)[0]
+    html_table = PseudoHiki::HtmlFormat.format(@table_with_col_header)[0]
     @table_manager.assign_scope(html_table)
     assert_equal(row_scope_table, html_table.to_s)
   end
