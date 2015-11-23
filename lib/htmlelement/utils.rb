@@ -26,7 +26,7 @@ class HtmlElement
       end
 
       def initialize(domain_name, from_host_names=[], scheme=DEFAULT_SCHEME)
-        domain_name = domain_name + SEP unless domain_name.end_with?(SEP)
+        domain_name += SEP unless domain_name.end_with?(SEP)
         domain_name = scheme + domain_name unless SCHEME_RE =~ domain_name
         @domain_name = URI.parse(domain_name)
         @domain_name_re = Regexp.compile(Regexp.escape(domain_name))
@@ -71,7 +71,7 @@ class HtmlElement
       end
 
       def default_domain?(url)
-        url = url + SEP unless url.end_with?(SEP)
+        url += SEP unless url.end_with?(SEP)
         (URI.parse(url) - @domain_name).to_s.empty?
       end
     end
