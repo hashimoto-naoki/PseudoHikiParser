@@ -75,5 +75,44 @@ class HtmlElement
         (URI.parse(url) - @domain_name).to_s.empty?
       end
     end
+
+    class TableManager
+      TH, TD, ROWSPAN, COLSPAN = %w(th td rowspan colspan)
+
+      def determine_header_scope(table)
+        cell_with_index(table) do |cell, i, j|
+          return if span_set?(cell, ROWSPAN) or span_set?(cell, COLSPAN)
+        end
+        col_scope?(table) or row_scope?(table)
+      end
+
+      private
+
+      def cell_with_index(table)
+        table.children.each_with_index do |tr, i|
+          tr.children.each_with_index do |cell, j|
+            yield cell, i, j
+          end
+        end
+      end
+
+      def span_set?(cell, span)
+        cell[span] && cell[span] > 1
+      end
+
+      def col_scope?(table)
+        cell_with_index(table) do |cell, i, j|
+          return unless (i == 0) == (cell.tagname == TH)
+        end
+        :col_scope
+      end
+
+      def row_scope?(table)
+        cell_with_index(table) do |cell, i, j|
+          return unless (j == 0) == (cell.tagname == TH)
+        end
+        :row_scope
+      end
+    end
   end
 end

@@ -122,3 +122,31 @@ HTML
     assert_equal(expected_html, html_str)
   end
 end
+
+class TC_HtmlElement_Utils_TableManager < MiniTest::Unit::TestCase
+  def setup
+    @table_manager = HtmlElement::Utils::TableManager.new
+  end
+
+  def test_determine_header_scope
+    table_with_row_header_text = <<TABLE
+||!header1||!header2||!header3
+||row1-1||row1-2||row1-3
+||row2-1||row2-2||row2-3
+TABLE
+
+table_with_col_header_text = <<TABLE
+||!header1||col1-1||col2-1
+||!header2||col1-2||col2-2
+||!header3||col1-3||col2-3
+TABLE
+
+    table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
+    html_table = PseudoHiki::HtmlFormat.format(table_with_row_header)[0]
+    assert_equal(:col_scope, @table_manager.determine_header_scope(html_table))
+
+    table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
+    html_table = PseudoHiki::HtmlFormat.format(table_with_col_header)[0]
+    assert_equal(:row_scope, @table_manager.determine_header_scope(html_table))
+  end
+end
