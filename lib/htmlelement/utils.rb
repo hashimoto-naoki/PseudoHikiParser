@@ -80,10 +80,16 @@ class HtmlElement
       TH, TD, ROWSPAN, COLSPAN = %w(th td rowspan colspan)
 
       def determine_header_scope(table)
+        col_scope = :col_scope
+        row_scope = :row_scope
+
         cell_with_index(table) do |cell, i, j|
           return if span_set?(cell, ROWSPAN) or span_set?(cell, COLSPAN)
+          col_scope = nil unless (i == 0) == (cell.tagname == TH)
+          row_scope = nil unless (j == 0) == (cell.tagname == TH)
         end
-        col_scope?(table) or row_scope?(table)
+
+        col_scope or row_scope
       end
 
       private
@@ -98,20 +104,6 @@ class HtmlElement
 
       def span_set?(cell, span)
         cell[span] && cell[span] > 1
-      end
-
-      def col_scope?(table)
-        cell_with_index(table) do |cell, i, j|
-          return unless (i == 0) == (cell.tagname == TH)
-        end
-        :col_scope
-      end
-
-      def row_scope?(table)
-        cell_with_index(table) do |cell, i, j|
-          return unless (j == 0) == (cell.tagname == TH)
-        end
-        :row_scope
       end
     end
   end
