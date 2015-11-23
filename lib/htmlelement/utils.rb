@@ -14,6 +14,12 @@ class HtmlElement
       end
     end
 
+    def self.collect_elements_by_name(tree, name)
+      collect_elements(tree) do |elm|
+        elm.kind_of? HtmlElement and elm.tagname == name
+      end
+    end
+
     class LinkManager
       SEP = "/".freeze
       SCHEME_RE = /^(https?|ftp):\/\//
