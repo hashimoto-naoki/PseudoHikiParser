@@ -32,6 +32,7 @@ module PseudoHiki
 
     class TableManager
       TH = "th"
+
       def determine_header_scope(table)
         col_scope?(table) or row_scope?(table)
       end
@@ -42,8 +43,8 @@ module PseudoHiki
         table.each_with_index do |row, i|
           row.each do |cell|
             return if cell.rowspan > 1 or cell.colspan > 1
-            #The first row sould be consist of <th> elements
-            #and other rows should not include <th> elements
+            # The first row sould be consist of <th> elements
+            # and other rows should not include <th> elements
             return unless (i == 0) == (cell.cell_type == TH)
           end
         end
@@ -54,8 +55,8 @@ module PseudoHiki
         table.each do |row|
           row.each_with_index do |cell, j|
             return if cell.rowspan > 1 or cell.colspan > 1
-            #The first column sould be consist of <th> elements
-            #and other columns should not include <th> elements
+            # The first column sould be consist of <th> elements
+            # and other columns should not include <th> elements
             return unless (j == 0) == (cell.cell_type == TH)
           end
         end
