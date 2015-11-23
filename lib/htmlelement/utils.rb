@@ -80,6 +80,10 @@ class HtmlElement
       TH, TD, ROWSPAN, COLSPAN, COL, ROW = %w(th td rowspan colspan col row)
       SCOPE = "scope"
 
+      def self.assign_scope(table)
+        @manager.assign_scope(table)
+      end
+
       def determine_header_scope(table)
         col_scope = COL
         row_scope = ROW
@@ -117,6 +121,8 @@ class HtmlElement
       def span_set?(cell, span)
         cell[span] && cell[span] > 1
       end
+
+      @manager = new
     end
   end
 end

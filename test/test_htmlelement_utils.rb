@@ -181,5 +181,9 @@ TABLE
     html_table = PseudoHiki::HtmlFormat.format(@table_with_col_header)[0]
     @table_manager.assign_scope(html_table)
     assert_equal(row_scope_table, html_table.to_s)
+
+    html_table = PseudoHiki::HtmlFormat.format(@table_with_row_header)[0]
+    HtmlElement::Utils::TableManager.assign_scope(html_table)
+    assert_equal(col_scope_table, html_table.to_s)
   end
 end
