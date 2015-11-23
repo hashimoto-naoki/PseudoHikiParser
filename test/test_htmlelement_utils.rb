@@ -149,4 +149,51 @@ TABLE
     html_table = PseudoHiki::HtmlFormat.format(table_with_col_header)[0]
     assert_equal("row", @table_manager.determine_header_scope(html_table))
   end
+
+  def test_assign_scope
+    table_with_row_header_text = <<TABLE
+||!header1||!header2||!header3
+||row1-1||row1-2||row1-3
+||row2-1||row2-2||row2-3
+TABLE
+
+table_with_col_header_text = <<TABLE
+||!header1||col1-1||col2-1
+||!header2||col1-2||col2-2
+||!header3||col1-3||col2-3
+TABLE
+
+
+col_scope_table = <<TABLE
+<table>
+<tr><th scope="col">header1</th><th scope="col">header2</th><th scope="col">header3
+</th></tr>
+<tr><td>row1-1</td><td>row1-2</td><td>row1-3
+</td></tr>
+<tr><td>row2-1</td><td>row2-2</td><td>row2-3
+</td></tr>
+</table>
+TABLE
+
+row_scope_table = <<TABLE
+<table>
+<tr><th scope="row">header1</th><td>col1-1</td><td>col2-1
+</td></tr>
+<tr><th scope="row">header2</th><td>col1-2</td><td>col2-2
+</td></tr>
+<tr><th scope="row">header3</th><td>col1-3</td><td>col2-3
+</td></tr>
+</table>
+TABLE
+
+    table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
+    html_table = PseudoHiki::HtmlFormat.format(table_with_row_header)[0]
+    @table_manager.assign_scope(html_table)
+    assert_equal(col_scope_table, html_table.to_s)
+
+    table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
+    html_table = PseudoHiki::HtmlFormat.format(table_with_col_header)[0]
+    @table_manager.assign_scope(html_table)
+    assert_equal(row_scope_table, html_table.to_s)
+  end
 end

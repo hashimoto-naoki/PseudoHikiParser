@@ -78,6 +78,7 @@ class HtmlElement
 
     class TableManager
       TH, TD, ROWSPAN, COLSPAN, COL, ROW = %w(th td rowspan colspan col row)
+      SCOPE = "scope"
 
       def determine_header_scope(table)
         col_scope = COL
@@ -90,6 +91,17 @@ class HtmlElement
         end
 
         col_scope or row_scope
+      end
+
+      def assign_scope(table)
+        scope = determine_header_scope(table)
+        headers = Utils.collect_elements(table) do |elm|
+          elm.kind_of? HtmlElement and elm.tagname == TH
+        end
+        headers.each do |th|
+          th[SCOPE] = scope if scope
+        end
+        table
       end
 
       private
