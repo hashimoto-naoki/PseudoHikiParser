@@ -99,8 +99,9 @@ class HtmlElement
 
       def assign_scope(table)
         scope = determine_header_scope(table)
+        return table unless scope
         Utils.collect_elements_by_name(table, TH).each do |th|
-          th[SCOPE] = scope if scope
+          th[SCOPE] = scope
         end
         table
       end
