@@ -84,7 +84,7 @@ class HtmlElement
         @manager.assign_scope(table)
       end
 
-      def determine_header_scope(table)
+      def guess_header_scope(table)
         col_scope = COL
         row_scope = ROW
 
@@ -98,7 +98,7 @@ class HtmlElement
       end
 
       def assign_scope(table)
-        scope = determine_header_scope(table)
+        scope = guess_header_scope(table)
         return table unless scope
         Utils.collect_elements_by_name(table, TH).each do |th|
           th[SCOPE] = scope

@@ -143,12 +143,12 @@ TABLE
 
   end
 
-  def test_determine_header_scope
+  def test_guess_header_scope
     html_table = PseudoHiki::HtmlFormat.format(@table_with_row_header)[0]
-    assert_equal("col", @table_manager.determine_header_scope(html_table))
+    assert_equal("col", @table_manager.guess_header_scope(html_table))
 
     html_table = PseudoHiki::HtmlFormat.format(@table_with_col_header)[0]
-    assert_equal("row", @table_manager.determine_header_scope(html_table))
+    assert_equal("row", @table_manager.guess_header_scope(html_table))
   end
 
   def test_assign_scope
