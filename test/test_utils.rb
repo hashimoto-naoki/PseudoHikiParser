@@ -38,7 +38,7 @@ TEXT
     assert_equal(selected_headings, nodes)
   end
 
-  def test_table_manager_determine_header_scope
+  def test_table_manager_guess_header_scope
     table_with_row_header_text = <<TABLE
 ||!header1||!header2||!header3
 ||row1-1||row1-2||row1-3
@@ -54,10 +54,10 @@ TABLE
     table_manager = PseudoHiki::Utils::TableManager.new
 
     table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)[0]
-    assert_equal("col", table_manager.determine_header_scope(table_with_row_header))
+    assert_equal("col", table_manager.guess_header_scope(table_with_row_header))
 
     table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)[0]
-    assert_equal("row", table_manager.determine_header_scope(table_with_col_header))
+    assert_equal("row", table_manager.guess_header_scope(table_with_col_header))
   end
 end
 
