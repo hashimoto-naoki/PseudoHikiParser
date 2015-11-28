@@ -33,7 +33,7 @@ module PseudoHiki
     class TableManager
       TH, COL, ROW = %w(th col row)
 
-      def determine_header_scope(table)
+      def guess_header_scope(table)
         col_scope?(table) or row_scope?(table)
       end
 
