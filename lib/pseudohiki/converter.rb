@@ -23,7 +23,6 @@ module PseudoHiki
     class BaseComposer
       def initialize(options)
         @options = options
-        @is_toc_item_pat = proc_for_is_toc_item_pat
       end
 
       def compose_body(tree)
@@ -34,16 +33,14 @@ module PseudoHiki
 
       private
 
-      def proc_for_is_toc_item_pat
-        proc do |node|
-          node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
-            (2..3).include? node.level and
-            node.node_id
-        end
+      def toc_item_pat?(node)
+        node.kind_of?(PseudoHiki::BlockParser::HeadingLeaf) and
+          (2..3).include? node.level and
+          node.node_id
       end
 
       def collect_nodes_for_table_of_contents(tree)
-        Utils::NodeCollector.select(tree) {|node| @is_toc_item_pat.call(node) }
+        Utils::NodeCollector.select(tree) {|node| toc_item_pat?(node) }
       end
 
       def to_plain(line)
