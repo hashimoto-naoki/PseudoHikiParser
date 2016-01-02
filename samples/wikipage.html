@@ -170,6 +170,8 @@ Until version 0.0.4, the name of the command was <code>pseudohiki2html.rb</code>
 From version 0.0.0.9.develop, command line options are renamed as follows:
 </p>
 <table summary="List of command line options changed from versions prior to 0.0.0.9.develop">
+<caption>Incompatible options
+
 <tr><th>old name</th><th>new name</th><th>note
 </th></tr>
 <tr><td>-f</td><td>-F</td><td>'-f' is now used as the short version of '--format-version'
@@ -280,7 +282,9 @@ And if you don't like the default behavior, you may prepare a class/module that 
 <p>
 If you don't need to reuse a tree parsed by PseudoHiki::BlockParser.parse, you can use following class methods of PseudoHiki::Format.
 </p>
-<table summary="List of available class methods of PseudoHiki::Format">
+<table summary="List of available method names and the corresponding output formats.">
+<caption>Class methods of PseudoHiki::Format
+
 <tr><th>Method name</th><th>Result of conversion
 </th></tr>
 <tr><td>to_html</td><td>HTML 4.01
