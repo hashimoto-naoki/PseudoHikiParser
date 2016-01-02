@@ -363,7 +363,7 @@ instead of \"#{given_opt}\"."
       end
     end
 
-    def set_encoding(given_opt)
+    def setup_ruby_encoding(given_opt)
       return nil unless String.new.respond_to? :encoding
       external, internal = given_opt.split(/:/o, 2)
       Encoding.default_external = external if external and not external.empty?
@@ -397,7 +397,7 @@ html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
         opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
                "Specify the default external and internal character encodings \
 (same as the option of MRI)") do |given_opt|
-          set_encoding(given_opt)
+          setup_ruby_encoding(given_opt)
         end
 
         # use '-w' to avoid the conflict with the short option for '[-t]emplate'
