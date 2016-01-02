@@ -370,10 +370,20 @@ instead of \"#{given_opt}\"."
       Encoding.default_internal = internal if internal and not internal.empty?
     end
 
+    def parse_opt_setup_ruby_encoding(opt)
+      opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
+             "Specify the default external and internal character encodings \
+(same as the option of MRI)") do |given_opt|
+        setup_ruby_encoding(given_opt)
+      end
+    end
+
     def setup_command_line_options
       OptionParser.new("USAGE: #{File.basename($0)} [OPTION]... [FILE]...
 Convert texts written in a Hiki-like notation into another format.") do |opt|
         opt.version = PseudoHiki::VERSION
+
+        parse_opt_setup_ruby_encoding(opt)
 
         opt.on("-f [format_version]", "--format-version [=format_version]",
                "Choose a formart for the output. Available options: \
@@ -392,12 +402,6 @@ html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
                "Available options: utf8, euc-jp, sjis, latin1 \
 (default: #{self[:encoding]})") do |given_opt|
           set_html_encoding(given_opt)
-        end
-
-        opt.on("-E [ex[:in]]", "--encoding [=ex[:in]]",
-               "Specify the default external and internal character encodings \
-(same as the option of MRI)") do |given_opt|
-          setup_ruby_encoding(given_opt)
         end
 
         # use '-w' to avoid the conflict with the short option for '[-t]emplate'
