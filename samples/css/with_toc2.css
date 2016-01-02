@@ -104,6 +104,10 @@ h1 {
     border-color: #aaeeee;
 }
 
+#contents a:hover {
+    background: #ffffaa;
+}
+
 #contents h2 {
     color: #4444ff;
 }
@@ -112,7 +116,7 @@ h1 {
     border-radius: 8px;
     border-style: dotted;
     border-width: 0px;
-    background: #ddeedd;
+    background: #eeffee;
     margin-right: 2%;
     margin-bottom: 1em;
     padding: 0em 1em 1em 1em;
@@ -131,6 +135,16 @@ h1 {
     margin-right: 1em;
     margin-left: 1em;
     font-size: 120%;
+    overflow: auto;
+}
+
+#contents pre a {
+    color: #88ffff;
+}
+
+#contents pre a:hover {
+    background: #aaffff;
+    color: #222222;
 }
 
 #contents code {
