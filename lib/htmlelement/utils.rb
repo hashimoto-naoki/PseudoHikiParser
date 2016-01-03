@@ -118,11 +118,8 @@ class HtmlElement
       end
 
       def children_except_caption(table)
-        if table.children[0].tagname == CAPTION
-          table.children[1..-1]
-        else
-          table.children
-        end
+        children = table.children
+        children[0].tagname == CAPTION ? children[1..-1] : children
       end
 
       def span_set?(cell, span)
