@@ -378,6 +378,10 @@ instead of \"#{given_opt}\"."
       end
     end
 
+    def assign_opt_value(opt, key, short, long, description)
+      opt.on(short, long, description) {|val| self[key] = val }
+    end
+
     def setup_command_line_options
       OptionParser.new("USAGE: #{File.basename($0)} [OPTION]... [FILE]...
 Convert texts written in a Hiki-like notation into another format.") do |opt|
@@ -411,17 +415,15 @@ html4, xhtml1, html5, plain, plain_verbose, markdown or gfm \
           self[:title] = title if value_given?(title)
         end
 
-        opt.on("-c [css]", "--css [=css]",
-               "Set the path to a css file to be used \
-(default: #{self[:css]})") do |css|
-          self[:css] = css
-        end
+        assign_opt_value(opt, :css, "-c [css]",
+                         "--css [=css]",
+                         "Set the path to a css file to be used \
+(default: #{self[:css]})")
 
-        opt.on("-C [path_to_css_file]", "--embed-css [=path_to_css_file]",
-               "Set the path to a css file to embed \
-(default: not to embed)") do |path_to_css_file|
-          self[:embed_css] = path_to_css_file
-        end
+        assign_opt_value(opt, :embed_css, "-C [path_to_css_file]",
+                         "--embed-css [=path_to_css_file]",
+                         "Set the path to a css file to embed \
+(default: not to embed)")
 
         opt.on("-b [base]", "--base [=base]",
                "Specify the value of href attribute of the <base> element \
@@ -442,22 +444,17 @@ inside (default: not specified)") do |template|
           @need_output_file = true
         end
 
-        opt.on("-F", "--force",
-               "Force to apply command line options. \
-(default: false)") do |force|
-          self[:force] = force
-        end
+        assign_opt_value(opt, :force, "-F", "--force",
+                         "Force to apply command line options. \
+(default: false)")
 
-        opt.on("-m [contents-title]", "--table-of-contents [=contents-title]",
-               "Include the list of h2 and/or h3 headings with ids. \
-(default: nil)") do |toc_title|
-          self[:toc] = toc_title
-        end
+        assign_opt_value(opt, :toc, "-m [contents-title]",
+                         "--table-of-contents [=contents-title]",
+                         "Include the list of h2 and/or h3 headings with ids. \
+(default: nil)")
 
-        opt.on("-s", "--split-main-heading",
-               "Split the first h1 element") do |should_be_split|
-          self[:split_main_heading] = should_be_split
-        end
+        assign_opt_value(opt, :split_main_heading, "-s", "--split-main-heading",
+               "Split the first h1 element")
 
         opt.on("-W", "--with-wikiname",
                "Use WikiNames") do |with_wikiname|
@@ -474,11 +471,9 @@ inside (default: not specified)") do |template|
           self[:alternative_domain_names] = names
         end
 
-        opt.on("-r", "--relative-links-in-html",
-               "Replace absolute paths with relative ones. \
-*** THIS OPTION IS EXPERIMENTAL ***") do |relative_link|
-          self[:relative_link] = relative_link
-        end
+        assign_opt_value(opt, :relative_link, "-r", "--relative-links-in-html",
+                         "Replace absolute paths with relative ones. \
+*** THIS OPTION IS EXPERIMENTAL ***")
 
         opt
       end
