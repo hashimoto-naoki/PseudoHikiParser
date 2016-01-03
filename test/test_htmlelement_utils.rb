@@ -137,9 +137,17 @@ table_with_col_header_text = <<TABLE
 ||!header3||col1-3||col2-3
 TABLE
 
+table_with_row_header_and_caption_text = <<TABLE
+//@caption: Caption
+||!header1||!header2||!header3
+||row1-1||row1-2||row1-3
+||row2-1||row2-2||row2-3
+TABLE
+
     @table_manager = HtmlElement::Utils::TableManager.new
     @table_with_row_header = PseudoHiki::BlockParser.parse(table_with_row_header_text)
     @table_with_col_header = PseudoHiki::BlockParser.parse(table_with_col_header_text)
+    @table_with_row_header_and_caption = PseudoHiki::BlockParser.parse(table_with_row_header_and_caption_text)
 
   end
 
@@ -149,6 +157,9 @@ TABLE
 
     html_table = PseudoHiki::HtmlFormat.format(@table_with_col_header)[0]
     assert_equal("row", @table_manager.guess_header_scope(html_table))
+
+    html_table = PseudoHiki::HtmlFormat.format(@table_with_row_header_and_caption)[0]
+    assert_equal("col", @table_manager.guess_header_scope(html_table))
   end
 
   def test_assign_scope
