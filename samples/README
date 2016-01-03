@@ -10,7 +10,7 @@ pseudohiki2html -fx -s -m 'Table of Contents' -c css/with_toc.css wikipage.txt -
 
 #wikipage_html5_with_toc.html
 
-pseudohiki2html -fh5 -s -m 'Table of Contents' -c css/with_toc2.css wikipage.txt -o wikipage_html5_with_toc.html
+pseudohiki2html -a -fh5 -s -m 'Table of Contents' -c css/with_toc2.css wikipage.txt -o wikipage_html5_with_toc.html
 
 #wikipage.md
 
