@@ -49,6 +49,8 @@ module PseudoHiki
     end
 
     class HtmlComposer < BaseComposer
+      TABLE = "table"
+
       def initialize(options)
         super(options)
         @link_manager = setup_link_manager(options)
@@ -60,6 +62,8 @@ module PseudoHiki
           if @relative_link and @link_manager
             @link_manager.use_relative_path_for_in_domain_links(html)
           end
+
+          assign_table_header_scope(html) if @options[:accessibility]
         end
       end
 
@@ -99,6 +103,12 @@ module PseudoHiki
           domain_name = @options[:domain_name]
           alternative_names = @options[:alternative_domain_names]
           HtmlElement::Utils::LinkManager.new(domain_name, alternative_names)
+        end
+      end
+
+      def assign_table_header_scope(html)
+        HtmlElement::Utils.collect_elements_by_name(html, TABLE).each do |table|
+          HtmlElement::Utils::TableManager.assign_scope(table)
         end
       end
 
@@ -474,6 +484,9 @@ inside (default: not specified)") do |template|
         assign_opt_value(opt, :relative_link, "-r", "--relative-links-in-html",
                          "Replace absolute paths with relative ones. \
 *** THIS OPTION IS EXPERIMENTAL ***")
+
+        assign_opt_value(opt, :accessibility, "-a", "--accessibility",
+                         "A bit improved accessibility")
 
         opt
       end
