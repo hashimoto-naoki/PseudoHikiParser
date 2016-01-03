@@ -77,9 +77,9 @@ class HtmlElement
     end
 
     class TableManager
-      TH, TD, ROWSPAN, COLSPAN, COL, ROW = %w(th td rowspan colspan col row)
-      SCOPE = "scope"
-      CAPTION = "caption"
+      TH, TD, CAPTION = %w(th td caption)
+      ROWSPAN, COLSPAN = %w(rowspan colspan)
+      SCOPE, COL, ROW = %w(scope col row)
 
       def self.assign_scope(table)
         @manager.assign_scope(table)
