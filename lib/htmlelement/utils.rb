@@ -79,6 +79,7 @@ class HtmlElement
     class TableManager
       TH, TD, ROWSPAN, COLSPAN, COL, ROW = %w(th td rowspan colspan col row)
       SCOPE = "scope"
+      CAPTION = "caption"
 
       def self.assign_scope(table)
         @manager.assign_scope(table)
@@ -109,10 +110,18 @@ class HtmlElement
       private
 
       def cell_with_index(table)
-        table.children.each_with_index do |tr, i|
+        children_except_caption(table).each_with_index do |tr, i|
           tr.children.each_with_index do |cell, j|
             yield cell, i, j
           end
+        end
+      end
+
+      def children_except_caption(table)
+        if table.children[0].tagname == CAPTION
+          table.children[1..-1]
+        else
+          table.children
         end
       end
 
