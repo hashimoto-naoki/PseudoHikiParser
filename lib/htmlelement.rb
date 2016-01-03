@@ -41,8 +41,8 @@ class HtmlElement
 
   ELEMENT_TYPES = {
     :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
-    :HEADING_TYPE_BLOCK => %w(dt dd tr title h1 h2 h3 h4 h5 h6),
-    :LIST_ITEM_TYPE_BLOCK => %w(li col caption),
+    :HEADING_TYPE_BLOCK => %w(dt dd tr title caption h1 h2 h3 h4 h5 h6),
+    :LIST_ITEM_TYPE_BLOCK => %w(li col),
     :EMPTY_BLOCK => %w(img meta link base input hr)
   }
 
