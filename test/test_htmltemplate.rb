@@ -187,4 +187,38 @@ HTML
     html.base = '/base/path'
     assert_equal(html_result, html.to_s)
   end
+
+  def test_embed_style
+    expected_html = <<HTML
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta content="en" http-equiv="Content-Language">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="text/javascript" http-equiv="Content-Script-Type">
+<title></title>
+<link href="default.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+p {
+  font-size: 120%;
+}
+</style>
+</head>
+<body>
+</body>
+</html>
+HTML
+
+    css = <<CSS
+p {
+  font-size: 120%;
+}
+CSS
+
+    html = HtmlTemplate.new
+    html.embed_style(css)
+
+    assert_equal(expected_html, html.to_s)
+  end
 end
