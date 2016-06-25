@@ -70,6 +70,12 @@ class HtmlTemplate
     @default_css_link["href"] = file_path
   end
 
+  def embed_style(css)
+    style = create_element("style", nil, "type" => "text/css")
+    @head.push style
+    style.push css
+  end
+
   def title=(title)
     @title_element.pop until @title_element.empty?
     @title = title
