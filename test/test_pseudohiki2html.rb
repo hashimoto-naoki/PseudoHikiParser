@@ -270,6 +270,35 @@ STYLE
     assert_equal(expected_style, style)
   end
 
+  def test_embed_css_into_html
+    expected_html = <<HTML
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta content="en" http-equiv="Content-Language">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="text/javascript" http-equiv="Content-Script-Type">
+<title>wikipage</title>
+<link href="default.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+h1 {
+    margin-left: 0.5em;
+}
+</style>
+</head>
+<body>
+</body>
+</html>
+HTML
+
+    set_argv("-C #{File.join(File.dirname(__FILE__), "test_data/css/test.css")} wikipage.txt")
+    options = OptionManager.new
+    options.parse_command_line_options
+    html = PageComposer.new(options).compose_html("").to_s
+    assert_equal(expected_html, html)
+  end
+
   def test_compose_html
     expected_html =<<HTML
 <?xml version="1.0" encoding="UTF-8"?>
