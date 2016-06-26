@@ -223,4 +223,39 @@ CSS
 
     assert_equal(expected_html, html.to_s)
   end
+
+  def test_xhtmltemplate_embed_style
+    expected_html = <<HTML
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"
+  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">
+<head>
+<meta content=\"en\" http-equiv=\"Content-Language\" />
+<meta content=\"text/html; charset=UTF-8\" http-equiv=\"Content-Type\" />
+<meta content=\"text/javascript\" http-equiv=\"Content-Script-Type\" />
+<title></title>
+<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />
+<style type=\"text/css\">
+p {
+  font-size: 120%;
+}
+</style>
+</head>
+<body>
+</body>
+</html>
+HTML
+
+    css = <<CSS
+p {
+  font-size: 120%;
+}
+CSS
+
+    html = XhtmlTemplate.new
+    html.embed_style(css)
+
+    assert_equal(expected_html, html.to_s)
+  end
 end

@@ -151,6 +151,12 @@ class XhtmlTemplate < HtmlTemplate
     super(language)
     @html["xml:lang"] = language
   end
+
+  private
+
+  def format_css(css)
+    css.rstrip + $/
+  end
 end
 
 class Xhtml5Template < XhtmlTemplate
