@@ -29,8 +29,6 @@ module PseudoHiki
         @options.formatter.format(tree)
       end
 
-      def create_style(path_to_css_file); "".freeze; end
-
       private
 
       def toc_item_pat?(node)
@@ -84,15 +82,6 @@ module PseudoHiki
           element.push h1 unless h1.empty?
           element.push create_toc_container(toc)
           element.push create_contents_container(body)
-        end
-      end
-
-      def create_style(path_to_css_file)
-        style = formatter.create_element("style").tap do |element|
-          element["type"] = "text/css"
-          open(File.expand_path(path_to_css_file)) do |css_file|
-            element.push css_file.read
-          end
         end
       end
 
@@ -223,7 +212,7 @@ module PseudoHiki
       else
         html = @options.create_html_template_with_current_options
         embed_css = @options[:embed_css]
-        html.head.push @composer.create_style(embed_css) if embed_css
+        html.embed_style(File.read(File.expand_path(embed_css))) if embed_css
         html.push main || body
       end
 
