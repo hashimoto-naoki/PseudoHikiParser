@@ -265,9 +265,11 @@ TEXT
 <title>wikipage</title>
 <link href="default.css" rel="stylesheet" type="text/css">
 <style type="text/css">
+<!--
 h1 {
     margin-left: 0.5em;
 }
+-->
 </style>
 </head>
 <body>
