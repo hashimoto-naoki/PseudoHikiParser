@@ -73,7 +73,7 @@ class HtmlTemplate
   def embed_style(css)
     style = create_element("style", nil, "type" => "text/css")
     @head.push style
-    style.push css
+    style.push format_css(css)
   end
 
   def title=(title)
@@ -131,6 +131,10 @@ class HtmlTemplate
   def set_path_to_base(base_uri)
     return "" unless base_uri
     create_element("base", nil, "href" => base_uri)
+  end
+
+  def format_css(css)
+    ["<!--", css.rstrip, "-->", ""].join($/)
   end
 end
 

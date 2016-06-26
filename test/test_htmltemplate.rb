@@ -200,9 +200,11 @@ HTML
 <title></title>
 <link href="default.css" rel="stylesheet" type="text/css">
 <style type="text/css">
+<!--
 p {
   font-size: 120%;
 }
+-->
 </style>
 </head>
 <body>
