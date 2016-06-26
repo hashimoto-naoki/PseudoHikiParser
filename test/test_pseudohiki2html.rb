@@ -253,23 +253,6 @@ TEXT
     assert_equal(toc_in_html, toc)
   end
 
-  def test_html_composer_create_style
-    expected_style = <<STYLE
-<style type="text/css">
-h1 {
-    margin-left: 0.5em;
-}
-</style>
-STYLE
-
-    set_argv("-c test_data/css/test.css wikipage.txt")
-    options = OptionManager.new
-    options.parse_command_line_options
-    test_data = File.join(File.dirname(__FILE__), "test_data/css/test.css")
-    style = PageComposer::HtmlComposer.new(options).create_style(test_data).to_s
-    assert_equal(expected_style, style)
-  end
-
   def test_embed_css_into_html
     expected_html = <<HTML
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
