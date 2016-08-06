@@ -36,7 +36,7 @@ class HtmlTemplate
       @head.push element
     end
   end
-  attr_reader :title, :head
+  attr_reader :title, :head, :body
 
   def create_element(*params)
     ELEMENT[self.class].create(*params)
@@ -107,6 +107,19 @@ class HtmlTemplate
   def to_s
     [ELEMENT[self.class].doctype(@charset),
       @html].join("")
+  end
+
+  def add_skip_link(to="contents", from=@body,label="Skip to Content")
+    skip_link = create_element("a", label, "href" => "#{to}")
+    if from == @body
+      skip_link_container = create_element("div").tap do |div|
+        div["class"] = "skip-link"
+        @body.push div
+      end
+    else
+      skip_link_container = from
+    end
+    skip_link_container.push skip_link
   end
 
   private

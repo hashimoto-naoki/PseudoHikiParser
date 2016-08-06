@@ -224,6 +224,18 @@ CSS
     assert_equal(expected_html, html.to_s)
   end
 
+  def test_add_skip_link
+    html = HtmlTemplate.new
+    html.add_skip_link
+    assert_equal("a", html.body.children[0].children[0].tagname)
+    assert_equal("contents", html.body.children[0].children[0]["href"])
+    html = HtmlTemplate.new
+    skip_link_container = html.create_element("div")
+    html.add_skip_link("contents", skip_link_container)
+    assert_equal("a", skip_link_container.children[0].tagname)
+    assert_equal("contents", skip_link_container.children[0]["href"])
+  end
+
   def test_xhtmltemplate_embed_style
     expected_html = <<HTML
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>
