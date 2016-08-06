@@ -110,16 +110,7 @@ class HtmlTemplate
   end
 
   def add_skip_link(to="contents", from=@body,label="Skip to Content")
-    skip_link = create_element("a", label, "href" => "#{to}")
-    if from == @body
-      skip_link_container = create_element("div").tap do |div|
-        div["class"] = "skip-link"
-        @body.push div
-      end
-    else
-      skip_link_container = from
-    end
-    skip_link_container.push skip_link
+    skip_link_container(from).push create_element("a", label, "href" => "#{to}")
   end
 
   private
@@ -148,6 +139,14 @@ class HtmlTemplate
 
   def format_css(css)
     ["<!--", css.rstrip, "-->", ""].join($/)
+  end
+
+  def skip_link_container(from)
+    return from unless from == @body
+    create_element("div").tap do |div|
+      div["class"] = "skip-link"
+      @body.push div
+    end
   end
 end
 
