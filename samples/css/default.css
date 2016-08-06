@@ -75,3 +75,13 @@ code {
     font-size: 120%;
     padding: 0.1em 0.3em 0.1em 0.3em;
 }
+
+.skip-link a {
+    margin: -6em 0em 0em -5000px;
+    display: inline;
+}
+
+.skip-link:active, .skip-link a:focus {
+    margin: 1em 0em 0em 1em;
+    display: block;
+}

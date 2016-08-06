@@ -120,3 +120,14 @@ td, th {
 td {
     padding: 0.2em 0.4em 0.2em 0.4em;
 }
+
+.skip-link a {
+    float: left;
+    margin-left: -5000px;
+}
+
+.skip-link:active, .skip-link a:focus {
+    margin-left: 1em;
+    background: #ffffff;
+    padding: 0.2em 0.5em 0.2em 0.5em;
+}
