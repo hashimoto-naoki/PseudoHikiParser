@@ -214,7 +214,7 @@ module PseudoHiki
         embed_css = @options[:embed_css]
         html.embed_style(File.read(File.expand_path(embed_css))) if embed_css
         html.push main || body
-        html.add_skip_link if html.kind_of? HtmlTemplate
+        html.add_skip_link if html.kind_of?(HtmlTemplate) and main
       end
 
       html
