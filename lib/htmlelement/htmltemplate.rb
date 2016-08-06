@@ -23,6 +23,11 @@ class HtmlTemplate
     @title = nil
     @title_element = create_element("title")
     @body = create_element("body")
+    @default_skip_link_labels = {
+      "en" => "Skip to Content",
+      "ja" => "\u{672c}\u{6587}\u{3078}", # honbun he
+      "fr" => "Aller au contenu"
+    }
     @html.push @head
     @html.push @body
     [ @content_language,
@@ -109,7 +114,7 @@ class HtmlTemplate
       @html].join("")
   end
 
-  def add_skip_link(to="contents", from=@body,label="Skip to Content")
+  def add_skip_link(to="contents", from=@body,label=default_skip_link_label)
     skip_link_container(from).unshift create_element("a", label, "href" => "##{to}")
   end
 
@@ -147,6 +152,11 @@ class HtmlTemplate
       div["class"] = "skip-link"
       @body.unshift div
     end
+  end
+
+  def default_skip_link_label
+    @default_skip_link_labels[@html["lang"]] ||
+      @default_skip_link_labels["en"]
   end
 end
 
