@@ -4,7 +4,6 @@ require 'minitest/autorun'
 require 'lib/htmlelement'
 
 class TC_HtmlElement < MiniTest::Unit::TestCase
-
   def test_pop
     section = HtmlElement.create("section")
     h1 = HtmlElement.create("h1")
@@ -14,6 +13,17 @@ class TC_HtmlElement < MiniTest::Unit::TestCase
     section.pop
     assert(section.children.empty?)
     assert_nil(h1.parent)
+  end
+
+  def test_unshift
+    section = HtmlElement.create("section")
+    paragraph = HtmlElement.create("p", "paragraph")
+    h1 = HtmlElement.create("h1", "title")
+    section.push paragraph
+    assert_equal(1, section.children.length)
+    section.unshift h1
+    assert_equal(2, section.children.length)
+    assert_equal(h1, section.children[0])
   end
 
   def test_format_attributes
