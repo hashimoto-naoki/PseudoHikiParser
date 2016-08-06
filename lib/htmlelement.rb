@@ -123,7 +123,9 @@ class HtmlElement
   end
 
   def pop
-    @children.pop
+    last_child = @children.pop
+    last_child.parent = nil if last_child.kind_of? HtmlElement
+    last_child
   end
 
   def []=(attribute, value)

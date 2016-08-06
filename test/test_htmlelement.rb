@@ -5,6 +5,17 @@ require 'lib/htmlelement'
 
 class TC_HtmlElement < MiniTest::Unit::TestCase
 
+  def test_pop
+    section = HtmlElement.create("section")
+    h1 = HtmlElement.create("h1")
+    section.push h1
+    assert_equal(section.children[0], h1)
+    assert_equal(section, h1.parent)
+    section.pop
+    assert(section.children.empty?)
+    assert_nil(h1.parent)
+  end
+
   def test_format_attributes
     a = HtmlElement.create("a")
     a['href'] = "http://www.example.net/example.cgi&param=value"
