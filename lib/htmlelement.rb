@@ -128,6 +128,12 @@ class HtmlElement
     last_child
   end
 
+  def unshift(child)
+    @children.unshift child
+    child.parent = self if child.kind_of? HtmlElement
+    self
+  end
+
   def []=(attribute, value)
     @attributes[attribute] = value
   end
