@@ -273,6 +273,9 @@ h1 {
 </style>
 </head>
 <body>
+<div class="skip-link">
+<a href="#contents">Skip to Content</a><!-- end of skip-link -->
+</div>
 </body>
 </html>
 HTML
@@ -295,6 +298,9 @@ HTML
 <link href="css/with_toc.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<div class="skip-link">
+<a href="#contents">Skip to Content</a><!-- end of skip-link -->
+</div>
 <section id="main">
 <section id="toc">
 <h2>table of contents</h2>
@@ -402,6 +408,9 @@ TEXT
 <link href="css/with_toc.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<div class="skip-link">
+<a href="#contents">Skip to Content</a><!-- end of skip-link -->
+</div>
 <p>
 a link in a paragraph <a href="./">http://www.example.org/</a>
 </p>
@@ -510,6 +519,9 @@ TEXT
 <link href="css/with_toc.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<div class="skip-link">
+<a href="#contents">Skip to Content</a><!-- end of skip-link -->
+</div>
 <p>
 a link in a paragraph <a href="http://www.example.org/">http://www.example.org/</a>
 </p>
@@ -530,6 +542,9 @@ HTML
 <link href="css/with_toc.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<div class="skip-link">
+<a href="#contents">Skip to Content</a><!-- end of skip-link -->
+</div>
 <p>
 a link in a paragraph http://www.example.org/
 </p>
