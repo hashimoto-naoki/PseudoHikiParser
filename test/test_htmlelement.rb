@@ -26,6 +26,19 @@ class TC_HtmlElement < MiniTest::Unit::TestCase
     assert_equal(h1, section.children[0])
   end
 
+  def test_shift
+    section = HtmlElement.create("section")
+    paragraph = HtmlElement.create("p", "paragraph")
+    h1 = HtmlElement.create("h1", "title")
+    section.push h1
+    section.push paragraph
+    assert_equal(section.children[0], h1)
+    assert_equal(section, h1.parent)
+    section.shift
+    refute(section.children.include?(h1))
+    assert_nil(h1.parent)
+  end
+
   def test_format_attributes
     a = HtmlElement.create("a")
     a['href'] = "http://www.example.net/example.cgi&param=value"

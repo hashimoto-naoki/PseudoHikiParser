@@ -134,6 +134,12 @@ class HtmlElement
     self
   end
 
+  def shift
+    first_child = @children.shift
+    first_child.parent = nil if first_child.kind_of? HtmlElement
+    first_child
+  end
+
   def []=(attribute, value)
     @attributes[attribute] = value
   end
