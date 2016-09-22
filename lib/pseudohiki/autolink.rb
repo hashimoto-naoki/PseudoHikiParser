@@ -47,7 +47,7 @@ module PseudoHiki
       end
 
       def link_wiki_name(line)
-        return line if WIKI_NAME_RE !~ line or VERBATIM_LEAF_HEAD_RE =~ line
+        return line if not WIKI_NAME_RE.match? line or VERBATIM_LEAF_HEAD_RE.match? line
         line.gsub(WIKI_NAME_RE) {|url| in_link_tag?($`) ? url : add_tag(url) }
       end
 

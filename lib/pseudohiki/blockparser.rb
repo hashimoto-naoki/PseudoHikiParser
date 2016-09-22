@@ -161,7 +161,7 @@ module PseudoHiki
       end
 
       def create_leaf(line, blockparser)
-        return BlockElement::VerbatimLeaf.create("".freeze, true) if VERBATIM_BEGIN =~ line
+        return BlockElement::VerbatimLeaf.create("".freeze, true) if VERBATIM_BEGIN.match? line
         line = blockparser.auto_linker.link(line)
         blockparser.select_leaf_type(line).create(line)
       end
@@ -218,9 +218,9 @@ module PseudoHiki
         attr_accessor :in_block_tag
 
         def add_leaf(line, blockparser)
-          return @stack.pop_with_breaker if VERBATIM_END =~ line
+          return @stack.pop_with_breaker if VERBATIM_END.match? line
           return super(line, blockparser) unless @in_block_tag
-          line = " #{line}" if BlockNodeEnd.head_re =~ line and not @in_block_tag
+          line = " #{line}" if BlockNodeEnd.head_re.match? line and not @in_block_tag
           @stack.push VerbatimLeaf.create(line, @in_block_tag)
         end
       end
@@ -457,7 +457,7 @@ module PseudoHiki
       end
 
       def self.link(line)
-        return line unless URI_RE =~ line and VERBATIM_LEAF_HEAD_RE !~ line
+        return line unless URI_RE.match? line and not VERBATIM_LEAF_HEAD_RE.match? line
         line.gsub(URI_RE) {|url| in_link_tag?($`) ? url : "[[#{url}]]" }
       end
 

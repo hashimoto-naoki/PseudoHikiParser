@@ -36,7 +36,7 @@ module PseudoHiki
 
     def self.convert_into_gfm_id_format(heading)
       heading.gsub(GFM_STRIPPED_CHARS_PAT) do |char|
-        /\A\s+\Z/o =~ char ? '-'.freeze : ''.freeze
+        /\A\s+\Z/o.match?(char) ? '-'.freeze : ''.freeze
       end.downcase
     end
 
@@ -80,7 +80,7 @@ module PseudoHiki
 
     def list_mark(tree, mark)
       mark = mark.dup
-      mark << " " if /^ /o !~ tree.join
+      mark << " " unless /^ /o.match? tree.join
       " " * (tree.level - 1) * 2 + mark
     end
 
@@ -171,7 +171,7 @@ module PseudoHiki
         tree = tree.dup
         element = create_self_element
         caption = get_caption(tree)
-        if IMAGE_SUFFIX_RE =~ ref_tail(tree, caption) and not_from_thumbnail
+        if IMAGE_SUFFIX_RE.match? ref_tail(tree, caption) and not_from_thumbnail
           element.push "!"
         end
         link = format_link(tree)
@@ -190,7 +190,7 @@ module PseudoHiki
       def format_link(tree)
         link = tree.join
         return link unless @id_conv_table
-        if /\A#/o =~ link and gfm_link = @id_conv_table[link[1..-1]]
+        if /\A#/o.match? link and gfm_link = @id_conv_table[link[1..-1]]
           "#".concat gfm_link
         else
           link
@@ -386,7 +386,7 @@ ERROR
       def visit(tree)
         super(tree).tap do |element|
           heading_mark = "#" * tree.first.level
-          heading_mark << " " if /^ /o !~ tree.join
+          heading_mark << " " unless /^ /o.match? tree.join
           element.unshift heading_mark
         end
       end
@@ -401,7 +401,7 @@ ERROR
     class ListNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          element.push $/ if /\A\*/o =~ element.first.join
+          element.push $/ if /\A\*/o.match? element.first.join
         end
       end
     end
@@ -409,7 +409,7 @@ ERROR
     class EnumNodeFormatter < self
       def visit(tree)
         super(tree).tap do |element|
-          element.push $/ if /\A\d/o =~ element.first.join
+          element.push $/ if /\A\d/o.match? element.first.join
         end
       end
     end
