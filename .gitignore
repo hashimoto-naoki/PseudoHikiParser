@@ -12,3 +12,4 @@ samples/*.md
 samples/*.txt
 samples/*.html
 samples/*.sh
+Gemfile.lock
