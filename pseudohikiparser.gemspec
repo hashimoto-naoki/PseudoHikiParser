@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
                         "lib/pseudohikiparser.rb",
                         "lib/pseudohiki/treestack.rb",
                         "lib/pseudohiki/inlineparser.rb",
+                        "lib/pseudohiki/shim.rb",
                         "lib/pseudohiki/blockparser.rb",
                         "lib/pseudohiki/htmlformat.rb",
                         "lib/pseudohiki/plaintextformat.rb",

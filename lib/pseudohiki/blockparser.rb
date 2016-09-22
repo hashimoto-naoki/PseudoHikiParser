@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'pseudohiki/shim'
 require 'pseudohiki/treestack'
 require 'pseudohiki/inlineparser'
 
