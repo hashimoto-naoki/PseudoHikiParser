@@ -189,7 +189,7 @@ module PseudoHiki
 
     def split_main_heading(input_lines)
       return "" unless @options[:split_main_heading]
-      h1_pos = input_lines.find_index {|line| /^![^!]/o =~ line }
+      h1_pos = input_lines.find_index {|line| /^![^!]/o.match? line }
       return "" unless h1_pos
       tree = BlockParser.parse([input_lines.delete_at(h1_pos)])
       @options.formatter.format(tree)
@@ -303,7 +303,7 @@ module PseudoHiki
     end
 
     def win32?
-      true if RUBY_PLATFORM =~ /win/i
+      true if RUBY_PLATFORM.match? /win/i
     end
 
     def value_given?(value)
@@ -324,9 +324,9 @@ module PseudoHiki
 
     def base
       base_dir = self[:base]
-      if base_dir and base_dir !~ /[\/\\]\.*$/o
+      if base_dir and not /[\/\\]\.*$/o.match? base_dir
         base_dir = File.join(base_dir, ".")
-        base_dir = "file:///" + base_dir if base_dir !~ /^\./o and win32?
+        base_dir = "file:///" + base_dir if not /^\./o.match? base_dir and win32?
       end
       base_dir
     end
@@ -344,7 +344,7 @@ module PseudoHiki
         if v.version == version
           return self[:html_version] = v
         else
-          self[:html_version] = v if v.opt_pat =~ version
+          self[:html_version] = v if v.opt_pat.match? version
         end
       end
       STDERR.puts "\"#{version}\" is an invalid option for --format-version. \
@@ -356,7 +356,7 @@ module PseudoHiki
         self[:encoding] = given_opt
       else
         ENCODING_REGEXP.each do |pat, encoding|
-          self[:encoding] = encoding if pat =~ given_opt
+          self[:encoding] = encoding if pat.match? given_opt
         end
         STDERR.puts "\"#{self[:encoding]}\" is chosen as an encoding system, \
 instead of \"#{given_opt}\"."
@@ -503,7 +503,7 @@ inside (default: not specified)") do |template|
 
     def set_options_from_input_file(input_lines)
       input_lines.each do |line|
-        break if FILE_HEADER_PAT !~ line
+        break unless FILE_HEADER_PAT.match? line
         line = line.chomp
         @options.keys.each do |opt|
           next if self[opt] and self[:force]

@@ -7,7 +7,7 @@ options.parse_command_line_options
 
 if $KCODE
   PseudoHiki::OptionManager::ENCODING_REGEXP.each do |pat, encoding|
-    options[:encoding] = encoding if pat =~ $KCODE and not options[:force]
+    options[:encoding] = encoding if pat.match? $KCODE and not options[:force]
   end
 end
 
