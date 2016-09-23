@@ -27,6 +27,19 @@ module PseudoHiki
     tokens
   end
 
+  def self.associate_nodes_with_tags(node_tag_table)
+    from_head, from_tail, to_head, to_tail = {}, {}, {}, {}
+
+    node_tag_table.each do |node_type, head, tail|
+      from_head[head] = node_type
+      from_tail[tail] = node_type
+      to_head[node_type] = head
+      to_tail[node_type] = tail
+    end
+
+    return from_head, from_tail, to_head, to_tail
+  end
+
   class InlineParser < TreeStack
     module InlineElement
       class InlineNode < InlineParser::Node; end
@@ -41,21 +54,17 @@ module PseudoHiki
     end
     include InlineElement
 
-    HEAD = {}
-    TAIL = {}
-    NodeTypeToHead = {}
     TokenPat = {}
 
-    [[LinkNode, "[[", "]]"],
-     [EmNode, "''", "''"],
-     [StrongNode, "'''", "'''"],
-     [DelNode, "==", "=="],
-     [LiteralNode, "``", "``"],
-     [PluginNode, "{{", "}}"]].each do |type, head, tail|
-      HEAD[head] = type
-      TAIL[tail] = type
-      NodeTypeToHead[type] = head
-    end
+    @node_tag_table = [
+      [LinkNode, "[[", "]]"],
+      [EmNode, "''", "''"],
+      [StrongNode, "'''", "'''"],
+      [DelNode, "==", "=="],
+      [LiteralNode, "``", "``"],
+      [PluginNode, "{{", "}}"]]
+
+    HEAD, TAIL, NodeTypeToHead, _ = PseudoHiki.associate_nodes_with_tags(@node_tag_table)
 
     TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys, TAIL.keys, [LinkSep, TableSep, DescSep])
 
