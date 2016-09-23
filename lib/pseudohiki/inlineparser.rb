@@ -41,6 +41,10 @@ module PseudoHiki
   end
 
   class InlineParser < TreeStack
+    class << self
+      attr_reader :token_pat
+    end
+
     module InlineElement
       class InlineNode < InlineParser::Node; end
       class InlineLeaf < InlineParser::Leaf; end
@@ -54,8 +58,6 @@ module PseudoHiki
     end
     include InlineElement
 
-    TokenPat = {}
-
     @node_tag_table = [
       [LinkNode, "[[", "]]"],
       [EmNode, "''", "''"],
@@ -66,10 +68,10 @@ module PseudoHiki
 
     HEAD, TAIL, NodeTypeToHead, _ = PseudoHiki.associate_nodes_with_tags(@node_tag_table)
 
-    TokenPat[self] = PseudoHiki.compile_token_pat(HEAD.keys, TAIL.keys, [LinkSep, TableSep, DescSep])
+    @token_pat = PseudoHiki.compile_token_pat(HEAD.keys, TAIL.keys, [LinkSep, TableSep, DescSep])
 
     def initialize(str)
-      @tokens = PseudoHiki.split_into_tokens(str, TokenPat[self.class])
+      @tokens = PseudoHiki.split_into_tokens(str, self.class.token_pat)
       super()
     end
 
@@ -122,7 +124,7 @@ module PseudoHiki
     include InlineElement
 
     TAIL[TableSep] = TableCellNode
-    TokenPat[self] = InlineParser::TokenPat[InlineParser]
+    @token_pat = InlineParser.token_pat
 
     class InlineElement::TableCellNode
       def parse_cellspan(token_str)
