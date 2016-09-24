@@ -8,7 +8,7 @@ require 'pseudohiki/htmlformat'
 module PseudoHiki
   class HtmlFormat
     class << Formatter[PluginNode]
-      def visit(leaf)
+      def visit(leaf, memo=nil)
         escape_inline_tags(leaf) { HtmlPlugin.new(@element_name, leaf.join).apply }
       end
     end
