@@ -19,7 +19,7 @@ module PseudoHiki
         @condition = condition
       end
 
-      def visit(tree)
+      def visit(tree, memo=nil)
         if @condition.call(tree)
           @nodes.push tree
         else
