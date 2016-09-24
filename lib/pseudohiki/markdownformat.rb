@@ -65,8 +65,10 @@ module PseudoHiki
     def visit(tree, memo)
       element = create_self_element(tree)
       push_visited_results(element, tree, memo)
-      element
+      element.tap {|elm| tap_element_in_visit(elm, tree, memo) }
     end
+
+    def tap_element_in_visit(elm, tree, memo); end
 
     def get_plain
       @formatter[PlainNode]
@@ -206,10 +208,8 @@ module PseudoHiki
     end
 
     class EmNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap do |element|
-          enclose_in(element, "_")
-        end
+      def tap_element_in_visit(element, tree, memo)
+        enclose_in(element, "_")
       end
     end
 
@@ -252,8 +252,8 @@ module PseudoHiki
     end
 
     class HeadingLeafFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap {|element| element.push $/ }
+      def tap_element_in_visit(element, tree, memo)
+        element.push $/
       end
     end
 
@@ -383,50 +383,40 @@ ERROR
     end
 
     class HeadingNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap do |element|
-          heading_mark = "#" * tree.first.level
-          heading_mark << " " unless /^ /o.match? tree.join
-          element.unshift heading_mark
-        end
+      def tap_element_in_visit(element, tree, memo)
+        heading_mark = "#" * tree.first.level
+        heading_mark << " " unless /^ /o.match? tree.join
+        element.unshift heading_mark
       end
     end
 
     class ParagraphNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap {|element| element.push $/ }
+      def tap_element_in_visit(element, tree, memo)
+        element.push $/
       end
     end
 
     class ListNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap do |element|
-          element.push $/ if /\A\*/o.match? element.first.join
-        end
+      def tap_element_in_visit(element, tree, memo)
+        element.push $/ if /\A\*/o.match? element.first.join
       end
     end
 
     class EnumNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap do |element|
-          element.push $/ if /\A\d/o.match? element.first.join
-        end
+      def tap_element_in_visit(element, tree, memo)
+        element.push $/ if /\A\d/o.match? element.first.join
       end
     end
 
     class ListWrapNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap do |element|
-          element.unshift list_mark(tree, "*")
-        end
+      def tap_element_in_visit(element, tree, memo)
+        element.unshift list_mark(tree, "*")
       end
     end
 
     class EnumWrapNodeFormatter < self
-      def visit(tree, memo)
-        super(tree, memo).tap do |element|
-          element.unshift list_mark(tree, "#{tree.level}.")
-        end
+      def tap_element_in_visit(element, tree, memo)
+        element.unshift list_mark(tree, "#{tree.level}.")
       end
     end
   end
