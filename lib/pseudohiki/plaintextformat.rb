@@ -40,18 +40,18 @@ module PseudoHiki
       Node.new
     end
 
-    def visited_result(node)
+    def visited_result(node, memo)
       visitor = @formatter[node.class] || @formatter[PlainNode]
-      node.accept(visitor)
+      node.accept(visitor, memo)
     end
 
-    def push_visited_results(element, tree)
-      tree.each {|token| element.push visited_result(token) }
+    def push_visited_results(element, tree, memo)
+      tree.each {|token| element.push visited_result(token, memo) }
     end
 
-    def visit(tree)
+    def visit(tree, memo)
       element = create_self_element(tree)
-      push_visited_results(element, tree)
+      push_visited_results(element, tree, memo)
       element
     end
 
@@ -99,15 +99,15 @@ module PseudoHiki
     ## Definitions of subclasses of PlainTextFormat begins here.
 
     class InlineLeafFormatter < self
-      def visit(leaf)
+      def visit(leaf, memo)
         leaf.join
       end
     end
 
     class LinkNodeFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         element = Node.new
-        caption, ref = get_caption(tree)
+        caption, ref = get_caption(tree, memo)
         if IMAGE_SUFFIX_RE.match? ref_tail(ref, caption)
           element.push (caption || ref).join
         else
@@ -117,9 +117,9 @@ module PseudoHiki
         element
       end
 
-      def get_caption(tree)
+      def get_caption(tree, memo)
         caption, ref_part = split_into_parts(tree, [LinkSep])
-        caption = caption.map {|element| visited_result(element) } if caption
+        caption = caption.map {|element| visited_result(element, memo) } if caption
         return caption, ref_part
       end
 
@@ -132,18 +132,18 @@ module PseudoHiki
     end
 
     class DelNodeFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         return "" unless @options.verbose_mode
-        "[deleted:#{tree.map {|token| visited_result(token) }.join}]"
+        "[deleted:#{tree.map {|token| visited_result(token, memo) }.join}]"
       end
     end
 
     class DescLeafFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         element = create_self_element(tree)
         dt_part, dd_part = split_into_parts(tree, DescSep)
-        push_visited_results(element, dt_part) if dt_part
-        dd = dd_part.map {|token| visited_result(token) }.join.lstrip
+        push_visited_results(element, dt_part, memo) if dt_part
+        dd = dd_part.map {|token| visited_result(token, memo) }.join.lstrip
         unless dd.empty?
           element.push element.empty? ? "\t" : ":\t"
           element.push dd
@@ -153,7 +153,7 @@ module PseudoHiki
     end
 
     class VerbatimNodeFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         tree.join
       end
     end
@@ -165,14 +165,14 @@ module PseudoHiki
 !! Please recheck if it is really what you want.
 ERROR_TEXT
 
-      def visit(tree)
+      def visit(tree, memo)
         table = create_self_element(tree)
         tree.length.times { table.push create_self_element(tree) }
         max_col = tree.map {|row| row.reduce(0) {|sum, cell| sum + cell.colspan }}.max - 1
         max_row = tree.length - 1
         each_empty_cell_index(max_row, max_col, tree, table) do |r, c, cur_row|
           cur_cell = cur_row.shift
-          table[r][c] = visited_result(cur_cell).join.lstrip.chomp
+          table[r][c] = visited_result(cur_cell, memo).join.lstrip.chomp
           fill_expand(table, r, c, cur_cell)
         end
         format_table(table, tree)
@@ -234,20 +234,20 @@ ERROR_TEXT
     end
 
     class CommentOutNodeFormatter < self
-      def visit(tree); ""; end
+      def visit(tree, memo); ""; end
     end
 
     class ParagraphNodeFormatter < self
-      def visit(tree)
-        super(tree).join + $/
+      def visit(tree, memo)
+        super(tree, memo).join + $/
       end
     end
 
     class PluginNodeFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         str = tree.join
         return str.strip * 2 if str == " {" or str == "} "
-        super(tree)
+        super(tree, memo)
       end
     end
   end
