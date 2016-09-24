@@ -53,18 +53,18 @@ module PseudoHiki
       HtmlElement::Children.new
     end
 
-    def visited_result(node)
+    def visited_result(node, memo)
       visitor = @formatter[node.class] || @formatter[PlainNode]
-      node.accept(visitor)
+      node.accept(visitor, memo)
     end
 
-    def push_visited_results(element, tree)
-      tree.each {|token| element.push visited_result(token) }
+    def push_visited_results(element, tree, memo)
+      tree.each {|token| element.push visited_result(token, memo) }
     end
 
-    def visit(tree)
+    def visit(tree, memo)
       element = create_self_element(tree)
-      push_visited_results(element, tree)
+      push_visited_results(element, tree, memo)
       element
     end
 
@@ -151,7 +151,7 @@ module PseudoHiki
     ## Definitions of subclasses of MarkDownFormat begins here.
 
     class InlineLeafFormatter < self
-      def visit(leaf)
+      def visit(leaf, memo)
         leaf.map do |str|
           escaped_str = str.gsub(/([_*])/o, "\\\\\\1")
           if @options.gfm_style
@@ -166,11 +166,11 @@ module PseudoHiki
     class LinkNodeFormatter < self
       attr_writer :id_conv_table
 
-      def visit(tree)
+      def visit(tree, memo)
         not_from_thumbnail = tree.first.class != LinkNode
         tree = tree.dup
         element = create_self_element
-        caption = get_caption(tree)
+        caption = get_caption(tree, memo)
         if IMAGE_SUFFIX_RE.match? ref_tail(tree, caption) and not_from_thumbnail
           element.push "!"
         end
@@ -179,12 +179,12 @@ module PseudoHiki
         element
       end
 
-      def get_caption(tree)
+      def get_caption(tree, memo)
         link_sep_index = tree.find_index([LinkSep])
         return nil unless link_sep_index
         caption_part = tree.shift(link_sep_index)
         tree.shift
-        caption_part.map {|element| visited_result(element) }
+        caption_part.map {|element| visited_result(element, memo) }
       end
 
       def format_link(tree)
@@ -206,65 +206,65 @@ module PseudoHiki
     end
 
     class EmNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           enclose_in(element, "_")
         end
       end
     end
 
     class StrongNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           enclose_in(element, "**")
         end
       end
     end
 
     class DelNodeFormatter < self
-      def visit(tree)
-        "~~#{super(tree).join.strip}~~"
+      def visit(tree, memo)
+        "~~#{super(tree, memo).join.strip}~~"
       end
     end
 
     class LiteralNodeFormatter < self
-      def visit(tree)
-        "`#{super(tree).join.strip}`"
+      def visit(tree, memo)
+        "`#{super(tree, memo).join.strip}`"
       end
     end
 
     class PluginNodeFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         str = tree.join
         return str.strip * 2 if str == " {" or str == "} "
-        super(tree)
+        super(tree, memo)
       end
     end
 
     class VerbatimLeafFormatter < InlineLeafFormatter
-      def visit(leaf)
+      def visit(leaf, memo)
         leaf.join
       end
     end
 
     class CommentOutLeafFormatter < self
-      def visit(tree); ""; end
+      def visit(tree, memo); ""; end
     end
 
     class HeadingLeafFormatter < self
-      def visit(tree)
-        super(tree).tap {|element| element.push $/ }
+      def visit(tree, memo)
+        super(tree, memo).tap {|element| element.push $/ }
       end
     end
 
     class HrLeafFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         "----#{$/}"
       end
     end
 
     class DescNodeFormatter < self
-      def visit(tree)
+      def visit(tree, memo)
         desc_list = HtmlElement.create("dl").tap do |element|
           element.push HtmlFormat.format(tree)
         end
@@ -273,8 +273,8 @@ module PseudoHiki
     end
 
     class VerbatimNodeFormatter < self
-      def visit(tree)
-        element = super(tree)
+      def visit(tree, memo)
+        element = super(tree, memo)
         @language_name = language_name(tree)
         return gfm_verbatim(element) if @options.gfm_style
         md_verbatim(element)
@@ -299,8 +299,8 @@ module PseudoHiki
     end
 
     class QuoteNodeFormatter < self
-      def visit(tree)
-        element = super(tree)
+      def visit(tree, memo)
+        element = super(tree, memo)
         element.join.gsub(/^/o, "> ").sub(/> \Z/o, "")
       end
     end
@@ -308,9 +308,9 @@ module PseudoHiki
     class TableNodeFormatter < PlainTextFormat::TableNodeFormatter
       class NotConformantStyleError < StandardError; end
 
-      def visit(tree)
+      def visit(tree, memo)
         @options.gfm_conformant = check_conformance_with_gfm_style(tree)
-        super(tree)
+        super(tree, memo)
       end
 
       def choose_expander_of_col_and_row
@@ -383,8 +383,8 @@ ERROR
     end
 
     class HeadingNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           heading_mark = "#" * tree.first.level
           heading_mark << " " unless /^ /o.match? tree.join
           element.unshift heading_mark
@@ -393,38 +393,38 @@ ERROR
     end
 
     class ParagraphNodeFormatter < self
-      def visit(tree)
-        super(tree).tap {|element| element.push $/ }
+      def visit(tree, memo)
+        super(tree, memo).tap {|element| element.push $/ }
       end
     end
 
     class ListNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           element.push $/ if /\A\*/o.match? element.first.join
         end
       end
     end
 
     class EnumNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           element.push $/ if /\A\d/o.match? element.first.join
         end
       end
     end
 
     class ListWrapNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           element.unshift list_mark(tree, "*")
         end
       end
     end
 
     class EnumWrapNodeFormatter < self
-      def visit(tree)
-        super(tree).tap do |element|
+      def visit(tree, memo)
+        super(tree, memo).tap do |element|
           element.unshift list_mark(tree, "#{tree.level}.")
         end
       end
