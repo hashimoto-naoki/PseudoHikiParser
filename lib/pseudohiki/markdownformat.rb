@@ -397,15 +397,12 @@ ERROR
 
     class EnumNodeFormatter < self
       def push_visited_results(element, tree, memo)
-        enum_item_count = 1
+        memo_with_enum_count = { :original => memo, :enum_item_count => 0 }
         tree.each do |token|
           if token.kind_of? EnumWrapNode
-            cur_memo = enum_item_count
-            enum_item_count += 1
-          else
-            cur_memo = memo
+            memo_with_enum_count[:enum_item_count] += 1
           end
-          element.push visited_result(token, cur_memo)
+          element.push visited_result(token, memo_with_enum_count)
         end
       end
 
@@ -422,7 +419,7 @@ ERROR
 
     class EnumWrapNodeFormatter < self
       def tap_element_in_visit(element, tree, item_num)
-        element.unshift list_mark(tree, "#{item_num}.")
+        element.unshift list_mark(tree, "#{item_num[:enum_item_count]}.")
       end
     end
   end
