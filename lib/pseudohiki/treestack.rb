@@ -11,8 +11,8 @@ class TreeStack
   module TreeElement
     attr_accessor :depth
 
-    def accept(visitor)
-      visitor.visit(self)
+    def accept(visitor, memo=nil)
+      visitor.visit(self, memo)
     end
   end
 
@@ -107,7 +107,7 @@ class TreeStack
     removed_node
   end
 
-  def accept(visitor)
-    visitor.visit(tree)
+  def accept(visitor, memo=nil)
+    visitor.visit(tree, memo)
   end
 end
