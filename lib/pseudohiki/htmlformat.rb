@@ -50,12 +50,12 @@ module PseudoHiki
       { :auto_link_in_verbatim => @auto_link_in_verbatim }
     end
 
-    def self.format(tree, options=nil)
+    def self.format(tree, options=nil, memo=nil)
       cur_auto_link_setting = @auto_link_in_verbatim
       options = default_options unless options
       @auto_link_in_verbatim = options[:auto_link_in_verbatim]
       formatter = get_plain
-      tree.accept(formatter)
+      tree.accept(formatter, memo)
     ensure
       @auto_link_in_verbatim = cur_auto_link_setting
     end
@@ -67,18 +67,18 @@ module PseudoHiki
       @format_class = self.class
     end
 
-    def visited_result(element)
+    def visited_result(element, memo)
       visitor = @formatter[element.class] || @formatter[PlainNode]
-      element.accept(visitor)
+      element.accept(visitor, memo)
     end
 
-    def push_visited_results(element, tree)
-      tree.each {|token| element.push visited_result(token) }
+    def push_visited_results(element, tree, memo)
+      tree.each {|token| element.push visited_result(token, memo) }
     end
 
-    def visit(tree)
+    def visit(tree, memo)
       htmlelement = create_element(tree)
-      push_visited_results(htmlelement, tree)
+      push_visited_results(htmlelement, tree, memo)
       htmlelement
     end
 
@@ -137,8 +137,8 @@ module PseudoHiki
     # for InlineParser
 
     class << Formatter[PluginNode]
-      def visit(tree)
-        escape_inline_tags(tree) { super(tree) }
+      def visit(tree, memo)
+        escape_inline_tags(tree) { super(tree, memo) }
       end
 
       def escape_inline_tags(tree)
@@ -150,9 +150,9 @@ module PseudoHiki
     end
 
     class << Formatter[LinkNode]
-      def visit(tree)
+      def visit(tree, memo)
         not_from_thumbnail = tree.first.class != LinkNode
-        caption, ref = caption_and_ref(tree)
+        caption, ref = caption_and_ref(tree, memo)
         if IMAGE_SUFFIX_RE.match? ref and not_from_thumbnail
           htmlelement = ImgFormat.create_element
           htmlelement[SRC] = ref
@@ -165,9 +165,9 @@ module PseudoHiki
         htmlelement
       end
 
-      def caption_and_ref(tree)
+      def caption_and_ref(tree, memo)
         caption, ref = split_into_parts(tree, LinkSep)
-        caption = ref ? caption.map {|token| visited_result(token) } : nil
+        caption = ref ? caption.map {|token| visited_result(token, memo) } : nil
         return caption, (ref || tree).join
       rescue NoMethodError
         raise NoMethodError unless (ref || tree).empty?
@@ -176,7 +176,7 @@ module PseudoHiki
     end
 
     class << Formatter[InlineLeaf]
-      def visit(leaf)
+      def visit(leaf, memo)
         @generator.escape(leaf.first)
       end
     end
@@ -190,7 +190,7 @@ module PseudoHiki
     # for BlockParser
 
     class << Formatter[VerbatimNode]
-      def visit(tree)
+      def visit(tree, memo)
         contents = add_link(@generator.escape(tree.join))
         create_element.tap {|elm| elm.push contents }
       end
@@ -204,7 +204,7 @@ module PseudoHiki
     end
 
     class << Formatter[CommentOutNode]
-      def visit(tree); BLANK; end
+      def visit(tree, memo); BLANK; end
     end
 
     class << Formatter[HeadingNode]
@@ -218,14 +218,14 @@ module PseudoHiki
     end
 
     class << Formatter[DescLeaf]
-      def visit(tree)
+      def visit(tree, memo)
         elm = @generator::Children.new
         dt_part, dd_part = split_into_parts(tree, DescSep)
-        dt = super(dt_part)
+        dt = super(dt_part, memo)
         elm.push dt
         unless dd_part.nil? or dd_part.empty?
           dd = @generator.create(DD)
-          push_visited_results(dd, dd_part)
+          push_visited_results(dd, dd_part, memo)
           elm.push dd
         end
         elm
@@ -233,9 +233,9 @@ module PseudoHiki
     end
 
     class << Formatter[TableCellNode]
-      def visit(tree)
+      def visit(tree, memo)
         @element_name = tree.cell_type
-        super(tree).tap do |elm|
+        super(tree, memo).tap do |elm|
           elm[ROWSPAN] = tree.rowspan if tree.rowspan > 1
           elm[COLSPAN] = tree.colspan if tree.colspan > 1
           # elm.push "&#160;" if elm.empty? # &#160; = &nbsp; this line would be necessary for HTML 4 or XHTML 1.0
