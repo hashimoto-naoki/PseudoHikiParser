@@ -13,7 +13,7 @@ module PseudoHiki
       end
     end
   end
-  
+
   class XhtmlFormat < HtmlFormat
     Formatter = HtmlFormat::Formatter.dup
     setup_new_formatter(Formatter, XhtmlElement)
@@ -48,7 +48,7 @@ module PseudoHiki
       @with_paren = nil
       @data = parse(parsed_data.to_s)
     end
-    
+
     def apply
       self.send @plugin_name
     end
