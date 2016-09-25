@@ -226,6 +226,7 @@ CSS
 
   def test_add_skip_link
     html = HtmlTemplate.new
+    html.body.push html.create_element("p").push("content")
     html.add_skip_link
     assert_equal("a", html.body.children[0].children[0].tagname)
     assert_equal("#contents", html.body.children[0].children[0]["href"])
