@@ -420,10 +420,10 @@ TEXT
 
     md_text = <<TEXT
 1. item 1
-1. item 2
-  2. item 2-1
+2. item 2
+  1. item 2-1
   2. item 2-2
-    3. item 2-2-1
+    1. item 2-2-1
 
 TEXT
 
@@ -508,7 +508,7 @@ TEXT
 ## heading
 
 1. item 1
-  2. item 1-1
+  1. item 1-1
 
 a paragraph for testing a striked through ~~string with an _emphasis_ in it.~~
 
