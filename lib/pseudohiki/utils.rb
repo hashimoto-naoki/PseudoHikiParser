@@ -24,7 +24,7 @@ module PseudoHiki
           @nodes.push tree
         else
           tree.each do |node|
-            node.accept(self) if node.respond_to? :accept
+            node.accept(self, memo) if node.respond_to? :accept
           end
         end
       end
