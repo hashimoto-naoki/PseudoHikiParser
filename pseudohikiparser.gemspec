@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{PseudoHikiParser parses texts written in a Hiki like notation, and coverts them into HTML, Markdown or other formats.}
   spec.summary       = %q{PseudoHikiParser: a parser of texts in a Hiki like notation.}
   spec.homepage      = "https://github.com/nico-hn/PseudoHikiParser/wiki"
-  spec.license       = "BSD 2-Clause license"
+  spec.license       = "BSD-2-Clause"
   
   spec.files         = [
                         "README.md",
