@@ -26,7 +26,7 @@ gem install pseudohikiparser
 or if you also want to try out experimental features,
 
 ```
-gem install pseudohikiparser --version 0.0.5.develop
+gem install pseudohikiparser --version 0.0.6.develop
 ```
 
 ## Usage
