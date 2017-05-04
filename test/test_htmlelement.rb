@@ -119,6 +119,27 @@ SECTION
     assert_equal(html5_section, Xhtml5Element.create("section").to_s)
   end
 
+  def test_html5_main_element
+    html_main = <<MAIN
+<div class="main">
+<!-- end of main -->
+</div>
+MAIN
+
+    html_main = html_main.split(/\r?\n/o).join($/)+"#{$/}"
+
+    assert_equal(html_main, HtmlElement.create("main").to_s)
+
+    html5_main = <<MAIN
+<main>
+</main>
+MAIN
+
+    html5_main = html5_main.split(/\r?\n/o).join($/)+"#{$/}"
+
+    assert_equal(html5_main, Xhtml5Element.create("main").to_s)
+  end
+
   def test_traverse
     html, head, meta, body, h1 = %w(html head meta body h1).map {|tagname| HtmlElement.create(tagname) }
     h1_content = "heading 1"

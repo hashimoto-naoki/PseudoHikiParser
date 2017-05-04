@@ -37,7 +37,7 @@ class HtmlElement
   DECODE = ESC.invert
   @char_entity_pat = /#{DECODE.keys.join("|")}/
 
-  HTML5_TAGS = %w(article section hgroup aside nav menu header footer figure details legend)
+  HTML5_TAGS = %w(article section hgroup aside nav menu main header footer figure details legend)
 
   ELEMENT_TYPES = {
     :BLOCK => %w(html body div table colgroup thead tbody ul ol dl head p pre blockquote style),
@@ -193,7 +193,7 @@ class Xhtml5Element < XhtmlElement
 
   ELEMENT_TYPES = superclass::ELEMENT_TYPES.dup
   ELEMENT_TYPES[:BLOCK] = superclass::ELEMENT_TYPES[:BLOCK] + superclass::HTML5_TAGS
-  HTML5_TAGS = %w(main)
+  HTML5_TAGS = []
 
   TagFormats = assign_tagformats
 end
