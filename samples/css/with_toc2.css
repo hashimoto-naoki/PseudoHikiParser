@@ -13,7 +13,7 @@ h1 {
     width: 100%;
     background: #ccffff;
     color: #ffffff;
-    -webkit-text-stroke: thin #00bbbb;
+    -webkit-text-stroke: thin #007777;
     font-size: 200%;
     font-weight: bold;
     padding: 1em 0em 1em 1em;
@@ -22,11 +22,11 @@ h1 {
     margin-bottom: 0%;
     margin-left: 0%;
     text-shadow: 
-    -1px -1px 0 #00bbbb,
-    1px -1px 0 #00bbbb,
-    -1px 1px 0 #00bbbb,
-    2px 1px 0 #00bbbb,
-    2px 0px 0 #00bbbb;
+    -1px -1px 0 #007777,
+    1px -1px 0 #007777,
+    -1px 1px 0 #007777,
+    2px 1px 0 #007777,
+    2px 0px 0 #007777;
 }
 
 #toc {
