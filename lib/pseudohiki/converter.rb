@@ -78,7 +78,7 @@ module PseudoHiki
       def create_main(toc, body, h1)
         return nil unless @options[:toc]
         main = formatter.create_element("section").tap do |element|
-          element["id"] = "main"
+          element["id"] = "container"
           element.push h1 unless h1.empty?
           element.push create_toc_container(toc)
           element.push create_contents_container(body)

@@ -298,7 +298,7 @@ HTML
 <div class="skip-link">
 <a href="#contents">Skip to Content</a><!-- end of skip-link -->
 </div>
-<section id="main">
+<section id="container">
 <section id="toc">
 <h2>table of contents</h2>
 <ul>
@@ -348,7 +348,7 @@ paragraph
 </section>
 <!-- end of contents -->
 </section>
-<!-- end of main -->
+<!-- end of container -->
 </section>
 </body>
 </html>
